@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.11.2",
+    "@ant-design/icons": "^6.1.1",
+    "antd": "^6.3.5",
     "axios": "^1.13.6",
     "react": "^19.2.4",
     "react-bootstrap": "^2.10.10",

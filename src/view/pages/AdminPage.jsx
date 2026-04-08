@@ -1,11 +1,9 @@
-import React from 'react'
-
 const AdminPage = () => {
   return (
     <>
-      어드민
+      <h1>관리자 페이지</h1>
     </>
-  )
-}
+  );
+};
 
-export default AdminPage
+export default AdminPage;
