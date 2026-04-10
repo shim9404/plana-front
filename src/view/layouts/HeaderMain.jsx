@@ -3,14 +3,12 @@ import { Link } from "react-router-dom";
 import MenuButton from "../../components/common/MenuButton";
 import {
   CompassOutlined,
-  LockOutlined,
   LoginOutlined,
   LogoutOutlined,
   SlidersOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import { useState } from "react";
-import PlanHeader from "../../components/plan/PlanHeader";
 const { Header } = Layout;
 
 const headerStyle = {

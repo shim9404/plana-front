@@ -1,8 +1,10 @@
+import PageLayout from "../../components/common/PageLayout";
+
 const MyTripPage = () => {
   return (
-    <>
-      <h1>내 여행 페이지</h1>
-    </>
+    <PageLayout>
+      <h2>내 여행 페이지</h2>
+    </PageLayout>
   );
 };
 
