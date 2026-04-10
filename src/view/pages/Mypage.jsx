@@ -1,8 +1,10 @@
+import PageLayout from "../../components/common/PageLayout";
+
 const Mypage = () => {
   return (
-    <>
-      <h1>마이페이지</h1>
-    </>
+    <PageLayout>
+      <h2>마이 페이지</h2>
+    </PageLayout>
   );
 };
 

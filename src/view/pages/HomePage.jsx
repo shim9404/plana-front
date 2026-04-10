@@ -1,8 +1,10 @@
+import PageLayout from "../../components/common/PageLayout";
+
 const HomePage = () => {
   return (
-    <>
-      <h1>HOME</h1>
-    </>
+    <PageLayout isVisiableFooter>
+      <h2>HOME</h2>
+    </PageLayout>
   );
 };
 
