@@ -2,6 +2,8 @@ import { Footer } from "antd/es/layout/layout";
 
 const footerStyle = {
   backgroundColor: "#565656",
+  position: "absolute",
+  bottom: "0px",
   zIndex: "100",
   display: "flex",
   alignItems: "center",
