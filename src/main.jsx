@@ -5,6 +5,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute.jsx";
 import HomePage from "./view/pages/HomePage.jsx";
 import HeaderMain from "./view/layouts/HeaderMain.jsx";
+import './styles/global.css';
 
 /**
  * 인증 필요 여부에 따른 페이지 분리
