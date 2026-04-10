@@ -4,6 +4,7 @@ import { App as AntdApp } from "antd";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute.jsx";
 import HomePage from "./view/pages/HomePage.jsx";
+import HeaderMain from "./view/layouts/HeaderMain.jsx";
 
 /**
  * 인증 필요 여부에 따른 페이지 분리
@@ -13,6 +14,7 @@ createRoot(document.getElementById("root")).render(
   <>
     <BrowserRouter>
       <AntdApp>
+        <HeaderMain />
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route
