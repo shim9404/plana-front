@@ -1,5 +1,5 @@
 import { Layout } from "antd";
-import PlanTable from "../../components/plan/PlanTable";
+// import PlanTable from "../../components/plan/PlanTable";
 import { Header } from "antd/es/layout/layout";
 import PageLayout from "../../components/common/PageLayout";
 const { Sider, Content } = Layout;
