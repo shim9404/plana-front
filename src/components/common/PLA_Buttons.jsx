@@ -1,5 +1,4 @@
 import { Button } from "antd";
-import { icons } from "antd/es/image/PreviewGroup";
 
 const buttonStyle = {
   display: "flex",
@@ -26,10 +25,12 @@ const iconStyle = {
 export const MenuButton = ({
   children,
   name,
+  onClickEvent,
   type = "default",
   iconSize = "24px",
   fontSize = "12px",
 }) => {
+
   const menuButtonStyle = {
     width: "80px",
     minWidth: "64px",
@@ -37,8 +38,17 @@ export const MenuButton = ({
     marginRight: "20px",
     padding: "8px",
   };
+
+  let handleOnClick = () => {
+    onClickEvent && onClickEvent();
+  };
+
   return (
-    <Button type={type} style={{ ...buttonStyle, ...menuButtonStyle }}>
+    <Button
+      type={type}
+      style={{ ...buttonStyle, ...menuButtonStyle }}
+      onClick={handleOnClick}
+    >
       <div style={{ fontSize: iconSize, ...iconStyle }}>{children}</div>
       <div style={{ fontSize, ...textStyle }}>{name}</div>
     </Button>
@@ -47,17 +57,24 @@ export const MenuButton = ({
 
 export const TextButton = ({
   children,
+  onClickEvent,
   type = "default",
   width = "auto",
   height = "auto",
   fontSize = "12px",
   danger = false,
 }) => {
+
+  let handleOnClick = () => {
+    onClickEvent && onClickEvent();
+  };
+
   return (
     <Button
       type={type}
       danger={danger ? true : false}
       style={{ width, height, ...buttonStyle }}
+      onClick={handleOnClick}
     >
       <div style={{ fontSize, ...textStyle }}>{children}</div>
     </Button>
@@ -66,17 +83,24 @@ export const TextButton = ({
 
 export const IconButton = ({
   children,
+  onClickEvent,
   type = "primary",
   width = "auto",
   height = "auto",
   fontSize = "24px",
   danger = false,
 }) => {
+  
+  let handleOnClick = () => {
+    onClickEvent && onClickEvent();
+  };
+
   return (
     <Button
       type={type}
       danger={danger ? true : false}
       style={{ width, height, ...buttonStyle }}
+      onClick={handleOnClick}
     >
       <div style={{ fontSize, ...iconStyle }}>{children}</div>
     </Button>
