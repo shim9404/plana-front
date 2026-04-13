@@ -1,0 +1,57 @@
+/* ============== 사이드 영역  ================ */
+/* 상단 프로필 박스 */
+.profile-box { 
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  border-bottom: 2px solid #c7c7c7;
+  margin: 20px 20px 20px 20px;
+  padding: 30px;
+}
+
+.profile-image {
+  width: 70px;
+  height: 70px;
+  border-radius: 12px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.profile-name {
+  font-weight: 700;
+  font-size: 15px;
+  word-break: break-word;
+  min-width: 0;
+}
+
+/* Menu */
+.custom-menu .ant-menu-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 15px;
+  margin-bottom: 15px;
+}
+
+.custom-menu .ant-menu-item .anticon {
+  margin-left: 50px;
+  margin-right: 3px;
+  color: #aaa;
+}
+
+.custom-menu .ant-menu-item:hover { 
+  background-color: #fff !important;
+}
+
+.custom-menu .ant-menu-item-selected { 
+  background-color: #fff !important;
+  color: #000 !important;
+  font-weight: 700;
+}
+
+.custom-menu .ant-menu-item-selected .anticon { 
+  color: #000 !important;
+}
+
+
+
