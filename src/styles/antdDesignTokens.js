@@ -1,7 +1,7 @@
 export const GLOBAL_TOKEN = {
   token: {
-      borderRadius: 8
-    },
+    borderRadius: 8,
+  },
   components: {
     Button: {
       defaultShadow: "0px 2px 4px rgba(0,0,0,0.25)",
@@ -12,6 +12,8 @@ export const GLOBAL_TOKEN = {
       colorPrimary: "rgba(168,168,168,1)",
       colorPrimaryHover: "rgba(100,100,100,1)",
       colorPrimaryActive: "rgba(0,0,0,0.25)",
+      dangerShadow: "0px 2px 4px rgba(128, 0, 0, 0.25)",
+      defaultActiveBg: "rgba(255,0,0,0.25)",
     },
   },
-}
+};

@@ -7,19 +7,20 @@ const buttonStyle = {
   flexDirection: "column",
 };
 
-const textStyle = {
+const iconStyle = {
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
   margin: "0px",
   padding: "0px",
-  width: "100%",
-  textAlign: "center",
 };
 
-const TextButton = ({children, type="default", width="auto", height="auto", fontSize="12px", danger=false}) => {
+const IconButton = ({children, type="primary", width="auto", height="auto", fontSize="24px", danger=false}) => {
   return (
     <Button type={type} danger={danger? true : false} style={{width, height, ...buttonStyle}}>
-      <div style={{fontSize, ...textStyle}}>{children}</div>
+      <div style={{fontSize, ...iconStyle}}>{children}</div>
     </Button>
   );
 }
 
-export default TextButton;
+export default IconButton;
