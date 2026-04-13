@@ -1,6 +1,6 @@
-import { Layout, ConfigProvider } from "antd";
+import { Layout } from "antd";
 import { Link } from "react-router-dom";
-import MenuButton from "../../components/common/MenuButton";
+import { MenuButton } from "../../components/common/PLA_Buttons";
 import {
   CompassOutlined,
   LoginOutlined,
@@ -60,10 +60,7 @@ const HeaderMain = () => {
     <Header style={headerStyle}>
       {/* 로고 영역 */}
       <div style={LogoContainer}>
-        <Link
-          to="/"
-          className="header-trip__brand"
-        >
+        <Link to="/" className="header-trip__brand">
           <img
             src="../../../public/images/svg/logos/plana-logo.svg"
             alt="logo"
