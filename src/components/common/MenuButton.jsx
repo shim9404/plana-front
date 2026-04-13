@@ -1,4 +1,4 @@
-import { Button, ConfigProvider } from "antd";
+import { Button } from "antd";
 
 const ButtonStyle = {
   display: "flex",
@@ -9,8 +9,7 @@ const ButtonStyle = {
   minWidth: "64px",
   height: "64px",
   margin: "10px",
-  padding: "10px",
-  filter: "drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.5))",
+  padding: "8px",
 };
 
 const IconStyle = {
@@ -22,7 +21,6 @@ const IconStyle = {
   width: "28px",
   height: "28px",
   fontSize: "24px",
-  // backgroundColor: "yellow",
 };
 
 const TextStyle = {
@@ -32,15 +30,14 @@ const TextStyle = {
   maxWidth: "64px",
   height: "20px",
   fontSize: "12px",
-  // backgroundColor: "green",
   textAlign: "center",
 };
 
-const MenuButton = (props) => {
+const MenuButton = ({children, name, type="default"}) => {
   return (
-    <Button style={ButtonStyle}>
-      <div style={IconStyle}>{props.children}</div>
-      <div style={TextStyle}>{props.name}</div>
+    <Button type={type} style={ButtonStyle}>
+      <div style={IconStyle}>{children}</div>
+      <div style={TextStyle}>{name}</div>
     </Button>
   );
 };
