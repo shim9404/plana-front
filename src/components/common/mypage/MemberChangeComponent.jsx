@@ -8,7 +8,7 @@ import img1 from '../../../styles/image1.PNG';
 
 
 {/* == 회원 정보 수정 콘텐츠 == */}
-const MemberChaneComponent = ({memberItem, setSelectedMenu}) => {
+const MemberChangeComponent = ({memberItem, setSelectedMenu}) => {
   return (
     <>
       {/* 콘텐츠 상단 */}
@@ -31,7 +31,8 @@ const MemberChaneComponent = ({memberItem, setSelectedMenu}) => {
         {/* 닉네임, 이름, 이름 변경 부분 */}
         <div className="profile-edit__row">
           <label>닉네임</label>
-          <Input className="profile-edit__input" maxLength={20} showCount/>
+          <Input className="profile-edit__input" placeholder={memberItem.nickname} 
+            maxLength={20} showCount/>
           <TextButton type="default" danger width="100px" height="40px" fontSize="15px">중복 확인</TextButton>
         </div>
         <div className="profile-edit__row">
@@ -43,7 +44,7 @@ const MemberChaneComponent = ({memberItem, setSelectedMenu}) => {
           <Input className="profile-edit__input" value={memberItem.name} style={{background: '#fff', color: '#aaa'}} disabled/>
         </div>
         <div className="profile-edit__change">
-          <TextButton type="default" width="480px" height="45px" fontSize="17px">
+          <TextButton type="primary" width="480px" height="45px" fontSize="17px">
             프로필 변경하기
           </TextButton>
         </div>
@@ -58,4 +59,4 @@ const MemberChaneComponent = ({memberItem, setSelectedMenu}) => {
   )
 }
 
-export default MemberChaneComponent
+export default MemberChangeComponent

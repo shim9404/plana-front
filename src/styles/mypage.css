@@ -123,7 +123,8 @@
 .ant-input:focus,
 .ant-input-focused,
 .ant-input:hover {
-  border-color: #aaa !important;    
+  border-color: #aaa !important;
+  box-shadow: none !important;    
 }
 
 /* 수정 버튼 */
@@ -143,4 +144,20 @@
 .withdraw-link {
   color: #aaa !important;
   font-size: 15px;
+}
+
+/* === 콘텐츠 2 _ 비밀번호 수정 === */
+.profile-edit_content2 {
+  padding-top: 100px;
+  max-width: 480px;
+  min-height: 100vh;
+  margin: 0 auto;
+  font-size: 16px;
+}
+
+.ant-input-affix-wrapper:focus,
+.ant-input-affix-wrapper-focused,
+.ant-input-affix-wrapper:hover {
+  border-color: #aaa !important;
+  box-shadow: none !important;
 }

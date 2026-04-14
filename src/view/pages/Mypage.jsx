@@ -3,7 +3,8 @@ import { Layout, Menu } from "antd";
 import { KeyOutlined, ProfileOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import '../../styles/mypage.css';
-import MemberChaneComponent from "../../components/common/mypage/MemberChaneComponent";
+import MemberChangeComponent from "../../components/common/mypage/MemberChangeComponent";
+import PasswordChangeComponent from "../../components/common/mypage/PasswordChangeComponent";
 
 import img1 from '../../styles/image1.PNG'; // 테스트용_이미지
 
@@ -68,7 +69,11 @@ const Mypage = () => {
         {/* == 콘텐츠 영역 == */}
         <Content style={contentStyle} >
           {/* 회원 정보 수정 콘텐츠 (1) */}
-          {selectedMenu === '1' && <MemberChaneComponent memberItem = {memberItem} setSelectedMenu = {setSelectedMenu}/>}
+          {selectedMenu === '1' && 
+            <MemberChangeComponent memberItem = {memberItem} setSelectedMenu = {setSelectedMenu} />}
+          {/* 비밀번호 수정 콘텐츠 (2) */}
+          {selectedMenu === '2' && 
+            <PasswordChangeComponent />}
         </Content>
       </Layout>
     </PageLayout>
