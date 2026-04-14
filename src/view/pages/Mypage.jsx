@@ -3,12 +3,11 @@ import { Layout, Menu } from "antd";
 import { KeyOutlined, ProfileOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import '../../styles/mypage.css';
-import MemberChangeComponent from "../../components/common/mypage/MemberChangeComponent";
-import PasswordChangeComponent from "../../components/common/mypage/PasswordChangeComponent";
-import MemberWithdrawComponent from "../../components/common/mypage/MemberWithdrawComponent";
+import MemberChangeComponent from "../../components/mypage/MemberChangeComponent";
+import PasswordChangeComponent from "../../components/mypage/PasswordChangeComponent";
+import MemberWithdrawComponent from "../../components/mypage/MemberWithdrawComponent";
 
-import img1 from '../../styles/image1.PNG'; // 테스트용_이미지
-
+import img1 from '../../../public/images/image1.PNG' // 테스트용_이미지
 
 const { Sider, Content } = Layout;
 
@@ -19,8 +18,8 @@ const layoutStyle = {
 };
 
 const contentStyle = {
-  margin: 24,
-  padding: 48,
+  margin: '24px',
+  padding: '48px',
   minHeight: '100vh',
   background: '#fff',
   borderRadius: '15px',
@@ -40,7 +39,7 @@ const Mypage = () => {
     <PageLayout>
       <Layout style={layoutStyle}>
         {/* == 사이드 영역 == */}
-        <Sider width={300} theme="light">
+        <Sider width={'300px'} theme="light">
           {/* 상단 프로필 박스 */}
           <div className="demo-logo-vertical" />  
             <div className="profile-box">

@@ -72,7 +72,7 @@
 }
 
 /* === 콘텐츠 1 _ 회원 정보 수정 === */
-.profile-edit_content_1 {
+.edit_content_1 {
   padding-top: 40px;
   max-width: 480px;
   min-height: 100vh;
@@ -103,19 +103,19 @@
 
 
 /* 닉네임, 이름, 이름 변경 부분 */
-.profile-edit__row {
+.edit__row {
   display: flex;
   align-items: center;
   margin-bottom: 30px;
   gap: 10px;
 }
 
-.profile-edit__row label {
+.edit__row label {
   width: 100px;
   font-weight: 500;
 }
 
-.profile-edit__input {
+.edit__input {
   flex: 1;
   height: 45px;
 }
@@ -128,7 +128,7 @@
 }
 
 /* 수정 버튼 */
-.profile-edit__change {
+.edit__change {
   display: flex;
   justify-content: center;
   margin-top: 35px;
@@ -147,7 +147,7 @@
 }
 
 /* === 콘텐츠 2 _ 비밀번호 수정 === */
-.profile-edit_content2 {
+.edit_content2 {
   padding-top: 100px;
   max-width: 480px;
   min-height: 100vh;
@@ -172,7 +172,7 @@
   background-color: #fafafa;
 }
 
-.profile-edit_content3 {
+.edit_content3 {
   padding-top: 30px;
   max-width: 480px;
   min-height: 100vh;

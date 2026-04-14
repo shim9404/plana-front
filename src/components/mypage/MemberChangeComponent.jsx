@@ -1,10 +1,9 @@
 import React from 'react'
 import { Button, Input } from 'antd';
 import { ProfileOutlined } from '@ant-design/icons';
-import '../../../styles/mypage.css';
-import { TextButton } from '../PLA_Buttons';
-
-import img1 from '../../../styles/image1.PNG';
+import '../../styles/mypage.css';
+import { TextButton } from '../common/PLA_Buttons';
+import img1 from '../../../public/images/image1.PNG'; // 테스트용_이미지
 
 
 {/* == 회원 정보 수정 콘텐츠 == */}
@@ -17,10 +16,10 @@ const MemberChangeComponent = ({memberItem, setSelectedMenu}) => {
         <span className="content-header__title">회원 정보 수정</span>
       </div>
       {/* 콘텐츠 내용 */}
-      <div className="profile-edit_content_1">
+      <div className="edit_content_1">
         {/* 프로필 변경 부분 */}
         <div className="profile-edit__image-section">
-          <label style={{ width: '80px', fontWeight: '500'}}>프로필</label>
+          <label style={{ width: '80px', fontWeight: 500}}>프로필</label>
           <img className="profile-edit__image" 
             src={memberItem.profileImage || img1}/>
             <div className="profile-edit__image-buttons">
@@ -29,21 +28,21 @@ const MemberChangeComponent = ({memberItem, setSelectedMenu}) => {
             </div>
         </div>
         {/* 닉네임, 이름, 이름 변경 부분 */}
-        <div className="profile-edit__row">
+        <div className="edit__row">
           <label>닉네임</label>
-          <Input className="profile-edit__input" placeholder={memberItem.nickname} 
+          <Input className="edit__input" placeholder={memberItem.nickname} 
             maxLength={20} showCount/>
           <TextButton type="default" danger width="100px" height="40px" fontSize="15px">중복 확인</TextButton>
         </div>
-        <div className="profile-edit__row">
+        <div className="edit__row">
           <label>이메일</label>
-          <Input className="profile-edit__input" value={memberItem.email} style={{background: '#fff', color: '#aaa'}} disabled/>
+          <Input className="edit__input" value={memberItem.email} style={{background: '#fff', color: '#aaa'}} disabled/>
         </div>
-        <div className="profile-edit__row">
+        <div className="edit__row">
           <label>이름</label>
-          <Input className="profile-edit__input" value={memberItem.name} style={{background: '#fff', color: '#aaa'}} disabled/>
+          <Input className="edit__input" value={memberItem.name} style={{background: '#fff', color: '#aaa'}} disabled/>
         </div>
-        <div className="profile-edit__change">
+        <div className="edit__change">
           <TextButton type="primary" width="480px" height="45px" fontSize="17px">
             프로필 변경하기
           </TextButton>
