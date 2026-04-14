@@ -52,12 +52,14 @@ export const TextButton = ({
   height = "auto",
   fontSize = "12px",
   danger = false,
+  onClick
 }) => {
   return (
     <Button
       type={type}
       danger={danger ? true : false}
       style={{ width, height, ...buttonStyle }}
+      onClick = {onClick}
     >
       <div style={{ fontSize, ...textStyle }}>{children}</div>
     </Button>

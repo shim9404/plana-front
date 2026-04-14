@@ -5,6 +5,7 @@ import { useState } from "react";
 import '../../styles/mypage.css';
 import MemberChangeComponent from "../../components/common/mypage/MemberChangeComponent";
 import PasswordChangeComponent from "../../components/common/mypage/PasswordChangeComponent";
+import MemberWithdrawComponent from "../../components/common/mypage/MemberWithdrawComponent";
 
 import img1 from '../../styles/image1.PNG'; // 테스트용_이미지
 
@@ -74,6 +75,9 @@ const Mypage = () => {
           {/* 비밀번호 수정 콘텐츠 (2) */}
           {selectedMenu === '2' && 
             <PasswordChangeComponent />}
+          {/* 비밀번호 수정 콘텐츠 (3) */}
+          {selectedMenu === '3' && 
+            <MemberWithdrawComponent setSelectedMenu = {setSelectedMenu}/>}
         </Content>
       </Layout>
     </PageLayout>

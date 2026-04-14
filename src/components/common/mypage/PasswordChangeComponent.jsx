@@ -33,12 +33,13 @@ const PasswordChangeComponent = () => {
             </div>
           </div>
         </div>
-          <div className="profile-edit__change">
-            <TextButton type="primary" width="480px" height="45px" fontSize="17px">
-              새 비밀번호로 변경하기
-            </TextButton>
-          </div>
+        {/* 비밀번호 변경 버튼 부분 */}
+        <div className="profile-edit__change">
+          <TextButton type="primary" width="480px" height="45px" fontSize="17px">
+            새 비밀번호로 변경하기
+          </TextButton>
         </div>
+      </div>
     </>
   )
 }

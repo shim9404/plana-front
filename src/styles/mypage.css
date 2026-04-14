@@ -161,3 +161,27 @@
   border-color: #aaa !important;
   box-shadow: none !important;
 }
+
+/* === 콘텐츠 2 _ 푀원 탈퇴 === */
+.withdraw-box {
+  border-left: 4px solid #c4c4c4;
+  border-top: 5px solid #c4c4c4;
+  padding: 20px;
+  margin: 30px;
+  border-radius: 8px;
+  background-color: #fafafa;
+}
+
+.profile-edit_content3 {
+  padding-top: 30px;
+  max-width: 480px;
+  min-height: 100vh;
+  margin: 0 auto;
+  font-size: 16px;
+}
+
+.withdraw-button-wrapper { 
+  display: flex;
+  justify-content: end;
+  gap: 10px;
+}
