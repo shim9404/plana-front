@@ -81,7 +81,7 @@ const MemberWithdrawComponent = ({setSelectedMenu}) => {
         </div>
         {/* 취소 및 회원 탈퇴 버튼 부분 */}
         <div className="withdraw-button-wrapper">
-          <TextButton type="primary" width="80px" height="45px" fontSize="17px" onClick={() => setSelectedMenu('1')}> 
+          <TextButton type="primary" width="80px" height="45px" fontSize="17px" onClickEvent={() => setSelectedMenu('1')}> 
             취소 
           </TextButton>
           <TextButton type="primary" width="180px" height="45px" fontSize="17px"> 
