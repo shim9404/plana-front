@@ -13,15 +13,14 @@ const { Sider, Content } = Layout;
 
 const layoutStyle = {
   display: "flex",
-  minHeight: '100vh',
-  margin: '8px 48px'
+  minHeight: '100%',
+  padding: '8px 48px'
 };
 
 const contentStyle = {
   margin: '24px',
   padding: '48px',
-  minHeight: '100vh',
-  background: '#fff',
+  background: '#ffffff',
   borderRadius: '15px',
   boxShadow: '0 3px 5px rgba(0,0,0,0.5)'
 }
@@ -29,7 +28,7 @@ const contentStyle = {
 const Mypage = () => {
   // 회원 정보 초기값
   const [memberItem, setMemberItem] = useState({
-    memberId: "M1", email: "a@a.com", name: "홍길동", nickname: "내가제일좋아하는게임캐릭터는커비입니다.", profileImage: "" 
+    memberId: "M1", email: "a@a.com", name: "홍길동", nickname: "내가제일좋아하는게임캐릭터는커비입니다.", profileImage: ""
   }) // 테스트용 임의 값 (Backend 연결)
 
   // 메뉴(회원 정보 수정(1) / 비밀번호 변경(2) / 회원 탈퇴(3)) 선택 
@@ -41,14 +40,14 @@ const Mypage = () => {
         {/* == 사이드 영역 == */}
         <Sider width={'300px'} theme="light">
           {/* 상단 프로필 박스 */}
-          <div className="demo-logo-vertical" />  
-            <div className="profile-box">
-              <img className="profile-image" 
-                src={memberItem.profileImage || img1} /> {/* 테스트용_이미지 */}
-              <div className="profile-name">{memberItem.nickname}</div>
+          <div className="demo-logo-vertical" />
+          <div className="profile-box">
+            <img className="profile-image"
+              src={memberItem.profileImage || img1} /> {/* 테스트용_이미지 */}
+            <div className="profile-name">{memberItem.nickname}</div>
           </div>
           {/* 메뉴 */}
-          <Menu 
+          <Menu
             className="custom-menu" theme="light" mode="inline"
             selectedKeys={selectedMenu ? [selectedMenu] : []}
             onClick={(e) => setSelectedMenu(e.key)}
@@ -69,14 +68,14 @@ const Mypage = () => {
         {/* == 콘텐츠 영역 == */}
         <Content style={contentStyle} >
           {/* 회원 정보 수정 콘텐츠 (1) */}
-          {selectedMenu === '1' && 
-            <MemberChangeComponent memberItem = {memberItem} setSelectedMenu = {setSelectedMenu} />}
+          {selectedMenu === '1' &&
+            <MemberChangeComponent memberItem={memberItem} setSelectedMenu={setSelectedMenu} />}
           {/* 비밀번호 수정 콘텐츠 (2) */}
-          {selectedMenu === '2' && 
+          {selectedMenu === '2' &&
             <PasswordChangeComponent />}
           {/* 비밀번호 수정 콘텐츠 (3) */}
-          {selectedMenu === '3' && 
-            <MemberWithdrawComponent setSelectedMenu = {setSelectedMenu}/>}
+          {selectedMenu === '3' &&
+            <MemberWithdrawComponent setSelectedMenu={setSelectedMenu} />}
         </Content>
       </Layout>
     </PageLayout>
