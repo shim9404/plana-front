@@ -13,12 +13,11 @@ const { Sider, Content } = Layout;
 
 const layoutStyle = {
   display: "flex",
-  minHeight: '100%',
-  padding: '8px 48px'
+  minHeight: '100%'
 };
 
 const contentStyle = {
-  display: 'flex', 
+  display: 'flex',
   flexDirection: 'column',
   margin: '24px',
   padding: '48px',
