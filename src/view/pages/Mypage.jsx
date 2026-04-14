@@ -1,10 +1,12 @@
-import { KeyOutlined, ProfileOutlined } from "@ant-design/icons";
 import PageLayout from "../../components/common/PageLayout";
 import { Layout, Menu } from "antd";
+import { KeyOutlined, ProfileOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import '../../styles/mypage.css';
+import MemberChaneComponent from "../../components/common/mypage/MemberChaneComponent";
 
 import img1 from '../../styles/image1.PNG'; // 테스트용_이미지
+
 
 const { Sider, Content } = Layout;
 
@@ -15,14 +17,15 @@ const layoutStyle = {
 };
 
 const contentStyle = {
-  margin: '8px 0px',
-  padding: 24,
-  minHeight: 280,
-  backgroundColor: 'green', // 레이아웃 확인용 색상 (개발 완료 후 색상 제거)
+  margin: 24,
+  padding: 48,
+  minHeight: '100vh',
+  background: '#fff',
+  borderRadius: '15px',
+  boxShadow: '0 3px 5px rgba(0,0,0,0.5)'
 }
 
 const Mypage = () => {
-
   // 회원 정보 초기값
   const [memberItem, setMemberItem] = useState({
     memberId: "M1", email: "a@a.com", name: "홍길동", nickname: "내가제일좋아하는게임캐릭터는커비입니다.", profileImage: "" 
@@ -62,8 +65,10 @@ const Mypage = () => {
             ]}
           />
         </Sider>
-        <Content style={contentStyle}>
-          콘텐츠 영역
+        {/* == 콘텐츠 영역 == */}
+        <Content style={contentStyle} >
+          {/* 회원 정보 수정 콘텐츠 (1) */}
+          {selectedMenu === '1' && <MemberChaneComponent memberItem = {memberItem} setSelectedMenu = {setSelectedMenu}/>}
         </Content>
       </Layout>
     </PageLayout>
