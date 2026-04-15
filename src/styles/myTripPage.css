@@ -240,7 +240,7 @@
 }
 
 .bookmark-card_icon-box {
-  height: 80px;
+  height: 90px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -258,7 +258,7 @@
 }
 
 .bookmark-card_address {
-  padding: 11px;
+  padding: 5px;
   font-size: 11px;
   color: #555555;
   white-space: nowrap;    
@@ -283,4 +283,191 @@
 .bookmark-card:hover .bookmark-card_title_full,
 .bookmark-card:hover .bookmark-card_address_full {
   display: block;
+}
+
+/* == 여행 계획표 == */
+/* 여행 계획표 상단 표시 */
+.schedule_head .ant-card-head{
+  min-height: 40px;
+  padding: 0 15px;
+  background: #ffffff;
+  border-bottom: 1px solid #c4c4c4;
+  padding-left: 20px;
+  padding-right: 20px;
+  gap: 10px;
+}
+/* 여행 계획표 내용 */
+.schedule-container {
+  max-height: 500px;      
+  overflow-x: auto; /* 가로 스크롤 */
+  overflow-y: auto; /* 세로 스크롤 */  
+}
+
+.schedule-day-card {
+  background: #fff;
+  border: 1px solid #c4c4c4;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  padding: 16px;
+  margin-bottom: 10px;
+  max-height: 350px;
+  display: flex;
+  flex-direction: column;
+}
+
+.schedule-day-card.dimmed {
+  opacity: 0.5;
+  filter: grayscale(80%);
+}
+
+.schedule-table-wrapper {
+  overflow-x: auto; 
+  overflow-y: auto; 
+  border: 1px solid #c4c4c4;
+  border-radius: 6px;
+}
+
+/* 날짜 */
+.schedule-day-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+  font-weight: 600;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.day-badge {
+  background: #c4c4c4;
+  color: #fff;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 13px;
+}
+
+.day-date {
+  font-size: 15px;
+  font-weight: 500;
+  color: #555555;
+}
+
+/* 스케줄 목록 */
+.schedule-table-header, 
+.schedule-table-row {
+  display: grid;
+  grid-template-columns: 20fr 70fr 70fr 60fr 250fr 350fr 70fr 30fr;
+  gap: 10px;
+  padding: 5px 15px 5px 15px;
+  min-width: 700px;
+  font-weight: 500;
+}
+
+.schedule-table-header div, 
+.schedule-table-row div{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0 10px;
+}
+
+.schedule-table-header {
+  font-weight: 600;
+  border-bottom: 2px solid #c4c4c4;
+  background: #555555;
+  color: #ffffff;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.schedule-table-body .schedule-table-row {
+  border-bottom: 2px solid #fafafa;
+}
+
+.schedule-table-body .schedule-table-row:last-child {
+  border-bottom: none;
+}
+
+/* 링크 */
+.link-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.link-icon.active {
+  color: #555555;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.link-icon.active:hover {
+  transform: scale(1.15);
+}
+
+.link-icon.disabled {
+  color: #aaa;
+  cursor: default;
+}
+
+/* 스케줄 정리표 */
+.schedule-summary-sticky {
+  position: sticky;
+  bottom: 0;
+  height: 45px;
+  background: #f3f3f3;
+  border: 1px solid #a0a0a0;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  z-index: 10;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.summary-left {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.summary-right {
+  display: flex;
+  gap: 30px;
+  padding-left: 10px;
+  padding-right: 10px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.summary-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.summary-item input {
+  width: 100px;
+  height: 28px;
+  border: 1px solid #c4c4c4;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.5);
+  background: #fff;
+  font-weight: 400;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.summary-item input[readonly] {
+  color: #aaa;
+}
+.summary-item input:hover,
+.summary-item input:focus {
+  border-color: #555555 !important;
 }

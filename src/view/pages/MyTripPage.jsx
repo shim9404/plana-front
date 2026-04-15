@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import '../../styles/myTripPage.css';
 import BookmarkComponent from "../../components/myTripPage/BookmarkComponent";
+import TripPlanComponent from "../../components/myTripPage/TripPlanComponent";
 
 const { Sider, Content } = Layout;
 
@@ -51,6 +52,7 @@ const MyTripPage = () => {
   const [trashPlanList, setTrashPlanList] = useState(
     tripItem.filter((item) => item.status === "INACTIVE"),
   );
+
   // 북마크 목록(전부) 초기값
   const [bookmarkList, setBookmarkList] = useState([
     {bookmarkId: "BM1", areaId: "A1", areaCategory: "FD6", // 음식점
@@ -60,7 +62,7 @@ const MyTripPage = () => {
     {bookmarkId: "BM3", areaId: "A32", areaCategory: "AT4", // 관광명소
       title: "미륵원지", address: "대전광역시 동구 냉천로152번길 80 (마산동)", link: "http://naver.com", telephon: "0000-000-0000",bookmarkType: "GREEN"},
     {bookmarkId: "BM4", areaId: "A33", areaCategory: "etc", // 기타
-      title: "예시1-기타타탙타ㅏ타타타타타타타탙ㅌ타ㅏ타타타탙", address: "대전광역시 동구 냉천로152번길 80 (마산동)", bookmarkType: "ORANGE"},
+      title: "커피사피엔스 가산어반워크점", address: "대전광역시 동구 냉천로152번길 80 (마산동)", bookmarkType: "ORANGE"},
     {bookmarkId: "BM5", areaId: "A34", areaCategory: "PK6", // 주차장
       title: "예시2-주차장", address: "대전광역시 동구 냉천로152번길 80 (마산동)", bookmarkType: "BLUE"},
     {bookmarkId: "BM6", areaId: "A35", areaCategory: "PO3", // 공공기관
@@ -72,7 +74,47 @@ const MyTripPage = () => {
     {bookmarkId: "BM9", areaId: "A38", areaCategory: "AD5", // 숙박
       title: "예시6-숙박", address: "대전광역시 동구 냉천로152번길 80 (마산동)", bookmarkType: "PURPLE"}
   ]);
+  
+  // 여행 일자 초기값
+  const [tripDate, setTripDate] = useState({
+    startDate: "2026-04-01",
+    endDate: "2026-04-02"
+  });
 
+  // 스케줄 목록(전부) 초기값
+  const [schedulelist, setScheduleList] = useState([
+    {
+      tripDayId: "TD14",
+      indexSort: 1,
+      schedules: [
+        {tripScheduleId: "TS123", indexSort: 1, context: "부산으로 ㄱㄱ", startTime: "10:00", endTime: "13:00", category: "이동", price: 10000, memo: "택시 타기"},
+        {tripScheduleId: "TS365", indexSort: 2, bookmarkId: "BM1", startTime: "14:00", endTime: "15:00", category: "식사", price: 50000, memo: "방문 전 예약 필수! 예약 실패 시, 1시간 대기",}
+      ]
+    },
+    {
+      tripDayId: "TD27",
+      indexSort: 2,
+      schedules: [
+        {tripScheduleId: "TS257", indexSort: 1, bookmarkId: "BM2", startTime: "10:00", endTime: "11:00", category: "이동", memo: ""},
+        {tripScheduleId: "TS258", indexSort: 2, bookmarkId: "BM3", startTime: "13:00", endTime: "14:00", category: "카페", price: 30000, memo: "딸기라떼 + 티라미수 필수"},
+        {tripScheduleId: "TS260", indexSort: 3, bookmarkId: "BM4", startTime: "14:00", endTime: "15:00", category: "관광명소", memo: "사진 찍기"},
+        {tripScheduleId: "TS261", indexSort: 4, context: "", startTime: "15:00", endTime: "16:00", category: "기타", memo: "소화 시킬겸 주변 공원 산책"},
+        {tripScheduleId: "TS262", indexSort: 5, bookmarkId: "BM5", startTime: "16:00", endTime: "17:00", category: "주차장", price: 3000, memo: ""},
+        {tripScheduleId: "TS263", indexSort: 6, context: "미정", startTime: "18:00", endTime: "19:00", category: "", price: "", memo: ""},
+        {tripScheduleId: "TS264", indexSort: 7, bookmarkId: "BM9", startTime: "20:00", endTime: "21:00", category: "숙박", price: 190000, memo: "꿈나라"}
+      ]
+    },
+    {
+      tripDayId: "TD28",
+      indexSort: 3,
+      schedules: [
+        {tripScheduleId: "TS300", indexSort: 1, bookmarkId: "BM2", startTime: "10:00", endTime: "11:00", category: "이동", memo: ""},
+        {tripScheduleId: "TS301", indexSort: 2, bookmarkId: "BM3", startTime: "13:00", endTime: "14:00", category: "카페", price: 30000, memo: "딸기라떼 + 티라미수 필수"},
+        {tripScheduleId: "TS302", indexSort: 3, bookmarkId: "BM4", startTime: "14:00", endTime: "15:00", category: "관광명소", memo: "사진 찍기"},
+        {tripScheduleId: "TS303", indexSort: 4, context: "", startTime: "15:00", endTime: "16:00", category: "기타", memo: "소화 시킬겸 주변 공원 산책"}
+      ]
+    }
+  ]);
 
 
   // ==========
@@ -187,8 +229,16 @@ const MyTripPage = () => {
                   </IconButton>
                 </div>
               </div>
-              {/* 북마크 카드*/}
+              {/* 북마크 카드 */}
               <BookmarkComponent bookmarkList = {bookmarkList}/>
+              {/* 여행 계획표 카드 */}
+              <TripPlanComponent
+                tripList={tripList}
+                tripDate={tripDate}
+                bookmarkList={bookmarkList}
+                schedulelist={schedulelist}
+                selectedMenu={selectedMenu}
+              />
               </>
             )}
           </Content>
