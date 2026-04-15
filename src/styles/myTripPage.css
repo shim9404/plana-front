@@ -98,7 +98,7 @@
   top: 0px;
   left: 0px;
   height: 100%;
-  background: #ff3f3f;
+  background: #FF2400;
   z-index: 0;
   border-radius: 6px;
 }
@@ -119,4 +119,168 @@
 .menu-extra-text {
   font-size: 14px;
   margin-bottom: 8px;
+}
+
+/* ============== 콘텐츠 영역  ================ */
+/* ===== 내 여행 계획 화면  ===== */
+/* 콘텐츠 상단 표시 */
+.trip-content-space {
+  display: flex;
+  justify-content: space-between; 
+  align-items: center;
+  width: 100%;
+  padding-bottom: 15px;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #c4c4c4;
+}
+
+.trip-content-header {
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  gap: 15px;
+  padding-left: 20px;
+  min-width: 0;
+}
+
+.trip-content-header__title {
+  font-size: 18px;
+  font-weight: 600;
+  white-space: nowrap;     
+  overflow: hidden;    
+  text-overflow: ellipsis; 
+  min-width: 0;
+}
+
+.trip-content-header_button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: 20px;
+  padding-top: 0;
+}
+
+/* == 북마크 == */
+/* 북마크 상단 표시 */
+.bookmark_head .ant-card-head{
+  min-height: 40px;
+  padding: 0 15px;
+  background: #ffffff;
+  border-bottom: 1px solid #c4c4c4;
+  padding-left: 20px;
+  padding-right: 20px;
+  gap: 10px;
+}
+
+.bookmark-extra-text{
+  display: flex;
+  justify-content: center;
+  height: 25px;
+  width: 40px;
+  font-size: 15px;
+  border: 1px solid #555555;
+  border-radius: 8px;
+}
+
+.bookmark-card-colors {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px; 
+}
+
+/* 북마크 내용 */
+.bookmark-list {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  align-items: flex-start;
+  padding-bottom: 10px;
+}
+
+.bookmark-card {
+  width: 150px;
+  border-radius: 10px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.5);
+  overflow: hidden;
+  cursor: pointer;
+  transition: 0.2s;
+  padding-bottom: 4px;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.bookmark-card_title {
+  display: block;
+  padding: 5px 15px;
+  font-weight: 600;
+  border-bottom: 1px solid #c4c4c4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;;
+}
+
+.bookmark-card_title_full {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 3px 15px;
+  border-radius: 10px 10px 0 0;
+  font-weight: 600;
+  white-space: normal;
+  word-break: break-word;
+  display: none;
+  z-index: 10;
+}
+
+.bookmark-card:hover .bookmark-card_title_full {
+  display: block;
+}
+
+.bookmark-card_icon-box {
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #c4c4c4;
+}
+
+.bookmark-card_icon {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #fafafa;
+  border-radius: 5px;
+}
+
+.bookmark-card_address {
+  padding: 11px;
+  font-size: 11px;
+  color: #555555;
+  white-space: nowrap;    
+  overflow: hidden;    
+  text-overflow: ellipsis;
+}
+
+.bookmark-card_address_full {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 11px;
+  font-size: 11px;
+  border-radius: 0 0 10px 10px;
+  white-space: normal;
+  word-break: break-word;
+  display: none;
+  z-index: 10;
+}
+
+.bookmark-card:hover .bookmark-card_title_full,
+.bookmark-card:hover .bookmark-card_address_full {
+  display: block;
 }
