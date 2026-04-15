@@ -100,7 +100,7 @@ const TripPlanComponent = ({tripList, tripDate, bookmarkList, schedulelist, sele
                       {getFormattedDateIndex(tripDate.startDate, day.indexSort)}
                     </div>
                   </div>
-                  <div className="schedule-table-wrapper">
+                  <div className="schedule-table">
                     <div className="schedule-table-header">
                       <div>
                         <CheckSquareOutlined style={{ fontSize: "16px", color: "#fafafa" }}/>

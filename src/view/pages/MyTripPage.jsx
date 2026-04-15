@@ -102,7 +102,9 @@ const MyTripPage = () => {
         {tripScheduleId: "TS261", indexSort: 4, context: "", startTime: "15:00", endTime: "16:00", category: "기타", memo: "소화 시킬겸 주변 공원 산책"},
         {tripScheduleId: "TS262", indexSort: 5, bookmarkId: "BM5", startTime: "16:00", endTime: "17:00", category: "주차장", price: 3000, memo: ""},
         {tripScheduleId: "TS263", indexSort: 6, context: "미정", startTime: "18:00", endTime: "19:00", category: "", price: "", memo: ""},
-        {tripScheduleId: "TS264", indexSort: 7, bookmarkId: "BM9", startTime: "20:00", endTime: "21:00", category: "숙박", price: 190000, memo: "꿈나라"}
+        {tripScheduleId: "TS264", indexSort: 7, bookmarkId: "BM9", startTime: "20:00", endTime: "21:00", category: "숙박", price: 190000, memo: "꿈나라"},
+        {tripScheduleId: "TS265", indexSort: 8, bookmarkId: "BM9", startTime: "20:00", endTime: "21:00", category: "숙박", price: 190000, memo: "꿈나라"},        
+        {tripScheduleId: "TS266", indexSort: 9, bookmarkId: "BM9", startTime: "20:00", endTime: "21:00", category: "숙박", price: 190000, memo: "꿈나라"}
       ]
     },
     {

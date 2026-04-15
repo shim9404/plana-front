@@ -197,6 +197,7 @@
   white-space: nowrap;
   align-items: flex-start;
   padding-bottom: 10px;
+  padding: 10px 10px 10px 10px;
 }
 
 .bookmark-card {
@@ -206,7 +207,6 @@
   overflow: hidden;
   cursor: pointer;
   transition: 0.2s;
-  padding-bottom: 4px;
   flex-shrink: 0;
   position: relative;
 }
@@ -223,8 +223,9 @@
 
 .bookmark-card_title_full {
   position: absolute;
-  top: 0;
+  top: 2px;
   left: 0;
+  padding: 5px 15px;
   width: 100%;
   padding: 3px 15px;
   border-radius: 10px 10px 0 0;
@@ -297,10 +298,8 @@
   gap: 10px;
 }
 /* 여행 계획표 내용 */
-.schedule-container {
-  max-height: 500px;      
-  overflow-x: auto; /* 가로 스크롤 */
-  overflow-y: auto; /* 세로 스크롤 */  
+.schedule-container {     
+  overflow-x: auto;  
 }
 
 .schedule-day-card {
@@ -310,7 +309,6 @@
   box-shadow: 0 1px 2px rgba(0,0,0,0.5);
   padding: 16px;
   margin-bottom: 10px;
-  max-height: 350px;
   display: flex;
   flex-direction: column;
 }
@@ -320,9 +318,8 @@
   filter: grayscale(80%);
 }
 
-.schedule-table-wrapper {
-  overflow-x: auto; 
-  overflow-y: auto; 
+.schedule-table {
+  overflow-x: auto;
   border: 1px solid #c4c4c4;
   border-radius: 6px;
 }
