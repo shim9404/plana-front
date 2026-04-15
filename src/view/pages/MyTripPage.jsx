@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import '../../styles/myTripPage.css';
 import BookmarkComponent from "../../components/myTripPage/BookmarkComponent";
 import TripPlanComponent from "../../components/myTripPage/TripPlanComponent";
+import TripTrashComponent from "../../components/myTripPage/TripTrashComponent";
 
 const { Sider, Content } = Layout;
 
@@ -116,6 +117,15 @@ const MyTripPage = () => {
     }
   ]);
 
+  // 휴지통 목록 내 여행 정보 초기값
+  const[trashPlanItem, setTrashPlanItem] = useState([
+    {tripId: "T9", name: "집에 보내줘요", status: "INACTIVE", startDate: "2026-04-01", endDate: "2026-04-02", latestDate: "2026-03-10", remainDate: 22, scheduleCount: 9999, bookmarkCount: 9999},
+    {tripId: "T11", name: "나 말리지마", status: "INACTIVE", startDate: "2026-04-03", endDate: "2026-04-05", latestDate: "2026-03-15", remainDate: 3, scheduleCount: 6, bookmarkCount: 0},
+    {tripId: "T50", name: "노는게 제일 좋아~ 뽀로로 언제나! 노는게!!!!!", status: "INACTIVE", startDate: "2026-04-01", endDate: "2026-04-02", latestDate: "2026-03-10", remainDate: 15, scheduleCount: 0, bookmarkCount: 0},
+    {tripId: "T51", name: "집에 보내줘요", status: "INACTIVE", startDate: "2026-04-01", endDate: "2026-04-02", latestDate: "2026-03-10", remainDate: 7, scheduleCount: 3, bookmarkCount: 5},
+    {tripId: "T52", name: "집에 보내줘요", status: "INACTIVE", startDate: "2026-04-01", endDate: "2026-04-02", latestDate: "2026-03-10", remainDate: 5, scheduleCount: 3, bookmarkCount: 5},
+    {tripId: "T53", name: "집에 보내줘요", status: "INACTIVE", startDate: "2026-04-01", endDate: "2026-04-02", latestDate: "2026-03-10", remainDate: 3, scheduleCount: 3, bookmarkCount: 5}
+  ])
 
   // ==========
   // 메뉴 - 여행 목록 선택
@@ -154,7 +164,7 @@ const MyTripPage = () => {
               {tripList.map((trip) => (
                 <div
                   key={trip.tripId}
-                  className={`trip-item ${selectedMenu === trip.tripId ? "active" : ""}`}
+                  className={`trip-item ${selectedMenu === trip.tripId && !selectedTrash ? "active" : ""}`}
                   onClick={() => setSelectedMenu(trip.tripId)}
                 >
                   <MapPinned size={25}/>
@@ -243,7 +253,21 @@ const MyTripPage = () => {
             )}
           </Content>
           ) : (
-            <Content style={contentStyle} >
+            <Content style={contentStyle}>
+              {/* 콘텐츠 상단 */}
+              <div className="trip-content-space">
+                <div className="trip-content-header">
+                  <Trash2 size={35} />
+                  <span className="trip-content-header__title">
+                    휴지통
+                      <div style={{ fontSize: "12px", fontWeight: "500" }}>
+                        휴지통은 버려진 여행 계획을 30일 동안 보관하고 이후에는
+                        영원히 삭제됩니다.
+                      </div>
+                  </span>
+                </div>
+              </div>
+              <TripTrashComponent trashPlanItem = {trashPlanItem}/>
             </Content>
           )
         }

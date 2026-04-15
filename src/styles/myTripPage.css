@@ -360,7 +360,7 @@
   grid-template-columns: 20fr 70fr 70fr 60fr 250fr 350fr 70fr 30fr;
   gap: 10px;
   padding: 5px 15px 5px 15px;
-  min-width: 700px;
+  min-width: 1000px;
   font-weight: 500;
 }
 
@@ -470,4 +470,69 @@
 .summary-item input:hover,
 .summary-item input:focus {
   border-color: #555555 !important;
+}
+
+/* == 휴지통 목록 == */
+/* 휴지통 목록 상단 */
+.trash-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
+.trash-header-right {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0px 10px;
+}
+
+/* 휴지통 목록 내용 */
+.trash-container {      
+  overflow-x: auto; 
+  overflow-y: auto;
+}
+
+.trash-table-header, 
+.trash-table-row {
+  display: grid;
+  grid-template-columns: 100fr 65fr 20fr 20fr 30fr 30fr 15fr 15fr;
+  gap: 10px;
+  padding: 5px 15px 5px 15px;
+  min-width: 1000px;
+  font-weight: 500;
+}
+
+.trash-table-row {
+  min-height: 60px;
+}
+
+.trash-table-header div, 
+.trash-table-row div{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0 10px;
+}
+
+.trash-table-header {
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 8px;
+  background: #555555;
+  color: #ffffff;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.trash-table-body .trash-table-row {
+  border-bottom: 2px solid #c4c4c4;
+}
+
+.trash-table-body .trash-table-row:last-child {
+  border-bottom: none;
 }
