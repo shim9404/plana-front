@@ -13,22 +13,25 @@ const { Sider, Content } = Layout;
 
 const layoutStyle = {
   display: "flex",
-  minHeight: '100%',
-  padding: '8px 48px'
+  minHeight: '100%'
 };
 
 const contentStyle = {
+  display: 'flex',
+  flexDirection: 'column',
   margin: '24px',
   padding: '48px',
   background: '#ffffff',
   borderRadius: '15px',
-  boxShadow: '0 3px 5px rgba(0,0,0,0.5)'
+  boxShadow: '0 3px 5px rgba(0,0,0,0.5)',
+  height: 'calc(100vh - 150px)',
+  overflowY: 'auto'
 }
 
 const Mypage = () => {
   // 회원 정보 초기값
   const [memberItem, setMemberItem] = useState({
-    memberId: "M1", email: "a@a.com", name: "홍길동", nickname: "내가제일좋아하는게임캐릭터는커비입니다.", profileImage: ""
+    memberId: "M1", email: "a@a.com", name: "홍길동", nickname: "내가제일좋아하는게임캐릭터는커비입니다.", profileImage: img1
   }) // 테스트용 임의 값 (Backend 연결)
 
   // 메뉴(회원 정보 수정(1) / 비밀번호 변경(2) / 회원 탈퇴(3)) 선택 
@@ -43,7 +46,7 @@ const Mypage = () => {
           <div className="demo-logo-vertical" />
           <div className="profile-box">
             <img className="profile-image"
-              src={memberItem.profileImage || img1} /> {/* 테스트용_이미지 */}
+              src={memberItem.profileImage || null} /> {/* 테스트용_이미지 */}
             <div className="profile-name">{memberItem.nickname}</div>
           </div>
           {/* 메뉴 */}

@@ -1,13 +1,14 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Button, Input } from 'antd';
 import { ProfileOutlined } from '@ant-design/icons';
 import '../../styles/mypage.css';
 import { TextButton } from '../common/PLA_Buttons';
-import img1 from '../../../public/images/image1.PNG'; // 테스트용_이미지
-
 
 {/* == 회원 정보 수정 콘텐츠 == */}
 const MemberChangeComponent = ({memberItem, setSelectedMenu}) => {
+  // 프로필 이미지 초기값
+  const [profileImage, setProfileImage] = useState(memberItem.profileImage)
+  
   return (
     <>
       {/* 콘텐츠 상단 */}
@@ -20,12 +21,17 @@ const MemberChangeComponent = ({memberItem, setSelectedMenu}) => {
         {/* 프로필 변경 부분 */}
         <div className="profile-edit__image-section">
           <label style={{ width: '80px', fontWeight: 500}}>프로필</label>
-          <img className="profile-edit__image" 
-            src={memberItem.profileImage || img1}/>
-            <div className="profile-edit__image-buttons">
-              <TextButton type="primary" width="150px" height="40px" fontSize="15px">내 사진 바꾸기</TextButton>
-              <TextButton type="primary" width="80px" height="40px" fontSize="15px">초기화</TextButton>
+          <div className="profile-edit__image-row">
+            <div className="image-wrapper">
+              <img className="profile-edit__image" src={profileImage || null}/>
+              <Button className="image-btn" onClick={() => {setProfileImage(null)}}>
+                X
+              </Button>            
             </div>
+              <TextButton type="primary" width="240px" height="40px" fontSize="15px">
+                내 사진 바꾸기
+              </TextButton>
+          </div>
         </div>
         {/* 닉네임, 이름, 이름 변경 부분 */}
         <div className="edit__row">
