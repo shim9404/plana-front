@@ -1,5 +1,5 @@
 import React from 'react'
-import { Card, Input } from 'antd';
+import { Card, Empty, Input } from 'antd';
 import { CheckSquareOutlined } from '@ant-design/icons';
 import { Link2 } from 'lucide-react';
 import '../../styles/myTripPage.css';
@@ -87,7 +87,7 @@ const TripPlanComponent = ({tripList, tripDate, bookmarkList, schedulelist, sele
           </div>} >
         {/* 내용 */}
         {schedulelist.length === 0 ? (
-          <div> 😥 여행 계획이 없습니다. </div>
+          <div> <Empty description= "여행 계획이 없습니다."/> </div>
         ) : (
           <div className="schedule-container">
             {schedulelist.map((day) => {

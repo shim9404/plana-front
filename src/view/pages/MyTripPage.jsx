@@ -1,6 +1,6 @@
 import PageLayout from "../../components/common/PageLayout";
 import { IconButton, TextButton } from "../../components/common/PLA_Buttons";
-import { Layout, message, Modal } from "antd";
+import { Empty, Layout, message, Modal } from "antd";
 import { CompassOutlined, FormOutlined } from "@ant-design/icons";
 import { Download, FilePenLine, MapPinned, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -61,7 +61,7 @@ const MyTripPage = () => {
     {bookmarkId: "BM1", areaId: "A1", areaCategory: "FD6", // 음식점
       title: "맛있는 초밥집", address: "대구 수성구 달구벌대로489안길 40-1", link: "http://naver.com", telephon: "0000-000-0000", bookmarkType: "YELLOW"},
     {bookmarkId: "BM2", areaId: "A1", areaCategory: "CE7",  // 카페
-      title: "성심당 본점 랄랄랄랄랄랄랄랄랄랄", address: "대전광역시 중구 대종로480번길 15", link: "http://naver.com", telephon: "0000-000-0000", bookmarkType: "RED"},
+      title: "성심당 본점 랄랄랄랄랄랄랄랄랄랄", address: "대전광역시 중구 대종로480번길 15", link: "http://naver.com", telephon: "0000-000-0000", bookmarkType: "YELLOW"},
     {bookmarkId: "BM3", areaId: "A32", areaCategory: "AT4", // 관광명소
       title: "미륵원지", address: "대전광역시 동구 냉천로152번길 80 (마산동)", link: "http://naver.com", telephon: "0000-000-0000",bookmarkType: "GREEN"},
     {bookmarkId: "BM4", areaId: "A33", areaCategory: "etc", // 기타
@@ -264,8 +264,8 @@ const MyTripPage = () => {
         {selectedTrash === false ? ( // 휴지통 버튼 클릭 여부
           <Content style={contentStyle}>
             {tripList.length === 0 ? ( // 여행 목록 없는 경우
-              <div className="content-header__title">
-                😥 여행 계획이 없습니다.
+              <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: 'calc(100vh - 300px)'}}>
+                <Empty description={"여행 계획이 없습니다."}/>
               </div>
             ) : (
               <>
@@ -314,8 +314,7 @@ const MyTripPage = () => {
                   <span className="trip-content-header__title">
                     휴지통
                       <div style={{ fontSize: "12px", fontWeight: "500" }}>
-                        휴지통은 버려진 여행 계획을 30일 동안 보관하고 이후에는
-                        영원히 삭제됩니다.
+                        휴지통은 버려진 여행 계획을 30일 동안 보관하고 이후에는 영원히 삭제됩니다.
                       </div>
                   </span>
                 </div>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Button, Card } from 'antd';
+import { Button, Card, Empty } from 'antd';
 import { StarOutlined } from '@ant-design/icons';
 import '../../styles/myTripPage.css';
 import { CATEGORY_ICON } from "../../Constants/categoryIcon";
@@ -45,17 +45,9 @@ const BookmarkComponent = ({bookmarkList}) => {
             </div>
           </div>} >
         {/* 내용 */}
-        {bookmarkList.length === 0 ? ( // 북마크 리스트 여부
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "16px" }}>
-            <div className="bookmark-card" 
-              style={{ background: BOOKMARK_COLOR.default }}>
-              <div className="bookmark-card_title">북마크가 없습니다.</div>
-              <div className="bookmark-card_icon-box">
-                <div className="bookmark-card_icon">
-                  <CATEGORY_ICON.default size={50} />
-                </div>
-              </div>
-            </div>
+        {filteredList.length === 0 ? ( // 북마크 리스트 여부
+          <div style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: "16px" }}>
+            <Empty description={"북마크가 없습니다."}/>
           </div>
           ) : (
             <div className="bookmark-list">
