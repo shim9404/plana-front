@@ -131,7 +131,7 @@ const TripPlanComponent = ({tripList, tripDate, bookmarkList, schedulelist, sele
                               {bookmark?.title || item.context || "-"}
                             </div>
                             <div>{item.memo || "-"}</div>
-                            <div>{item.price || "-"}</div>
+                            <div>{item.price ? item.price.toLocaleString() : "-"}</div>
                             <div>
                               {url ? (
                                 <a href={url.startsWith("http")? url: `https://${url}`}
@@ -161,19 +161,21 @@ const TripPlanComponent = ({tripList, tripDate, bookmarkList, schedulelist, sele
                 <div className="summary-right">
                   <div className="summary-item">
                     <span>참여 인원</span>
-                    <Input type="number" style={{ width: "50px" }}
-                      value={
-                        tripList.find((trip) => trip.tripId === selectedMenu)?.entryCount} />
+                    <span className="summary-value" style={{width: '50px'}}>
+                      {tripList.find((trip) => trip.tripId === selectedMenu)?.entryCount}
+                    </span>
                   </div>
                   <div className="summary-item">
                     <span>총 예산</span>
-                    <Input type="text" readOnly
-                      value={`${totalPrice.toLocaleString()} 원`} />
+                    <span className="summary-value" style={{width: '100px'}}>
+                      {totalPrice.toLocaleString()} 원
+                    </span>
                   </div>
                   <div className="summary-item">
                     <span>인당</span>
-                    <Input type="text" readOnly
-                      value={`${(totalPrice / tripList.find((trip) => trip.tripId === selectedMenu)?.entryCount).toLocaleString()} 원`}/>
+                    <span className="summary-value" style={{width: '100px'}}>
+                      {( totalPrice / (tripList.find((trip) => trip.tripId === selectedMenu)?.entryCount || 1)).toLocaleString()} 원
+                    </span>
                   </div>
                 </div>
               </div>

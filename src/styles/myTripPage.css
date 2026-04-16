@@ -462,24 +462,15 @@
   gap: 8px;
 }
 
-.summary-item input {
-  width: 100px;
-  height: 28px;
-  border: 1px solid #c4c4c4;
-  box-shadow: 0 1px 1px rgba(0,0,0,0.5);
-  background: #fff;
-  font-weight: 400;
-  border-radius: 5px;
-  text-align: center;
-  padding: 0 8px; 
-}
-
-.summary-item input[readonly] {
-  color: #aaa;
-}
-.summary-item input:hover,
-.summary-item input:focus {
-  border-color: #555555 !important;
+.summary-value {
+  display: flex;
+  justify-content: center;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #555555;
+  box-shadow: -1px -1px 2px rgba(0,0,0,0.5);
+  font-weight: 500;
 }
 
 /* == 휴지통 목록 == */
