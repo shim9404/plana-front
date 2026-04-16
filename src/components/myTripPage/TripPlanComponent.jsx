@@ -1,5 +1,5 @@
 import React from 'react'
-import { Card, Input } from 'antd';
+import { Card, Empty, Input } from 'antd';
 import { CheckSquareOutlined } from '@ant-design/icons';
 import { Link2 } from 'lucide-react';
 import '../../styles/myTripPage.css';
@@ -87,7 +87,7 @@ const TripPlanComponent = ({tripList, tripDate, bookmarkList, schedulelist, sele
           </div>} >
         {/* 내용 */}
         {schedulelist.length === 0 ? (
-          <div> 😥 여행 계획이 없습니다. </div>
+          <div> <Empty description= "여행 계획이 없습니다."/> </div>
         ) : (
           <div className="schedule-container">
             {schedulelist.map((day) => {
@@ -131,7 +131,7 @@ const TripPlanComponent = ({tripList, tripDate, bookmarkList, schedulelist, sele
                               {bookmark?.title || item.context || "-"}
                             </div>
                             <div>{item.memo || "-"}</div>
-                            <div>{item.price || "-"}</div>
+                            <div>{item.price ? item.price.toLocaleString() : "-"}</div>
                             <div>
                               {url ? (
                                 <a href={url.startsWith("http")? url: `https://${url}`}
@@ -161,19 +161,21 @@ const TripPlanComponent = ({tripList, tripDate, bookmarkList, schedulelist, sele
                 <div className="summary-right">
                   <div className="summary-item">
                     <span>참여 인원</span>
-                    <Input type="number" style={{ width: "50px" }}
-                      value={
-                        tripList.find((trip) => trip.tripId === selectedMenu)?.entryCount} />
+                    <span className="summary-value" style={{width: '50px'}}>
+                      {tripList.find((trip) => trip.tripId === selectedMenu)?.entryCount}
+                    </span>
                   </div>
                   <div className="summary-item">
                     <span>총 예산</span>
-                    <Input type="text" readOnly
-                      value={`${totalPrice.toLocaleString()} 원`} />
+                    <span className="summary-value" style={{width: '100px'}}>
+                      {totalPrice.toLocaleString()} 원
+                    </span>
                   </div>
                   <div className="summary-item">
                     <span>인당</span>
-                    <Input type="text" readOnly
-                      value={`${(totalPrice / tripList.find((trip) => trip.tripId === selectedMenu)?.entryCount).toLocaleString()} 원`}/>
+                    <span className="summary-value" style={{width: '100px'}}>
+                      {( totalPrice / (tripList.find((trip) => trip.tripId === selectedMenu)?.entryCount || 1)).toLocaleString()} 원
+                    </span>
                   </div>
                 </div>
               </div>
