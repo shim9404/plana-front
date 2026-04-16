@@ -185,7 +185,18 @@
 .bookmark-card-colors {
   width: 20px;
   height: 20px;
+  padding: 0 !important;
   border-radius: 6px; 
+  margin-left: 3px;
+  border: none !important;
+}
+
+.bookmark-card-colors:hover {
+  box-shadow: 0 0 0 2px white !important;
+}
+
+.bookmark-card-colors:active {
+  box-shadow: 0 0 0 2px white !important;
 }
 
 /* 북마크 내용 */
@@ -198,6 +209,7 @@
   align-items: flex-start;
   padding-bottom: 10px;
   padding: 10px 10px 10px 10px;
+  height: 190px;
 }
 
 .bookmark-card {
@@ -450,23 +462,15 @@
   gap: 8px;
 }
 
-.summary-item input {
-  width: 100px;
-  height: 28px;
-  border: 1px solid #c4c4c4;
-  box-shadow: 0 1px 1px rgba(0,0,0,0.5);
-  background: #fff;
-  font-weight: 400;
-  border-radius: 5px;
-  text-align: center;
-}
-
-.summary-item input[readonly] {
-  color: #aaa;
-}
-.summary-item input:hover,
-.summary-item input:focus {
-  border-color: #555555 !important;
+.summary-value {
+  display: flex;
+  justify-content: center;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #555555;
+  box-shadow: -1px -1px 2px rgba(0,0,0,0.5);
+  font-weight: 500;
 }
 
 /* == 휴지통 목록 == */
@@ -532,4 +536,19 @@
 
 .trash-table-body .trash-table-row:last-child {
   border-bottom: none;
+}
+
+/* ============== PDF  ================ */
+.pdf-mode * {
+  box-shadow: none !important;
+}
+
+/* ============== message  ================ */
+.ant-message-notice-content {
+  padding: 16px 24px !important;
+  font-size: 16px !important;
+}
+
+.ant-message-custom-content {
+  font-size: 16px !important;
 }
