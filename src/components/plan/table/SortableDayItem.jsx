@@ -10,6 +10,7 @@ const dayStyle = {
   backgroundColor: "rgba(168, 168, 168, 1)",
   width: "48px",
   alignItems: "center",
+  overflow: "hidden",
 };
 
 const textRotateStyle = {
