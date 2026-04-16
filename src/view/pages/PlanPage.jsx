@@ -5,7 +5,7 @@ import { FlexContainer } from "../../components/common/PLA_Containers";
 import { useState } from "react";
 import PlanTableContainer from "../../components/plan/PlanTableContainer";
 import { FlexBox } from "../../components/common/PLA_FlexBox";
-import { PlanTableContext } from "../../components/plan/contexts/PlanTableContext";
+import { PlanTableContext } from "../../hooks/plan/PlanTableContext";
 const { Sider, Content } = Layout;
 
 const layoutStyle = {
@@ -50,11 +50,11 @@ const containerSetting = {
 };
 
 const PlanPage = () => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const handleCollapse = (collapsed, size) => {
     // console.log(collapsed, size);
-    setIsCollapsed(size[0] === 0);
+    setIsExpanded(size[0] === 0);
     // 왼쪽 패널이 collapse되면 오른쪽이 전체를 차지
   };
 
@@ -85,11 +85,11 @@ const PlanPage = () => {
                   // flex={1}
                   collapsible
                   resizable={false}
-                  size={isCollapsed ? 0 : undefined}
+                  size={isExpanded ? 0 : undefined}
                 />
-                <Splitter.Panel size={isCollapsed ? "100%" : 752}>
+                <Splitter.Panel size={isExpanded ? "100%" : 752}>
                   <FlexBox style={{ overflowX: "hidden" }}>
-                    <PlanTableContext.Provider value={{ isCollapsed }}>
+                    <PlanTableContext.Provider value={{ isExpanded }}>
                       <PlanTableContainer />
                     </PlanTableContext.Provider>
                   </FlexBox>

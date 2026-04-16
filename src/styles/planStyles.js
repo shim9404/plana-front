@@ -9,7 +9,7 @@ export const TableStyles = {
     minHeight: "30px",
     borderRadius: "8px 8px 0px 0px",
     fontWeight: 500,
-    overflowX: "hidden",
+    overflow: "hidden",
   },
   headerTextStyle: {
     color: "#FFFFFF",

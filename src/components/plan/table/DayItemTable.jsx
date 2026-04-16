@@ -9,9 +9,15 @@ import {
 import { Table } from "antd";
 import { SortableScheduleItem } from "./SortableScheduleItem";
 import { DragHandle } from "./DragHandle";
-import { ExportOutlined, HolderOutlined } from "@ant-design/icons";
-import { PlanTableContext } from "../contexts/PlanTableContext";
+import {
+  CloseSquareOutlined,
+  ExportOutlined,
+  HolderOutlined,
+} from "@ant-design/icons";
+import { PlanTableContext } from "../../../hooks/plan/PlanTableContext";
 import { IconButton } from "../../common/PLA_Buttons";
+import { FlexContainer } from "../../common/PLA_Containers";
+import { FlexBox } from "../../common/PLA_FlexBox";
 
 /**
  * DAY 리스트 내부에 존재하는 SCHEDULE 단위의 테이블 역할
@@ -19,7 +25,7 @@ import { IconButton } from "../../common/PLA_Buttons";
  * @returns
  */
 const DayItemTable = ({ dayId, schedules, onSchedulesChange }) => {
-  const { isCollapsed } = useContext(PlanTableContext);
+  const { isExpanded } = useContext(PlanTableContext);
   const columns = [
     {
       key: "dragHandle",
@@ -31,6 +37,7 @@ const DayItemTable = ({ dayId, schedules, onSchedulesChange }) => {
       dataIndex: "startTime",
       key: "startTime",
       width: "92px",
+      align: "center",
       editable: true,
       // render: (v) => v ?? "-",
     },
@@ -39,6 +46,7 @@ const DayItemTable = ({ dayId, schedules, onSchedulesChange }) => {
       dataIndex: "endTime",
       key: "endTime",
       width: "100px",
+      align: "center",
       editable: true,
       // render: (v) => v ?? "-",
     },
@@ -47,6 +55,7 @@ const DayItemTable = ({ dayId, schedules, onSchedulesChange }) => {
       dataIndex: "category",
       key: "category",
       width: "88px",
+      align: "center",
       editable: true,
       // render: (v) => v ?? "-",
     },
@@ -54,9 +63,16 @@ const DayItemTable = ({ dayId, schedules, onSchedulesChange }) => {
       title: "장소",
       dataIndex: "context",
       key: "context",
-      width: "330px",
-      // render: (v) => v ?? "-",
+      width: "300px",
+      align: "center",
       editable: true,
+      render: (v) => (
+        <FlexBox h="24px">
+          <FlexContainer>
+            <FlexBox settings={{ justify: "center" }} style={{overflow: "hidden"}}>{v}</FlexBox>
+          </FlexContainer>
+        </FlexBox>
+      ),
     },
   ];
 
@@ -66,31 +82,64 @@ const DayItemTable = ({ dayId, schedules, onSchedulesChange }) => {
       dataIndex: "memo",
       key: "memo",
       width: "380px",
-      // render: (v) => v ?? "-",
+      align: "center",
       editable: true,
+      // render: (v) => v ?? "-",
     },
     {
       title: "예산",
       dataIndex: "price",
       key: "price",
       width: "200px",
-      // render: (v) => v ?? "-",
+      align: "center",
       editable: true,
+      // render: (v) => v ?? "-",
     },
     {
       title: "링크",
       dataIndex: "link",
       key: "link",
       width: "64px",
-      render: (v) => ( v ?
-      <IconButton width="32px" height="24px" fontSize="16px"
-        onClickEvent={() => {window.open(v, '_blank');}}>
-        <ExportOutlined/>
-      </IconButton>
-      : null ), // 아이콘버튼 => 클릭 시 데이터의 링크로 이동
+      align: "center",
+      render: (v) =>
+        v ? (
+          <IconButton
+            width="32px"
+            height="24px"
+            fontSize="16px"
+            onClickEvent={() => {
+              window.open(v, "_blank");
+            }}
+          >
+            <ExportOutlined />
+          </IconButton>
+        ) : null, // 아이콘버튼 => 클릭 시 데이터의 링크로 이동
       editable: true,
     },
   ];
+
+  const deleteColumn = {
+    title: "삭제",
+    dataIndex: "delete",
+    key: "delete",
+    width: "52px",
+    align: "center",
+    render: (v) => (
+      <IconButton
+        width="24px"
+        height="24px"
+        fontSize="16px"
+        danger
+        onClickEvent={() => {
+          // 행 삭제 이벤트 연결
+
+        }}
+      >
+        <CloseSquareOutlined />
+      </IconButton>
+    ), // 아이콘버튼 => 클릭 시 행 삭제
+    editable: true,
+  };
 
   const onDragEnd = ({ active, over }) => {
     if (!over || active.id === over.id) return;
@@ -119,7 +168,9 @@ const DayItemTable = ({ dayId, schedules, onSchedulesChange }) => {
           rowKey="tripScheduleId"
           showHeader={false}
           columns={
-            isCollapsed ? [...columns, ...collapsedColumn] : [...columns]
+            isExpanded
+              ? [...columns, ...collapsedColumn, deleteColumn]
+              : [...columns, deleteColumn]
           }
           dataSource={schedules}
           pagination={false}

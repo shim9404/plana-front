@@ -1,49 +1,88 @@
 import { useContext } from "react";
 import { FlexBox } from "../../common/PLA_FlexBox";
 import { DeleteFilled } from "@ant-design/icons";
-import { PlanTableContext } from "../contexts/PlanTableContext";
+import { PlanTableContext } from "../../../hooks/plan/PlanTableContext";
+
+// 708px
+const DefaultHeaderContents = ({ styles }) => {
+  return (
+    <FlexBox>
+      <FlexBox w="15%" bg="none" style={styles.headerTextStyle}>
+        출발시간
+      </FlexBox>
+      <FlexBox w="15%" bg="none" style={styles.headerTextStyle}>
+        도착시간
+      </FlexBox>
+      <FlexBox w="14%" bg="none" style={styles.headerTextStyle}>
+        구분
+      </FlexBox>
+      <FlexBox w="46%" bg="none" style={styles.headerTextStyle}>
+        장소
+      </FlexBox>
+      <FlexBox
+        w="10%"
+        bg="none"
+        style={{ minWidth: "48px", ...styles.headerTextStyle }}
+      >
+        <DeleteFilled />
+      </FlexBox>
+    </FlexBox>
+  );
+};
+
+// 1392px
+const ExpandedHeaderContents = ({ styles }) => {
+  return (
+    <FlexBox>
+      <FlexBox w="7.5%" bg="none" style={styles.headerTextStyle}>
+        출발시간
+      </FlexBox>
+      <FlexBox w="7.5%" bg="none" style={styles.headerTextStyle}>
+        도착시간
+      </FlexBox>
+      <FlexBox w="6%" bg="none" style={styles.headerTextStyle}>
+        구분
+      </FlexBox>
+      <FlexBox w="24%" bg="none" style={styles.headerTextStyle}>
+        장소
+      </FlexBox>
+      <FlexBox w="29%" bg="none" style={styles.headerTextStyle}>
+        메모
+      </FlexBox>
+      <FlexBox w="15%" bg="none" style={styles.headerTextStyle}>
+        예산
+      </FlexBox>
+      <FlexBox w="4%" bg="none" style={styles.headerTextStyle}>
+        링크
+      </FlexBox>
+      <FlexBox
+        w="7%"
+        bg="none"
+        style={{ minWidth: "48px", ...styles.headerTextStyle }}
+      >
+        <DeleteFilled />
+      </FlexBox>
+    </FlexBox>
+  );
+};
 
 const PlanTableHeader = ({ styles }) => {
-  const { isCollapsed } = useContext(PlanTableContext);
+  const { isExpanded } = useContext(PlanTableContext);
 
   return (
     <FlexBox h="30px" style={styles.headerStyle}>
-      {/* 기본 항목 */}
-      <FlexBox>
-        <FlexBox w="72px" style={styles.headerTextStyle}>
-          일자
-        </FlexBox>
-        <FlexBox w="92px" style={styles.headerTextStyle}>
-          출발시간
-        </FlexBox>
-        <FlexBox w="92px" style={styles.headerTextStyle}>
-          도착시간
-        </FlexBox>
-        <FlexBox w="76px" style={styles.headerTextStyle}>
-          구분
-        </FlexBox>
-        <FlexBox w="330px" style={styles.headerTextStyle}>
-          장소
-        </FlexBox>
+      <FlexBox
+        w="80px"
+        bg="none"
+        style={{ minWidth: "80px", ...styles.headerTextStyle }}
+      >
+        일자
       </FlexBox>
-      {/* 확장 시 추가 항목 */}
-      {isCollapsed && (
-        <FlexBox>
-          <FlexBox w="220px" style={styles.headerTextStyle}>
-            메모
-          </FlexBox>
-          <FlexBox w="80px" style={styles.headerTextStyle}>
-            예산
-          </FlexBox>
-          <FlexBox w="48px" style={styles.headerTextStyle}>
-            링크
-          </FlexBox>
-        </FlexBox>
+      {isExpanded ? (
+        <ExpandedHeaderContents styles={styles} />
+      ) : (
+        <DefaultHeaderContents styles={styles} />
       )}
-      {/* 휴지통 */}
-      <FlexBox w="48px" style={styles.headerTextStyle}>
-        <DeleteFilled />
-      </FlexBox>
     </FlexBox>
   );
 };
