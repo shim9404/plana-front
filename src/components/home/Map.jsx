@@ -22,6 +22,7 @@ import Jeonnam from '../../../public/images/svg/regions/Jeonnam.svg?react';
 import Gyeongbuk from '../../../public/images/svg/regions/Gyeongbuk.svg?react';
 import Gyeongnam from '../../../public/images/svg/regions/Gyeongnam.svg?react';
 import Jeju from '../../../public/images/svg/regions/Jeju.svg?react';
+import { useRegion } from '../../hooks/home/RegionContext.jsx';
 //#endregion
 
 // svg파일과 regionId 매칭
@@ -46,21 +47,50 @@ const SIGU_MAPS = {
 };
 
 function Map() {
-  const [currentView, setCurrentView] = useState('total'); // 현재 보고 있는 뷰 total / 32 / 31 ...
   const [tooltip, setTooltip] = useState({ visible: false, x: 0, y: 0, name: '' }); // 툴팁 정보
-  const [regionMap, setRegionMap] = useState({}); // { "31": "경기도", "32": "강원도" ...
 
-  const ActiveMap = SIGU_MAPS[currentView] || Total;  // svg파일
+  const { regionData, selectedZdo, setSelectedZdo, selectedSigu, setSelectedSigu, hoveredId } = useRegion();
+  const { regionMap } = regionData;
+
+  const ActiveMap = SIGU_MAPS[selectedZdo] || Total;  // svg파일
 
   const GetIsTotalView = () => {
-    return currentView === 'total'
+    return selectedZdo == null || selectedZdo === ""
   }
+
+  // 호버 시 색상 조정
+  useEffect(() => {
+    if (!hoveredId) return;
+
+    const el = document.getElementById(String(hoveredId));
+    if (el) el.classList.add('hovered');
+
+    return () => {
+      if (el) el.classList.remove('hovered');
+    };
+  }, [hoveredId]);
+
+
+  // 시군구 선택 시 색상 조정
+  useEffect(() => {
+    if (selectedSigu == null) return;
+
+    const el = document.getElementById(String(selectedSigu));
+    if (el) el.classList.add('selected');
+
+    return () => {
+      if (el) el.classList.remove('selected');
+    };
+  }, [selectedSigu]);
+
+
 
   //#region 마우스 이벤트
   const onMouseMove = (e) => {
+    if (regionMap == null) return;
+
     const rect = e.currentTarget.getBoundingClientRect();
     const regionName = regionMap[e.target.id];
-
     if (regionName) {
       setTooltip({
         visible: true,
@@ -79,74 +109,28 @@ function Map() {
 
   const onClick = (e) => {
     const id = e.target.id; // 숫자 코드 (예: "32")
-    console.log(id)
-    if (GetIsTotalView() && SIGU_MAPS[id]) {
-      setCurrentView(id);
+
+    if (GetIsTotalView() && SIGU_MAPS[id]) {  // 시도
+      setSelectedZdo(id);
+      setSelectedSigu(`${id}000`);
+    } else if (!GetIsTotalView() && id) { // 시군구
+      setSelectedSigu(id);
     }
   }
   //#endregion
-
-  // 컴포넌트 마운트 시 DB 데이터 불러오기
-  useEffect(() => {
-    loadDataFromDB();
-  }, []);
-
-  const loadDataFromDB = async () => {
-    try {
-      // const response = await axios.get('/api/regions'); 
-      // 임시 데이터 (DB에서 가져온 결과라고 가정)
-      const rawData = {
-        "regions": [
-          {
-            "zdoCode": 32,
-            "zdoName": "강원도",
-            "sigus": [
-              { "regionId": "32030", "siguName": "강릉시" },
-              { "regionId": "32600", "siguName": "고성군" },
-              { "regionId": "32040", "siguName": "동해시" }
-            ]
-          },
-          {
-            "zdoCode": 31,
-            "zdoName": "경기도",
-            "sigus": [
-              { "regionId": "31570", "siguName": "가평군" }
-            ]
-          }
-        ]
-      };
-
-      // Array를 Object로 변환: { "11": "서울특별시", ... }
-      const convertRegionMap = rawData.regions.reduce((acc, region) => {
-        // 1. 시도 데이터 추가 (예: "32": "강원도")
-        // Key값을 문자열로 맞추기 위해 String()을 사용하거나 템플릿 리터럴을 씁니다.
-        acc[String(region.zdoCode)] = region.zdoName;
-
-        // 2. 해당 시도 안의 시군구들을 순회하며 추가 (예: "32030": "강릉시")
-        region.sigus.forEach(sigu => {
-          acc[sigu.regionId] = sigu.siguName;
-        });
-
-        return acc;
-      }, {});
-
-      setRegionMap(convertRegionMap);
-    } catch (error) {
-      console.error("데이터 로드 실패:", error);
-    }
-  };
 
 
   return (
     <div
       style={mapStyle}
       className={styles.mapContainer}
+      data-hover-id={hoveredId}
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeaveMap}>
       {/* Map */}
       <AnimatePresence mode="wait">
         <motion.div
-          key={currentView} // key가 바뀌어야 애니메이션이 작동함
+          key={selectedZdo} // key가 바뀌어야 애니메이션이 작동함
           variants={slideVariants}
           initial="enter"
           animate="center"

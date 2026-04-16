@@ -18,9 +18,11 @@ export const slideVariants = {
 
 export const mapStyle = {
   position: "absolute",
-  transform: "translate(0,-12%)",
-  width: "65%",
-  height: "96%"
+  transform: "translate(0,-13%)",
+  width: "57%",
+  height: "110%",
+  overflow: "hidden",
+  // backgroundColor: "red"
 }
 
 export const siguStyle = {
@@ -64,3 +66,16 @@ export const tooltipStyle = (tooltip) => {
 
   return style
 }
+
+export const flexStyle = {
+  flexDirection: "column"
+}
+
+export const labelStyle = {
+  justifyContent: "flex-start",
+  color: "#A8A8A8",
+  width: "400px",
+  height: "52px",
+  fontSize: "16px"
+}
+

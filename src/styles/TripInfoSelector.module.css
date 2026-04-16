@@ -1,0 +1,15 @@
+.customPopup :global(.ant-cascader-menu) {
+  width: 200px;
+  /* 각 열의 너비 */
+  height: 300px;
+  /* 전체 팝업 높이 */
+  background-color: #ffffff;
+}
+
+.customPopup :global(.ant-cascader-menu-item) {
+  font-size: 15px;
+  /* 글자 크기 */
+  padding: 10px 16px;
+  /* 아이템 간격 */
+  border-radius: 4px;
+}
