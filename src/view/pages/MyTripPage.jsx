@@ -1,10 +1,12 @@
 import PageLayout from "../../components/common/PageLayout";
 import { IconButton, TextButton } from "../../components/common/PLA_Buttons";
-import { Layout } from "antd";
+import { Layout, message, Modal } from "antd";
 import { CompassOutlined, FormOutlined } from "@ant-design/icons";
 import { Download, FilePenLine, MapPinned, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 import '../../styles/myTripPage.css';
 import BookmarkComponent from "../../components/myTripPage/BookmarkComponent";
 import TripPlanComponent from "../../components/myTripPage/TripPlanComponent";
@@ -39,20 +41,20 @@ const MyTripPage = () => {
     { tripId: "T2", name: "즐거운 마음으로", entryCount: 2, status: "ACTIVE" },
     { tripId: "T3", name: "모두 함께 떠나요 ~ ! 예예예예예예예예예예예예", entryCount: 2, status: "ACTIVE" },
     { tripId: "T4", name: "글자 수량 제한이 꼭 꼭 필요합니다. 20?30?글자 제한 필요합니다!!얍얍", entryCount: 1, status: "ACTIVE" },
-    { tripId: "T5", name: "비활성환 부분들은", entryCount: 1, status: "INACTIVE" },
-    { tripId: "T6", name: "목록에 안뜸", entryCount: 1, status: "INACTIVE" },
-    { tripId: "T7", name: "휴지통에 보여질거임", entryCount: 1, status: "INACTIVE" }
+    { tripId: "T9", name: "집에 보내줘요", entryCount: 1, status: "INACTIVE" },
+    { tripId: "T11", name: "나 말리지마", entryCount: 1, status: "INACTIVE" },
+    { tripId: "T50", name: "노는게 제일 좋아~ 뽀로로 언제나! 노는게!!!!!", entryCount: 1, status: "INACTIVE" },
+    { tripId: "T51", name: "집에 보내줘", entryCount: 1, status: "INACTIVE" },
+    { tripId: "T52", name: "집에 보내줘요", entryCount: 1, status: "INACTIVE" },
+    { tripId: "T53", name: "집에 보내줘요", entryCount: 1, status: "INACTIVE" },
+    { tripId: "T54", name: "집에 보내줘요", entryCount: 1, status: "INACTIVE" }
   ]);
 
   // 여행 목록(간단) - ACTIVE(활성) 초기값
-  const [tripList, setTripList] = useState(
-    tripItem.filter((item) => item.status === "ACTIVE"),
-  );
+  const tripList = tripItem.filter((item) => item.status === "ACTIVE");
 
   // 여행 목록(간단) - INACTIVE(비활성-휴지통) 초기값
-  const [trashPlanList, setTrashPlanList] = useState(
-    tripItem.filter((item) => item.status === "INACTIVE"),
-  );
+  const trashPlanList = tripItem.filter((item) => item.status === "INACTIVE");
 
   // 북마크 목록(전부) 초기값
   const [bookmarkList, setBookmarkList] = useState([
@@ -126,8 +128,12 @@ const MyTripPage = () => {
     {tripId: "T50", name: "노는게 제일 좋아~ 뽀로로 언제나! 노는게!!!!!", status: "INACTIVE", startDate: "2026-04-01", endDate: "2026-04-02", latestDate: "2026-03-10", remainDate: 15, scheduleCount: 0, bookmarkCount: 0},
     {tripId: "T51", name: "집에 보내줘요", status: "INACTIVE", startDate: "2026-04-01", endDate: "2026-04-02", latestDate: "2026-03-10", remainDate: 7, scheduleCount: 3, bookmarkCount: 5},
     {tripId: "T52", name: "집에 보내줘요", status: "INACTIVE", startDate: "2026-04-01", endDate: "2026-04-02", latestDate: "2026-03-10", remainDate: 5, scheduleCount: 3, bookmarkCount: 5},
-    {tripId: "T53", name: "집에 보내줘요", status: "INACTIVE", startDate: "2026-04-01", endDate: "2026-04-02", latestDate: "2026-03-10", remainDate: 3, scheduleCount: 3, bookmarkCount: 5}
+    {tripId: "T53", name: "집에 보내줘요", status: "INACTIVE", startDate: "2026-04-01", endDate: "2026-04-02", latestDate: "2026-03-10", remainDate: 3, scheduleCount: 3, bookmarkCount: 5},
+    {tripId: "T54", name: "집에 보내줘요", status: "INACTIVE", startDate: "2026-04-01", endDate: "2026-04-02", latestDate: "2026-03-10", remainDate: 3, scheduleCount: 3, bookmarkCount: 5}
   ])
+
+  // 휴지통 목록(간단) - INACTIVE(비활성) 초기값
+  const trashList = trashPlanItem.filter((item) => item.status === "INACTIVE");
 
   // ==========
   // 메뉴 - 여행 목록 선택
@@ -135,13 +141,56 @@ const MyTripPage = () => {
 
   // 메뉴 선택의 초기 선택값 설정
   useEffect(() => {
-    if (tripList.length > 0) {
-      setSelectedMenu(tripList[0].tripId);
-    }
-  }, [tripList]);
+    if (tripList.length > 0 && !tripList.some(trip => trip.tripId === selectedMenu)) {
+      setSelectedMenu(tripList[0].tripId);}
+  }, [tripList, selectedMenu]);
 
-  // 메뉴 - 휴지통 버튼 선택
+  // 메뉴 하단 - 휴지통 버튼 선택
   const [selectedTrash, setSelectedTrash] = useState(false);
+
+  // 콘텐츠 상단 - 휴지통 버튼 선택
+  const [isTrashModalOpen, setIsTrashModalOpen] = useState(false); // 경고창 모달
+  const [selectedTrashTripId, setSelectedTrashTripId] = useState(""); // 휴지통에 보낼 여행 목록 id
+  const trashshowModal = (tripId) => { // 모달 open
+    if (trashPlanList.length >= 10) {
+      message.warning("휴지통이 가득 찼습니다. (10 / 10)")
+      return;
+    }
+    setSelectedTrashTripId(tripId);
+    setIsTrashModalOpen(true);
+  }; 
+  const trashhandleOk = () => { // 확인
+    setTripItem(prev =>
+      prev.map(item =>
+        item.tripId === selectedTrashTripId? { ...item, status: "INACTIVE" }: item));
+    setIsTrashModalOpen(false);
+  }; 
+  const trashhandleCancel = () => { // 취소
+    setIsTrashModalOpen(false);
+  }; 
+
+  // 콘텐츠 상단 - 다운로드 버튼 선택
+  const handleDownloadPdf = async () => { // PDF 저장
+  // 캡처 전 스타일 변경
+  document.body.classList.add("pdf-mode");
+  const element = document.getElementById("pdf-area");
+  const canvas = await html2canvas(element);
+  const imgData = canvas.toDataURL("image/png");
+
+  // 캡처 후 바로 복구
+  document.body.classList.remove("pdf-mode");
+
+  const pdf = new jsPDF("p", "mm", "a4");
+  const imgWidth = 210;
+  const pageHeight = 297;
+  const imgHeight = (canvas.height * imgWidth) / canvas.width;
+  let position = 0;
+
+  pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+  
+  window.open(pdf.output("bloburl")) // 미리보기
+};
+
 
   return (
     <PageLayout>
@@ -229,28 +278,30 @@ const MyTripPage = () => {
                   </span>
                 </div>
                 <div className="trip-content-header_button">
-                  <IconButton type="default" width="50px" height="40px">
+                  <IconButton type="default" width="50px" height="40px" onClickEvent={()=>trashshowModal(selectedMenu)}>
                     <Trash2 size={20} />
                   </IconButton>
                   <IconButton type="default" width="50px" height="40px"
                     onClickEvent={() => navigate("/Plan")}>
                     <FilePenLine size={20} />
                   </IconButton>
-                  <IconButton type="default" width="50px" height="40px">
+                  <IconButton type="default" width="50px" height="40px" onClickEvent={handleDownloadPdf}>
                     <Download size={20} />
                   </IconButton>
                 </div>
               </div>
               {/* 북마크 카드 */}
               <BookmarkComponent bookmarkList = {bookmarkList}/>
-              {/* 여행 계획표 카드 */}
-              <TripPlanComponent
-                tripList={tripList}
-                tripDate={tripDate}
-                bookmarkList={bookmarkList}
-                schedulelist={schedulelist}
-                selectedMenu={selectedMenu}
-              />
+              <div id="pdf-area">
+                {/* 여행 계획표 카드 */}
+                <TripPlanComponent
+                  tripList={tripList}
+                  tripDate={tripDate}
+                  bookmarkList={bookmarkList}
+                  schedulelist={schedulelist}
+                  selectedMenu={selectedMenu}
+                />
+              </div>
               </>
             )}
           </Content>
@@ -269,11 +320,31 @@ const MyTripPage = () => {
                   </span>
                 </div>
               </div>
-              <TripTrashComponent trashPlanItem = {trashPlanItem}/>
+              {/* 휴지통 리스트 */}
+              <TripTrashComponent 
+                setTripItem = {setTripItem}
+                tripList = {tripList}
+                setTrashPlanItem = {setTrashPlanItem}
+                trashList = {trashList} 
+              />
             </Content>
           )
         }
       </Layout>
+
+      <Modal
+        title="알림창"
+        closable={{ 'aria-label': 'Custom Close Button' }}
+        open={isTrashModalOpen}
+        onOk={trashhandleOk}
+        onCancel={trashhandleCancel}
+        okText="확인"
+        cancelText="취소"
+        okButtonProps={{ danger: true }}
+      >
+        <p>이 여행 목록을 휴지통에 버리겠습니까?</p>
+      </Modal>
+
     </PageLayout>
   );
 };

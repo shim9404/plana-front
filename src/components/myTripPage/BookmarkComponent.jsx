@@ -1,5 +1,5 @@
-import React from 'react'
-import { Card } from 'antd';
+import React, { useState } from 'react'
+import { Button, Card } from 'antd';
 import { StarOutlined } from '@ant-design/icons';
 import '../../styles/myTripPage.css';
 import { CATEGORY_ICON } from "../../Constants/categoryIcon";
@@ -8,6 +8,14 @@ import { BOOKMARK_COLOR } from "../../Constants/bookmarkColor";
 
 {/* 북마크 카드*/}
 const BookmarkComponent = ({bookmarkList}) => {
+  // 색상 (색 버튼 클릭) 
+  const [selectedColor, setSelectedColor] = useState("");
+
+  // 색상 별 리스트
+  const filteredList = selectedColor? 
+    bookmarkList.filter(item => item.bookmarkType === selectedColor)
+    : bookmarkList; // 전체
+
   return (
     <>
       <Card
@@ -20,20 +28,26 @@ const BookmarkComponent = ({bookmarkList}) => {
               <StarOutlined style={{ fontSize: "20px" }} />
               <span style={{ fontWeight: 600 }}>북마크</span>
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "6px", paddingLeft: "10px"}}>
-              <span className="bookmark-extra-text">전체</span>
-              <div className="bookmark-card-colors"style={{ background: BOOKMARK_COLOR.RED.bg }}/>
-              <div className="bookmark-card-colors"style={{ background: BOOKMARK_COLOR.ORANGE.bg }}/>
-              <div className="bookmark-card-colors"style={{ background: BOOKMARK_COLOR.YELLOW.bg }}/>
-              <div className="bookmark-card-colors"style={{ background: BOOKMARK_COLOR.GREEN.bg }}/>
-              <div className="bookmark-card-colors"style={{ background: BOOKMARK_COLOR.BLUE.bg }}/>
-              <div className="bookmark-card-colors"style={{ background: BOOKMARK_COLOR.PURPLE.bg }}/>
+            <div style={{ display: "flex", alignItems: "center", gap: "6px", paddingLeft: "10px", paddingRight: "10px"}}>
+              <Button className="bookmark-extra-text" onClick={()=>setSelectedColor("")}>전체</Button>
+              <Button className="bookmark-card-colors" style={{ background: BOOKMARK_COLOR.RED.bg }}
+                onClick={()=>setSelectedColor("RED")}/>
+              <Button className="bookmark-card-colors" style={{ background: BOOKMARK_COLOR.ORANGE.bg }}
+                onClick={()=>setSelectedColor("ORANGE")}/>
+              <Button className="bookmark-card-colors" style={{ background: BOOKMARK_COLOR.YELLOW.bg }}
+                onClick={()=>setSelectedColor("YELLOW")}/>
+              <Button className="bookmark-card-colors" style={{ background: BOOKMARK_COLOR.GREEN.bg }}
+                onClick={()=>setSelectedColor("GREEN")}/>
+              <Button className="bookmark-card-colors" style={{ background: BOOKMARK_COLOR.BLUE.bg }}
+                onClick={()=>setSelectedColor("BLUE")}/>
+              <Button className="bookmark-card-colors" style={{ background: BOOKMARK_COLOR.PURPLE.bg }}
+                onClick={()=>setSelectedColor("PURPLE")}/>
             </div>
           </div>} >
         {/* 내용 */}
         {bookmarkList.length === 0 ? ( // 북마크 리스트 여부
           <div style={{ display: "flex", flexWrap: "wrap", gap: "16px" }}>
-            <div className="bookmark-card"
+            <div className="bookmark-card" 
               style={{ background: BOOKMARK_COLOR.default }}>
               <div className="bookmark-card_title">북마크가 없습니다.</div>
               <div className="bookmark-card_icon-box">
@@ -45,11 +59,11 @@ const BookmarkComponent = ({bookmarkList}) => {
           </div>
           ) : (
             <div className="bookmark-list">
-              {bookmarkList.map((item) => {
+              {filteredList.map((item) => {
                 const Icon = CATEGORY_ICON[item.areaCategory] || CATEGORY_ICON.default;
                 const colorData = BOOKMARK_COLOR[item.bookmarkType] || BOOKMARK_COLOR.default;
                 return (
-                  <div key={item.id} className="bookmark-card" style={{ background: colorData.bg }}>
+                  <div key={item.bookmarkId} className="bookmark-card" style={{ background: colorData.bg }}>
                     <div className="bookmark-card_title">
                       {item.title}
                     </div>

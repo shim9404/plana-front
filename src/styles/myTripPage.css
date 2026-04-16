@@ -185,7 +185,18 @@
 .bookmark-card-colors {
   width: 20px;
   height: 20px;
+  padding: 0 !important;
   border-radius: 6px; 
+  margin-left: 3px;
+  border: none !important;
+}
+
+.bookmark-card-colors:hover {
+  box-shadow: 0 0 0 2px white !important;
+}
+
+.bookmark-card-colors:active {
+  box-shadow: 0 0 0 2px white !important;
 }
 
 /* 북마크 내용 */
@@ -459,6 +470,7 @@
   font-weight: 400;
   border-radius: 5px;
   text-align: center;
+  padding: 0 8px; 
 }
 
 .summary-item input[readonly] {
@@ -532,4 +544,19 @@
 
 .trash-table-body .trash-table-row:last-child {
   border-bottom: none;
+}
+
+/* ============== PDF  ================ */
+.pdf-mode * {
+  box-shadow: none !important;
+}
+
+/* ============== message  ================ */
+.ant-message-notice-content {
+  padding: 16px 24px !important;
+  font-size: 16px !important;
+}
+
+.ant-message-custom-content {
+  font-size: 16px !important;
 }
