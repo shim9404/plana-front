@@ -1,6 +1,6 @@
-import { Layout, ConfigProvider } from "antd";
+import { Layout } from "antd";
 import { Link } from "react-router-dom";
-import MenuButton from "../../components/common/MenuButton";
+import { MenuButton } from "../../components/common/PLA_Buttons";
 import {
   CompassOutlined,
   LoginOutlined,
@@ -57,63 +57,49 @@ const HeaderMain = () => {
   const isAdmin = isLoggedIn && userRole === "ROLE_ADMIN";
 
   return (
-    <ConfigProvider
-      theme={{
-        components: {
-          Button: {
-            colorPrimaryHover: "rgba(168,168,186,0.5)",
-            colorPrimaryActive: "rgba(168,168,186,1)",
-          },
-        },
-      }}
-    >
-      <Header style={headerStyle}>
-        {/* 로고 영역 */}
-        <div style={LogoContainer}>
-          <Link
-            to="/"
-            className="header-trip__brand"
-          >
-            <img
-              src="../../../public/images/svg/logos/plana-logo.svg"
-              alt="logo"
-              width="137px"
-              left="13%"
-              height="52px"
-            />
-          </Link>
+    <Header style={headerStyle}>
+      {/* 로고 영역 */}
+      <div style={LogoContainer}>
+        <Link to="/" className="header-trip__brand">
+          <img
+            src="../../../public/images/svg/logos/plana-logo.svg"
+            alt="logo"
+            width="137px"
+            left="13%"
+            height="52px"
+          />
+        </Link>
+      </div>
+      {/* 여행 계획 페이지 활성: 여행 정보 영역 */}
+      {isPlanning ? (
+        <div style={PlanContainer}>
+          <PlanHeader />
         </div>
-        {/* 여행 계획 페이지 활성: 여행 정보 영역 */}
-        {isPlanning ? (
-          <div style={PlanContainer}>
-            <PlanHeader />
-          </div>
+      ) : null}
+      {/* 메뉴 버튼 영역 */}
+      <div style={ButtonContainer}>
+        {isAdmin ? (
+          <MenuButton name="관리자 페이지" type="primary">
+            <SlidersOutlined />
+          </MenuButton>
         ) : null}
-        {/* 메뉴 버튼 영역 */}
-        <div style={ButtonContainer}>
-          {isAdmin ? (
-            <MenuButton name="관리자 페이지">
-              <SlidersOutlined />
-            </MenuButton>
-          ) : null}
-          <MenuButton name="내 여행">
-            <CompassOutlined />
+        <MenuButton name="내 여행">
+          <CompassOutlined />
+        </MenuButton>
+        <MenuButton name="내 프로필">
+          <UserOutlined />
+        </MenuButton>
+        {isLoggedIn ? (
+          <MenuButton name="로그아웃">
+            <LogoutOutlined />
           </MenuButton>
-          <MenuButton name="내 프로필">
-            <UserOutlined />
+        ) : (
+          <MenuButton name="로그인">
+            <LoginOutlined />
           </MenuButton>
-          {isLoggedIn ? (
-            <MenuButton name="로그아웃">
-              <LogoutOutlined />
-            </MenuButton>
-          ) : (
-            <MenuButton name="로그인">
-              <LoginOutlined />
-            </MenuButton>
-          )}
-        </div>
-      </Header>
-    </ConfigProvider>
+        )}
+      </div>
+    </Header>
   );
 };
 

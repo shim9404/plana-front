@@ -28,7 +28,6 @@ const AppRouter = () => {
   return (
     <Routes>
       {/* 공개 페이지: 누구나 접근 가능 */}
-      <Route path="/" element={<HomePage />}></Route>
       <Route path="/error" element={<ErrorPage />}></Route>
 
       {/* 권한 필요: ROLE_ADMIN 또는 ROLE_MANAGER, ROLE_MEMBER만 접근 가능 */}

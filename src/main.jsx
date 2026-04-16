@@ -1,11 +1,12 @@
 import { createRoot } from "react-dom/client";
 import App from "./App.jsx";
-import { App as AntdApp } from "antd";
+import { App as AntdApp, ConfigProvider } from "antd";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute.jsx";
 import HomePage from "./view/pages/HomePage.jsx";
 import HeaderMain from "./view/layouts/HeaderMain.jsx";
-import './styles/global.css';
+import "./styles/global.css";
+import { GLOBAL_TOKEN } from "./styles/antdDesignTokens.js";
 
 /**
  * 인증 필요 여부에 따른 페이지 분리
@@ -15,18 +16,20 @@ createRoot(document.getElementById("root")).render(
   <>
     <BrowserRouter>
       <AntdApp>
-        <HeaderMain />
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route
-            path="/*"
-            element={
-              <ProtectedRoute>
-                <App />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
+        <ConfigProvider theme={GLOBAL_TOKEN}>
+          <HeaderMain />
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route
+              path="/*"
+              element={
+                <ProtectedRoute>
+                  <App />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </ConfigProvider>
       </AntdApp>
     </BrowserRouter>
   </>,
