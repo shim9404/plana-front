@@ -46,7 +46,7 @@ const BookmarkComponent = ({bookmarkList}) => {
           </div>} >
         {/* 내용 */}
         {filteredList.length === 0 ? ( // 북마크 리스트 여부
-          <div style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: "16px" }}>
+          <div className="bookmark-list" style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
             <Empty description={"북마크가 없습니다."}/>
           </div>
           ) : (
