@@ -19,7 +19,7 @@ const footerStyle = {
 const FooterMain = () => {
   return (
     <Footer style={footerStyle}>
-        PLAN A Copyright &copy; 2026. Team Allrounder All right reserved
+      PLAN A Copyright &copy; 2026. Team Allrounder All right reserved
     </Footer>
   );
 };

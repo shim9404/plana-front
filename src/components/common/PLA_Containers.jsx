@@ -34,11 +34,11 @@ export const FlexContainer = ({ children, bg="#FFFFFF", settings }) => {
  * @param {*} props 
  * @returns 
  */
-export const SpaceContainer = ({children, settings}) => {
+export const SpaceContainer = ({ children, settings }) => {
   return (
-    <Space style={boxStyle} 
-          vertical={settings?.isVertical}
-          align={settings?.align}>
+    <Space style={boxStyle}
+      vertical={settings?.isVertical}
+      align={settings?.align}>
       {children}
     </Space>
   );

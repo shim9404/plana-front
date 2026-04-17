@@ -1,0 +1,119 @@
+/* 전체 지도 컨테이너 범위 제한 */
+
+/* 1. 기본 path 스타일 (전역 오염 방지) */
+.mapContainer :global(path) {
+  fill: #ffffff;
+  /* 기본 배경색 */
+  stroke: #ced4da;
+  /* 경계선 색상 */
+  stroke-width: 0.8;
+  transition: fill 0.25s ease, stroke 0.25s ease, stroke-width 0.25s ease;
+}
+
+.mapContainer :global(path:nth-child(17n + 1)) {
+  --hover-color: #ff7675;
+}
+
+/* Red */
+.mapContainer :global(path:nth-child(17n + 2)) {
+  --hover-color: #74b9ff;
+}
+
+/* Blue */
+.mapContainer :global(path:nth-child(17n + 3)) {
+  --hover-color: #55efc4;
+}
+
+/* Mint */
+.mapContainer :global(path:nth-child(17n + 4)) {
+  --hover-color: #ffeaa7;
+}
+
+/* Yellow */
+.mapContainer :global(path:nth-child(17n + 5)) {
+  --hover-color: #a29bfe;
+}
+
+/* Purple */
+.mapContainer :global(path:nth-child(17n + 6)) {
+  --hover-color: #fab1a0;
+}
+
+/* Orange */
+.mapContainer :global(path:nth-child(17n + 7)) {
+  --hover-color: #81ecec;
+}
+
+/* Cyan */
+.mapContainer :global(path:nth-child(17n + 8)) {
+  --hover-color: #fd79a8;
+}
+
+/* Pink */
+.mapContainer :global(path:nth-child(17n + 9)) {
+  --hover-color: #badc58;
+}
+
+/* Lime */
+.mapContainer :global(path:nth-child(17n + 10)) {
+  --hover-color: #00cec9;
+}
+
+/* Teal */
+.mapContainer :global(path:nth-child(17n + 11)) {
+  --hover-color: #ef5350;
+}
+
+/* Coral */
+.mapContainer :global(path:nth-child(17n + 12)) {
+  --hover-color: #5c6bc0;
+}
+
+/* Indigo */
+.mapContainer :global(path:nth-child(17n + 13)) {
+  --hover-color: #9ccc65;
+}
+
+/* Light Green */
+.mapContainer :global(path:nth-child(17n + 14)) {
+  --hover-color: #ffca28;
+}
+
+/* Amber */
+.mapContainer :global(path:nth-child(17n + 15)) {
+  --hover-color: #26c6da;
+}
+
+/* Sky Blue */
+.mapContainer :global(path:nth-child(17n + 16)) {
+  --hover-color: #ab47bc;
+}
+
+/* Orchid */
+.mapContainer :global(path:nth-child(17n + 17)) {
+  --hover-color: #ffa726;
+}
+
+/* Orange Yellow */
+
+/* 호버 시 적용 */
+.mapContainer :global(path):hover {
+
+  fill: var(--hover-color, #1890ff) !important;
+  stroke: #ffffff;
+  stroke-width: 2;
+  cursor: pointer;
+}
+
+.mapContainer :global(path.hovered) {
+  fill: var(--hover-color, #1890ff) !important;
+  stroke: #ffffff;
+  stroke-width: 2;
+  cursor: pointer;
+}
+
+.mapContainer :global(path.selected) {
+  fill: var(--hover-color, #1890ff) !important;
+  stroke: #ffffff;
+  stroke-width: 2;
+}
