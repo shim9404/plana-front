@@ -6,6 +6,7 @@ import { useState } from "react";
 import PlanTableContainer from "../../components/plan/PlanTableContainer";
 import { FlexBox } from "../../components/common/PLA_FlexBox";
 import { PlanTableContext } from "../../hooks/plan/PlanTableContext";
+import PlanAreaContainer from "../../components/plan/PlanAreaContainer";
 const { Sider, Content } = Layout;
 
 const layoutStyle = {
@@ -71,11 +72,7 @@ const PlanPage = () => {
         <Layout style={contentStyle}>
           {/* 장소 목록 영역 */}
           <Sider width="388px" style={areaListStyle}>
-            <FlexContainer settings={containerSetting}>
-              <FlexBox h="10%">
-                {/* <IconButton onClickEvent={() => console.log("asdg")}> 버튼</IconButton> */}
-              </FlexBox>
-            </FlexContainer>
+            <PlanAreaContainer/>
           </Sider>
           {/* 지도 표시용 여백 영역 (공백) */}
           <Content>
