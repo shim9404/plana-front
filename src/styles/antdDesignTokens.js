@@ -13,7 +13,6 @@ export const GLOBAL_TOKEN = {
       colorPrimaryHover: "rgba(100,100,100,1)",
       colorPrimaryActive: "rgba(0,0,0,0.25)",
       dangerShadow: "0px 2px 4px rgba(128, 0, 0, 0.25)",
-      defaultActiveBg: "rgba(255,0,0,0.25)",
     },
   },
 };
