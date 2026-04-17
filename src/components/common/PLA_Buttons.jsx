@@ -1,4 +1,5 @@
-import { Button } from "antd";
+import { Button, Flex } from "antd";
+import { useEffect, useState } from "react";
 
 const buttonStyle = {
   display: "flex",
@@ -62,7 +63,9 @@ export const TextButton = ({
   width = "auto",
   height = "auto",
   fontSize = "12px",
+  fontWeight = 500,
   danger = false,
+  disabled = false
 }) => {
 
   let handleOnClick = () => {
@@ -73,7 +76,8 @@ export const TextButton = ({
     <Button
       type={type}
       danger={danger ? true : false}
-      style={{ width, height, ...buttonStyle }}
+      disabled={disabled ? true : false}
+      style={{ width, height, fontWeight, ...buttonStyle }}
       onClick={handleOnClick}
     >
       <div style={{ fontSize, ...textStyle }}>{children}</div>
@@ -89,6 +93,7 @@ export const IconButton = ({
   height = "auto",
   fontSize = "24px",
   danger = false,
+  disabled = false
 }) => {
   
   let handleOnClick = () => {
@@ -99,10 +104,47 @@ export const IconButton = ({
     <Button
       type={type}
       danger={danger ? true : false}
+      disabled={disabled ? true : false}
       style={{ width, height, ...buttonStyle }}
       onClick={handleOnClick}
     >
       <div style={{ fontSize, ...iconStyle }}>{children}</div>
     </Button>
+  );
+};
+
+export const ToggleButtonGroup = ({ toggles, isVertical, onChangedEvent, btnStyle }) => {
+  let [selected, setSelected] = useState(toggles[0].type);
+
+  const handleChangeToggle = (select) => {
+    if (select === selected) return;
+    onChangedEvent && onChangedEvent(select);
+    setSelected(select);
+  }
+
+  const flexStyle = {
+    width: "100%",
+    height: "100%"
+  }
+
+  return(
+    <Flex vertical={isVertical} align="center" justify="space-between" style={flexStyle}>
+      {toggles.map((toggle, idx) => {
+        return (
+          <TextButton
+            width={toggle.width}
+            height={toggle.height}
+            fontSize={toggle.fontSize}
+            style={btnStyle}
+            fontWeight={toggle.type === selected ? toggle.fontWeight + 200 : toggle.fontWeight}
+            type={toggle.type === selected ? "primary" : "default"}
+            // disabled={toggle.type === selected}
+            onClickEvent={() => handleChangeToggle(toggle.type)}
+          >
+            {toggle.title}
+          </TextButton>
+        );
+      })}
+    </Flex>
   );
 };
