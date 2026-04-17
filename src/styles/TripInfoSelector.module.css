@@ -13,3 +13,18 @@
   /* 아이템 간격 */
   border-radius: 4px;
 }
+
+
+.customDatePicker :global(.ant-picker-input input) {
+  font-size: 16px;
+  /* placeholder + 입력값 둘 다 적용 */
+}
+
+
+.customPopup :global(.ant-cascader-menu) {
+  scroll-behavior: auto !important;
+}
+
+.customPopup :global(.ant-cascader-menu-item-active) {
+  scroll-margin: 0 !important;
+}

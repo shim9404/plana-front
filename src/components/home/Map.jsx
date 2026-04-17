@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { motion, AnimatePresence, transform } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import styles from '../../styles/Map.module.css';
 import { tooltipStyle, animDivStyle, mapStyle, siguStyle, slideVariants, zdoStyle } from '../../styles/homeStyles.js';
 
@@ -23,6 +23,7 @@ import Gyeongbuk from '../../../public/images/svg/regions/Gyeongbuk.svg?react';
 import Gyeongnam from '../../../public/images/svg/regions/Gyeongnam.svg?react';
 import Jeju from '../../../public/images/svg/regions/Jeju.svg?react';
 import { useRegion } from '../../hooks/home/RegionContext.jsx';
+import { useTripInfo } from '../../hooks/TripInfoContext.jsx';
 //#endregion
 
 // svg파일과 regionId 매칭
@@ -49,7 +50,8 @@ const SIGU_MAPS = {
 function Map() {
   const [tooltip, setTooltip] = useState({ visible: false, x: 0, y: 0, name: '' }); // 툴팁 정보
 
-  const { regionData, selectedZdo, setSelectedZdo, selectedSigu, setSelectedSigu, hoveredId } = useRegion();
+  const { selectedZdo, setSelectedZdo, selectedSigu, setSelectedSigu } = useTripInfo();
+  const { regionData } = useRegion();
   const { regionMap } = regionData;
 
   const ActiveMap = SIGU_MAPS[selectedZdo] || Total;  // svg파일
@@ -57,19 +59,6 @@ function Map() {
   const GetIsTotalView = () => {
     return selectedZdo == null || selectedZdo === ""
   }
-
-  // 호버 시 색상 조정
-  useEffect(() => {
-    if (!hoveredId) return;
-
-    const el = document.getElementById(String(hoveredId));
-    if (el) el.classList.add('hovered');
-
-    return () => {
-      if (el) el.classList.remove('hovered');
-    };
-  }, [hoveredId]);
-
 
   // 시군구 선택 시 색상 조정
   useEffect(() => {
@@ -124,7 +113,6 @@ function Map() {
     <div
       style={mapStyle}
       className={styles.mapContainer}
-      data-hover-id={hoveredId}
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeaveMap}>
       {/* Map */}

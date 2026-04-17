@@ -6,18 +6,29 @@ import { flexStyle, labelStyle } from '../../styles/homeStyles'
 import { useRef, useState } from 'react'
 import { useRegion } from '../../hooks/home/RegionContext'
 import styles from "../../styles/TripInfoSelector.module.css"
+import TripDatePicker from './TripDatePicker'
+import { useTripInfo } from '../../hooks/TripInfoContext'
+import { useNavigate } from 'react-router-dom'
 
-const TripInfoSelector = () => {
+const TripInfoSelector = ({ setHoveredId }) => {
+  const navigate = useNavigate();
+  const { selectedZdo, setSelectedZdo, selectedSigu, setSelectedSigu } = useTripInfo();
 
-  const { regionData, selectedZdo, setSelectedZdo, selectedSigu, setSelectedSigu, setHoveredId } = useRegion();
+  const { regionData } = useRegion();
   const { cascaderOptions } = regionData;
-  const hoverTimerRef = useRef(null);
+
+  const hoverTimerRef = useRef(null); // 호버 유예 시간
 
   const cascaderValue = selectedSigu
-    ? [selectedZdo, selectedSigu]   // 시군구까지 선택된 경우
+    ? [selectedZdo, selectedSigu]     // 시군구까지 선택된 경우
     : selectedZdo
-      ? [selectedZdo]                  // 시도만 선택된 경우
-      : undefined;                     // 아무것도 선택 안 된 경우
+      ? [selectedZdo]                 // 시도만 선택된 경우
+      : undefined;                    // 아무것도 선택 안 된 경우
+
+  // plan page로 이동
+  const handleStart = () => {
+    navigate("/Plan");
+  }
 
   const handleValuesChange = (value) => {
     // value는 [zdoCode, siguId] 배열 형태
@@ -31,13 +42,11 @@ const TripInfoSelector = () => {
     setSelectedSigu(value[1] ?? `${value[0]}000`);
   };
 
-  // hover null 타이머 취소 후 즉시 설정
   const handleMouseEnter = (value) => {
     if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current);
     setHoveredId(value);
   };
 
-  // hover 딜레이 넣기
   const handleMouseLeave = () => {
     hoverTimerRef.current = setTimeout(() => {
       setHoveredId(null);
@@ -55,7 +64,7 @@ const TripInfoSelector = () => {
               {/* 어디로 가볼까요? */}
               <FlexBox w="100%" h="50%" settings={{ align: "center", justify: "center" }} style={flexStyle}>
                 <FlexBox h="20%" style={{ fontSize: "20px" }}>어디로 가볼까요?</FlexBox>
-                <FlexBox h="50%" >
+                <FlexBox h="50%">
                   {cascaderOptions && cascaderOptions.length > 0 ?
                     <Cascader
                       value={cascaderValue}
@@ -92,12 +101,12 @@ const TripInfoSelector = () => {
               <FlexBox w="100%" h="50%" settings={{ align: "center", justify: "center" }} style={flexStyle}>
                 <FlexBox h="20%" style={{ fontSize: "20px" }}>언제 출발할까요?</FlexBox>
                 <FlexBox h="50%" >
-                  <Button style={labelStyle} onClick={() => { }}>여행 날짜를 선택해 주세요</Button>
+                  <TripDatePicker />
                 </FlexBox>
               </FlexBox>
             </FlexBox>
             <FlexBox w="100%" h="20%" settings={{ align: "center", justify: "center" }}>
-              <TextButton type="primary" width="400px" height="64px" fontSize="18px">여행 계획 시작하기</TextButton>
+              <TextButton type="primary" disabled={selectedZdo ? false : true} onClickEvent={handleStart} width="400px" height="64px" fontSize="18px">여행 계획 시작하기</TextButton>
             </FlexBox>
           </FlexBox>
         </FloatingContainer>
