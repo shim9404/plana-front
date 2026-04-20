@@ -1,12 +1,14 @@
 import { Button, Flex } from 'antd';
 import styled from 'styled-components';
 import { FlexBox } from '../../common/PLA_FlexBox';
+import { BOOKMARK_COLOR } from '../../../Constants/bookmarkColor';
+import { StarTwoTone } from '@ant-design/icons';
 
 // 5각형 배경을 담당할 Wrapper
 const PentagonWrapper = styled.div`
   position: relative;
   display: inline-flex;
-  padding: 12px 12px 16px 40px; /* 말풍선 내부 여백 */
+  padding: 8px 12px 12px 40px; /* 말풍선 내부 여백 */
   color: white;
   filter: drop-shadow(1px 0px 0px #A8A8A8) 
           drop-shadow(-1px 0px 0px #A8A8A8) 
@@ -35,17 +37,24 @@ const PentagonWrapper = styled.div`
   }
 `;
 
-export const BookmarkPopup = () => {
+export const BookmarkPopup = ({ bookmarkEvent }) => {
+
+  const handleBookmark = (e) => {
+    bookmarkEvent?.(e.target.name);
+  }
+
   return (
     <FlexBox>
       <PentagonWrapper>
-        <FlexBox>
-          <Button></Button>
-          <Button></Button>
-          <Button></Button>
-          <Button></Button>
-          <Button></Button>
-          <Button></Button>
+        <FlexBox w="248px" bg="none">
+          <Button style={{ width: "40px", height: "40px", background: "rgba(0,0,0,0.5)"}}>
+            <StarTwoTone twoToneColor={BOOKMARK_COLOR.PURPLE.bg} style={{fontSize: "32px"}}/>
+          </Button>
+          <Button name="RED" style={{ background: BOOKMARK_COLOR.RED.bg }} onClick={handleBookmark}/>
+          <Button name="YELLOW" style={{ background: BOOKMARK_COLOR.YELLOW.bg }} onClick={handleBookmark}/>
+          <Button name="GREEN" style={{ background: BOOKMARK_COLOR.GREEN.bg }} onClick={handleBookmark}/>
+          <Button name="BLUE" style={{ background: BOOKMARK_COLOR.BLUE.bg }} onClick={handleBookmark}/>
+          <Button name="PURPLE" style={{ background: BOOKMARK_COLOR.PURPLE.bg }} onClick={handleBookmark}/>
         </FlexBox>
       </PentagonWrapper>
     </FlexBox>

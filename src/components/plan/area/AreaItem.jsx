@@ -1,14 +1,19 @@
 import { FlexBox, TextBox } from '../../common/PLA_FlexBox';
 import { FlexContainer } from '../../common/PLA_Containers';
 import { IconButton } from '../../common/PLA_Buttons';
-import { ExportOutlined, StarOutlined } from '@ant-design/icons';
+import { ExportOutlined, StarTwoTone } from '@ant-design/icons';
 import MapMarkerImage from './MapMarkerImage';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import { getBookmarkColor } from '../../../utils/plan/bookmarkUtils';
+import { BOOKMARK_COLOR } from '../../../Constants/bookmarkColor';
 
-const AreaItem = ({ area, number, margin }) => {
-  const [isBookmark, setIsBookmark] = useState(false);
+const AreaItem = ({ area, number, margin, popupBookmark }) => {
+  const [bookmarkType, setBookmarkType] = useState("");
+  const buttonRef = useRef();
 
-  const handleBookmark = () => {}
+  const handleBookmark = () => {
+    popupBookmark?.(buttonRef.current.getBoundingClientRect().y, area.areaId);
+  }
 
   const handleOpenlink = (link) => {
     window.open(link, "_blank");
@@ -38,9 +43,10 @@ const AreaItem = ({ area, number, margin }) => {
           <TextBox h="20%" bg="none" alignW="left">{area.telephone}</TextBox>
         </FlexBox>
         {/* 우측 버튼 */}
-        <FlexBox w="48px" bg="none" settings={{ isVertical: true, justify: "space-around" }} style={{ padding: "8px", position: "relative" }}>
-          <IconButton width="36px" height="36px" type="default" onClickEvent={() => handleBookmark()}>
-            <StarOutlined/>
+        <FlexBox w="48px" bg="none" settings={{ isVertical: true, justify: "space-around" }} style={{ padding: "8px", position: "relative" }}
+        ref={buttonRef}>
+          <IconButton width="36px" height="36px" type={bookmarkType=="" ? "default" : "primary"} onClickEvent={(e) => handleBookmark(e)} >
+            <StarTwoTone twoToneColor={getBookmarkColor(bookmarkType)}/>
           </IconButton>
           <IconButton width="36px" height="36px" type="default" onClickEvent={() => handleOpenlink(area.link)}>
             <ExportOutlined/>

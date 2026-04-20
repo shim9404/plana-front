@@ -3,8 +3,9 @@ import { ToggleButtonGroup } from "../common/PLA_Buttons";
 import { FlexContainer } from "../common/PLA_Containers";
 import { FlexBox } from "../common/PLA_FlexBox";
 import AreaItem from "./area/AreaItem";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import SearchInput from "./area/SearchInput";
+import { BookmarkPopup } from "./area/BookmarkPopup";
 
 // API 적용 전 테스트용 더미 데이터
 const DUMMY_DATAS = {
@@ -352,6 +353,12 @@ const PlanAreaContainer = () => {
   const [arrFood, setArrFood] = useState([]);
   const [arrDisplay, setArrDisplay] = useState([]);
 
+  //#region 북마크 팝업
+  const listRef = useRef();
+  const [popupPosY, setPopupPosY] = useState(0);
+  const [selectedAreaId, setSelectedAreaId] = useState("");
+  //#endregion
+
   const onToggleChange = (selected) => {
     console.log(selected);
     setSearchType(selected);
@@ -374,8 +381,7 @@ const PlanAreaContainer = () => {
     let searchData = null;
     switch (searchType) {
       case "PLACE" :
-        // TODO: 카카오맵 API 검색
-        searchData = arrPlace;
+        arrPlace;
         break;
       case "SPOT" :
         searchData = arrSpot;
@@ -392,8 +398,37 @@ const PlanAreaContainer = () => {
     setArrDisplay(searchData?.filter(data => data.name.includes(keyword)));
   }
 
+  const scrollEvent = () => {
+    setSelectedAreaId("");
+  }
+
+  const openBookmarkPopup = (posY, areaId) => {
+    if (areaId == selectedAreaId) 
+    {
+      setSelectedAreaId("");
+      return;
+    }
+    // console.log("button pos ", posY);
+    const parentRect = listRef.current.getBoundingClientRect().top;
+    const popupPosY = posY - parentRect + 116;
+    
+    // console.log(`BUTTON: ${posY}, popupPosY: ${popupPosY}`);
+    setPopupPosY(popupPosY);
+    setSelectedAreaId(areaId);
+  }
+
+  const handleBookmarkChanged = (type) => {
+    console.log(`${selectedAreaId}를 ${type} 으로 북마크`);
+    setSelectedAreaId("");
+    // TODO: selectedAreaId의 장소 북마크를 param의 type으로 지정
+  }
+
   // 초기화
   useEffect(() => {
+    if (listRef && listRef.current) {
+      listRef.current.addEventListener("scroll", scrollEvent);
+    }
+
     // TODO: 장소 검색 API 호출
     const data = DUMMY_DATAS;
     // 각 배열에 담기
@@ -411,7 +446,7 @@ const PlanAreaContainer = () => {
   return (
     <FlexContainer>
       <FlexBox
-        settings={{ isVertical: true, justify: "flex-start" }}
+        settings={{ isVertical: true, justify: "flex-start", position: "relative" }}
         style={{ padding: "12px 20px" }}
         bg="none"
       >
@@ -434,15 +469,18 @@ const PlanAreaContainer = () => {
         {/* 리스트 콘텐츠 */}
         <FlexBox h="75%" settings={{ isVertical: true, justify: "flex-start" }} 
           style={{ padding: "12px 0px",
-            overflowY: "auto",
-            scrollbarWidth: "thin",
-            scrollbarColor: "rgba(0,0,0,0.25) transparent", }}>
+          overflowY: "auto",
+          scrollbarWidth: "thin",
+          scrollbarColor: "rgba(0,0,0,0.25) transparent", }}
+          ref={listRef}
+          >
           {/* 아이템 map */}
           {
-            arrDisplay.length > 0 ?
-            arrDisplay.map((area, idx) => {
+            arrDisplay?.length > 0 ?
+            arrDisplay?.map((area, idx) => {
               return (
-                <AreaItem area={area} number={idx + 1} margin="4px"/>
+                <AreaItem area={area} number={idx + 1} margin="4px"
+                popupBookmark={openBookmarkPopup}/>
               )
             }) : 
             (<FlexBox settings={{isVertical: true, justify: "center"}}>
@@ -451,6 +489,15 @@ const PlanAreaContainer = () => {
           
           }
         </FlexBox>
+                    
+        {/* absolut */}
+        {
+          selectedAreaId != null && selectedAreaId.length > 0 && 
+          (<FlexBox w="312px" h="60px" bg="none" 
+          style={{ position: "absolute", top: "0%", right: "0%", transform: `translate(85%, ${popupPosY}px)`,  zIndex: 20 }}>
+            <BookmarkPopup bookmarkEvent={handleBookmarkChanged}/>
+          </FlexBox>)
+        }
       </FlexBox>
     </FlexContainer>
   );

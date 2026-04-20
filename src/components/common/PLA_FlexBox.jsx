@@ -1,6 +1,6 @@
-import { Flex, Space } from "antd";
+import { Flex } from "antd";
 
-export const FlexBox = ({ children, settings, w="100%", h="100%", bg, style }) => {
+export const FlexBox = ({ children, settings, w="100%", h="100%", bg, style, ...rest }) => {
   return (
     <Flex
       style={{ width: w, height: h, backgroundColor: bg, ...style }}
@@ -8,6 +8,7 @@ export const FlexBox = ({ children, settings, w="100%", h="100%", bg, style }) =
       align={settings?.align ?? "center"}
       justify={settings?.justify ?? "space-between"}
       flex={settings?.flex}
+      ref={rest.ref}
     >
       {children}
     </Flex>
