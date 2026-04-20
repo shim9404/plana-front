@@ -1,0 +1,80 @@
+/* 입력 에러 메시지 */
+:global(.ant-form-item-explain-error) {
+  font-size: 11px;
+}
+
+/* 입력 추가 메시지 */
+:global(.ant-form-item-extra) {
+  font-size: 11px !important;
+  color: #999 !important;
+}
+
+/* 라벨(폼 기본 열) + 컨트롤(Input·버튼): 한 줄 유지 */
+.signUpForm .InputCheckFormItem :global(.ant-form-item-row) {
+  flex-wrap: nowrap;
+  align-items: center;
+}
+
+.signUpForm .InputCheckFormItem :global(.ant-form-item-label) {
+  padding-bottom: 0;
+}
+
+.signUpForm .InputCheckFormItem :global(.ant-form-item-control-input-content) {
+  width: 100%;
+}
+
+.InputCheckFormItem {
+  margin-top: 10px !important;
+  margin-bottom: 0px !important;
+}
+
+/* 입력 + 중복확인: 한 줄, 줄바꿈 없음 */
+.InputCheckeRow {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  width: 100%;
+  gap: 5px;
+}
+
+.InputCheckRow > :global(.ant-form-item) {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin-bottom: 0;
+}
+
+.InputCheckBtn {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 300;
+  background: var(--color-grey, #565656) !important;
+  border-color: var(--color-grey, #565656) !important;
+  color: var(--color-white, #ffffff) !important;
+}
+
+.InputCheckBtn:hover,
+.InputCheckBtn:focus {
+  background: var(--color-dark-grey, #565656) !important;
+  border-color: var(--color-dark-grey, #565656) !important;
+  color: var(--color-white, #ffffff) !important;
+}
+
+/* 가입하기 버튼 */
+.submitFinishGray {
+  width: 100%;
+  height: 40px;
+  padding-block: 10px;
+  font-size: 14px;
+  background: var(--color-grey, #565656) !important;
+  border-color: var(--color-grey, #565656) !important;
+  color: var(--color-white, #ffffff) !important;
+}
+
+.submitFinishGray:hover,
+.submitFinishGray:focus {
+  background: var(--color-dark-grey, #565656) !important;
+  border-color: var(--color-dark-grey, #565656) !important;
+  color: var(--color-white, #ffffff) !important;
+}
