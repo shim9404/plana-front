@@ -27,7 +27,7 @@ const TripInfoSelector = ({ setHoveredId }) => {
 
   // plan page로 이동
   const handleStart = () => {
-    navigate("/Plan");
+    navigate("/plan");
   }
 
   const handleValuesChange = (value) => {
