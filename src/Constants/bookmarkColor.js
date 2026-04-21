@@ -1,8 +1,8 @@
 export const BOOKMARK_COLOR = {
   RED: {
-    bg: '#FFD6D6',
-    bg2: '#FFF1F0',
-    color: '#B71C1C',
+    bg: '#F5C3C4',
+    bg2: '#FCEBEC',
+    color: '#BB3033',
   },
   ORANGE: {
     bg: '#FFE0B2',
@@ -10,24 +10,24 @@ export const BOOKMARK_COLOR = {
     color: '#E65100',
   },
   YELLOW: {
-    bg: '#FFF3B0',
-    bg2: '#FEFFE6',
-    color: '#BFA100',
+    bg: '#FDE9BD',
+    bg2: '#FEF8E9',
+    color: '#E96D00',
   },
   GREEN: {
-    bg: '#D9F2E6',
-    bg2: '#F6FFED',
-    color: '#1B7F5C',
+    bg: '#BFDFC0',
+    bg2: '#EAF4EA',
+    color: '#3C7766',
   },
   BLUE: {
-    bg: '#D6E8FF',
-    bg2: '#E6F4FF',
-    color: '#1A5FCC',
+    bg: '#BACCE9',
+    bg2: '#E8EEF8',
+    color: '#344AA2',
   },
   PURPLE: {
-    bg: '#E6D6FF',
-    bg2: '#F9F0FF',
-    color: '#5A2CA0',
+    bg: '#C8BAE9',
+    bg2: '#EDE8F8',
+    color: '#772D86',
   },
   default: {
     bg: '#EAEAEA',

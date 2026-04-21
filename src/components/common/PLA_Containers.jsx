@@ -16,13 +16,14 @@ const boxStyle = {
  * @param {*} props 
  * @returns 
  */
-export const FlexContainer = ({ children, bg="#FFFFFF", settings }) => {
+export const FlexContainer = ({ children, bg="#FFFFFF", settings, ...rest }) => {
   return (
     <Flex style={{...boxStyle, backgroundColor: bg}}
       vertical={settings?.isVertical}
       align={settings?.align}
       justify={settings?.justify}
-      flex={settings?.flex}>
+      flex={settings?.flex}
+      {...rest}>
       {children}
     </Flex>
   );
@@ -34,23 +35,25 @@ export const FlexContainer = ({ children, bg="#FFFFFF", settings }) => {
  * @param {*} props 
  * @returns 
  */
-export const SpaceContainer = ({ children, settings }) => {
+export const SpaceContainer = ({ children, settings, ...rest }) => {
   return (
     <Space style={boxStyle}
       vertical={settings?.isVertical}
-      align={settings?.align}>
+      align={settings?.align}
+      {...rest}>
       {children}
     </Space>
   );
 };
 
-export const FloatingContainer = ({ children, settings }) => {
+export const FloatingContainer = ({ children, settings, ...rest }) => {
   return (
     <Flex style={{ ...boxStyle, position: "absolute", zIndex: "10", backgroundColor: settings?.backgroundColor, top: settings?.top, left: settings?.left, transform: settings?.transform }}
       vertical={settings?.isVertical}
       align={settings?.align ?? "center"}
       justify={settings?.justify ?? "space-between"}
       flex={settings?.flex}
+      {...rest}
     >
       {children}
     </Flex>
