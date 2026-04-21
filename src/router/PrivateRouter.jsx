@@ -11,7 +11,7 @@ const PrivateRouter = ({ children, allowedRoles }) => {
   // 비로그인
   if (!isLoggedIn) {
     openLoginModal();
-    return <Navigate to="/" replace state={{ from: location }} />;
+    return <Navigate to="/" replace />;
   }
 
   // 권한 있음

@@ -53,8 +53,6 @@ export const AuthProvider = ({ children }) => {
     setEmail(inputEmail);
     setMemberId(data.memberId)
 
-    console.log("email:: ", inputEmail);
-
     // AppRouter 이벤트 리스너와 호환
     window.dispatchEvent(new Event('trip-auth-profile-updated'));
   }, []);
@@ -78,7 +76,6 @@ export const AuthProvider = ({ children }) => {
 
     if (isExpired || sessionStorage.getItem(SESSION_EXPIRED_NOTICE_KEY)) {
       sessionStorage.removeItem(SESSION_EXPIRED_NOTICE_KEY); // 플래그 제거
-      // TODO: 모달 출력
       console.log("토큰이 만료되어 로그아웃되었습니다.")
     }
     window.dispatchEvent(new Event('trip-auth-profile-updated'));
@@ -87,7 +84,6 @@ export const AuthProvider = ({ children }) => {
   // logout 콜백 등록
   useEffect(() => {
     tokenStore.setOnLogout(() => logout(true));
-    // tokenStore.setOnLogout(() => console.log("토큰이 만료되어 로그아웃되었습니다."));
   }, [logout]);
 
 

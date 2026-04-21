@@ -4,6 +4,7 @@ import { useAuth } from "./hooks/AuthContext";
 import { useModal } from "./hooks/ModalProvider";
 import { useEffect } from "react";
 
+
 /**
  * 로그인 없이 접근 가능한 공개 경로 목록
  *

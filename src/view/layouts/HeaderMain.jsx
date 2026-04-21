@@ -1,4 +1,4 @@
-import { Form, Layout, message } from "antd";
+import { Layout, message } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import { MenuButton } from "../../components/common/PLA_Buttons";
 import {
@@ -8,14 +8,10 @@ import {
   SlidersOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { useState } from "react";
 
-import LoginModalComponent from "../../components/auth/LoginModalComponent";
-import SignUpModalComponent from "../../components/auth/SignUpModalComponent";
 import { useAuth } from "../../hooks/AuthContext";
 import { useModal } from "../../hooks/ModalProvider";
 import { logoutApi } from "../../services/authApi";
-import axiosInstance from "../../services/axiosInstance";
 const { Header } = Layout;
 
 const headerStyle = {
@@ -76,6 +72,14 @@ const HeaderMain = () => {
     }
   };
 
+  const handleProtectedNav = (path) => {
+    if (!isLoggedIn) {
+      openLoginModal();
+      return;
+    }
+    navigate(path);
+  };
+
   return (
     <Header style={headerStyle}>
       {/* 로고 */}
@@ -88,14 +92,14 @@ const HeaderMain = () => {
       {/* 메뉴 버튼 */}
       <div style={ButtonContainer}>
         {isAdmin && (
-          <MenuButton name="관리자 페이지" type="primary">
+          <MenuButton name="관리자 페이지" type="primary" onClickEvent={() => handleProtectedNav('/admin')} >
             <SlidersOutlined />
           </MenuButton>
         )}
-        <MenuButton name="내 여행" onClickEvent={() => navigate('/mytrip')}>
+        <MenuButton name="내 여행" onClickEvent={() => handleProtectedNav('/mytrip')}>
           <CompassOutlined />
         </MenuButton>
-        <MenuButton name="내 프로필" onClickEvent={() => navigate('/mypage')}>
+        <MenuButton name="내 프로필" onClickEvent={() => handleProtectedNav('/mypage')}>
           <UserOutlined />
         </MenuButton>
         {isLoggedIn ? (
