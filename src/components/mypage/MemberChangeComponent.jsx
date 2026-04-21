@@ -1,14 +1,20 @@
-import React, { useState } from 'react'
-import { Button, Input } from 'antd';
-import { ProfileOutlined } from '@ant-design/icons';
+import React, { useEffect, useState } from 'react'
+import { Button, Input, Modal } from 'antd';
+import { ProfileOutlined, SmileOutlined } from '@ant-design/icons';
 import '../../styles/mypage.css';
 import { TextButton } from '../common/PLA_Buttons';
 
 {/* == 회원 정보 수정 콘텐츠 == */}
-const MemberChangeComponent = ({memberItem, setSelectedMenu}) => {
+const MemberChangeComponent = ({images, memberItem, setSelectedMenu}) => {
   // 프로필 이미지 초기값
-  const [profileImage, setProfileImage] = useState(memberItem.profileImage)
-  
+  const [profileImage, setProfileImage] = useState("")
+  useEffect(() => {
+    if (memberItem) {
+      setProfileImage(memberItem.profileImage);
+    }
+  }, [memberItem]);
+  const [profileModalOpen, setProfileModalOpen] = useState(false); // 모달 창 OPEN  
+
   return (
     <>
       {/* 콘텐츠 상단 */}
@@ -23,15 +29,42 @@ const MemberChangeComponent = ({memberItem, setSelectedMenu}) => {
           <label style={{ width: '80px', fontWeight: 500}}>프로필</label>
           <div className="profile-edit__image-row">
             <div className="image-wrapper">
-              <img className="profile-edit__image" src={profileImage || null}/>
-              <Button className="image-btn" onClick={() => {setProfileImage(null)}}>
+              {profileImage ? (
+                <img className="profile-edit__image" src={profileImage}/>
+              ) : (
+                <SmileOutlined  style={{ fontSize: '112px' }} />
+              )}
+              <Button className="image-btn" onClick={() => {setProfileImage("")}}>
                 X
               </Button>            
             </div>
-              <TextButton type="primary" width="240px" height="40px" fontSize="15px">
+              <TextButton type="primary" width="240px" height="40px" fontSize="15px" 
+              onClickEvent={() => {setProfileModalOpen(true)}}>
                 내 사진 바꾸기
               </TextButton>
           </div>
+          <Modal
+            open={profileModalOpen}
+            title="프로필 이미지 선택"
+            footer={null}  
+            onCancel={() => setProfileModalOpen(false)}
+            width={400}
+            styles={{body: { display: 'flex', justifyContent: 'center', padding: '12px'}}}
+          >
+            <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 110px)', gap: '10px', width: 'fit-content'}}>
+              {images.map((img, idx) => (
+                <img
+                  key={idx}
+                  src={img}
+                  onClick={() => {
+                    setProfileImage(img);
+                    setProfileModalOpen(false);
+                  }}
+                  className='profile-select-image'
+                />
+              ))}
+            </div>
+          </Modal>
         </div>
         {/* 닉네임, 이름, 이름 변경 부분 */}
         <div className="edit__row">
