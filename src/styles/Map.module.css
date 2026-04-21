@@ -1,7 +1,12 @@
 /* 전체 지도 컨테이너 범위 제한 */
+.mapContainer :global(svg) {
+  pointer-events: none;
+}
 
 /* 1. 기본 path 스타일 (전역 오염 방지) */
 .mapContainer :global(path) {
+  pointer-events: all;
+  cursor: pointer;
   fill: #ffffff;
   /* 기본 배경색 */
   stroke: #ced4da;
@@ -102,14 +107,12 @@
   fill: var(--hover-color, #1890ff) !important;
   stroke: #ffffff;
   stroke-width: 2;
-  cursor: pointer;
 }
 
 .mapContainer :global(path.hovered) {
   fill: var(--hover-color, #1890ff) !important;
   stroke: #ffffff;
   stroke-width: 2;
-  cursor: pointer;
 }
 
 .mapContainer :global(path.selected) {
