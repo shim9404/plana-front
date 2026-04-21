@@ -1,5 +1,5 @@
 import { Button, Flex } from "antd";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const buttonStyle = {
   display: "flex",
@@ -37,7 +37,7 @@ export const MenuButton = ({
     width: "80px",
     minWidth: "64px",
     height: "64px",
-    marginRight: "20px",
+    marginLeft: "20px",
     padding: "8px",
   };
 
@@ -52,8 +52,8 @@ export const MenuButton = ({
       onClick={handleOnClick}
       {...rest}
     >
-      <div style={{ fontSize: iconSize, ...iconStyle }}>{children}</div>
-      <div style={{ fontSize, ...textStyle }}>{name}</div>
+      <Flex style={{ fontSize: iconSize, ...iconStyle }}>{children}</Flex>
+      <Flex align="center" justify="center" style={{ fontSize, ...textStyle }}>{name}</Flex>
     </Button>
   );
 };
