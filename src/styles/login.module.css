@@ -1,0 +1,83 @@
+/* LoginModal: 이메일·비밀번호와 동일 너비 전송 버튼 (antd Button 루트에 직접 적용) */
+.submitGray {
+  width: 100%;
+  height: 40px;
+  padding-block: 10px;
+  font-size: 14px;
+  background: var(--color-grey, #565656) !important;
+  border-color: var(--color-grey, #565656) !important;
+  color: var(--color-white, #ffffff) !important;
+}
+
+.submitGray:hover,
+.submitGray:focus {
+  background: var(--color-dark-grey, #565656) !important;
+  border-color: var(--color-dark-grey, #565656) !important;
+  color: var(--color-white, #ffffff) !important;
+}
+
+/* LoginModal: 입력 에러 메시지 */
+.smallError :global(.ant-form-item-explain-error) {
+  font-size: 11px;
+  margin-bottom: 5px;
+}
+
+/* LoginModal — SNS 안내 문구 */
+.snsCaption {
+  font-size: var(--font-micro);
+  text-align: center;
+  margin-top: 12px;
+  margin-bottom: 7px;
+}
+
+.submitNaver {
+  width: 100%;
+  height: 40px;
+  padding-block: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  background: var(--color-naver, #03c75a) !important;
+  border-color: var(--color-naver, #03c75a) !important;
+  color: var(--color-white, #ffffff) !important;
+
+}
+.submitNaver:hover,
+.submitNaver:focus {
+  background: var(--color-naver-dark, #029a48) !important;
+  border-color: var(--color-naver-dark, #029a48) !important;
+  color: var(--color-white, #ffffff) !important;
+}
+
+.submitKakao {
+  width: 100%;
+  height: 40px;
+  padding-block: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  background: var(--color-kakao, #fee500) !important;
+  border-color: var(--color-kakao, #fee500) !important;
+  color: var(--color-gray, #555) !important;
+}
+.submitKakao:hover,
+.submitKakao:focus {
+  background: var(--color-kakao-hover, #f5dc00) !important;
+  border-color: var(--color-kakao-hover, #f5dc00) !important;
+  color: var(--color-gray, #555) !important;
+}
+
+.submitGoogle {
+  width: 100%;
+  height: 40px;
+  padding-block: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  background: var(--color-google, #d9d9d9) !important;
+  border-color: var(--color-google, #d9d9d9) !important;
+  color: var(--color-gray, #555) !important;
+}
+.submitGoogle:hover,
+.submitGoogle:focus {
+  background: var(--color-google-hover, #c9c9c9) !important;
+  border-color: var(--color-google-hover, #c9c9c9) !important;
+  color: var(--color-gray, #555) !important;
+}
