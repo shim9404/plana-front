@@ -1,13 +1,12 @@
 import PageLayout from "../../components/common/PageLayout";
 import { Layout, Menu } from "antd";
-import { KeyOutlined, ProfileOutlined } from "@ant-design/icons";
+import { KeyOutlined, ProfileOutlined, SmileOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import '../../styles/mypage.css';
 import MemberChangeComponent from "../../components/mypage/MemberChangeComponent";
 import PasswordChangeComponent from "../../components/mypage/PasswordChangeComponent";
 import MemberWithdrawComponent from "../../components/mypage/MemberWithdrawComponent";
 // 프로필 이미지
-import profileImage0 from '../../../public/images/profileImage/profileImage0.jpg'
 import profileImage1 from '../../../public/images/profileImage/profileImage1.jpg'
 import profileImage2 from '../../../public/images/profileImage/profileImage2.jpg'
 import profileImage3 from '../../../public/images/profileImage/profileImage3.jpg'
@@ -58,8 +57,11 @@ const Mypage = () => {
           {/* 상단 프로필 박스 */}
           <div className="demo-logo-vertical" />
           <div className="profile-box">
-            <img className="profile-image"
-              src={memberItem.profileImage || profileImage0} />
+            {memberItem?.profileImage ? (
+              <img className="profile-image" src={memberItem.profileImage}/>
+            ) : (
+            <SmileOutlined style={{ fontSize: '60px' }} />
+            )}
             <div className="profile-name">{memberItem.nickname}</div>
           </div>
           {/* 메뉴 */}
@@ -86,7 +88,6 @@ const Mypage = () => {
           {/* 회원 정보 수정 콘텐츠 (1) */}
           {selectedMenu === '1' &&
             <MemberChangeComponent 
-            profileImage0={profileImage0}
             images = {images}            
             memberItem={memberItem} 
             setSelectedMenu={setSelectedMenu} />}

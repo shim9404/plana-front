@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { Button, Input, Modal } from 'antd';
-import { ProfileOutlined } from '@ant-design/icons';
+import { ProfileOutlined, SmileOutlined } from '@ant-design/icons';
 import '../../styles/mypage.css';
 import { TextButton } from '../common/PLA_Buttons';
 
 {/* == 회원 정보 수정 콘텐츠 == */}
-const MemberChangeComponent = ({profileImage0, images, memberItem, setSelectedMenu}) => {
+const MemberChangeComponent = ({images, memberItem, setSelectedMenu}) => {
   // 프로필 이미지 초기값
   const [profileImage, setProfileImage] = useState("")
   useEffect(() => {
@@ -29,8 +29,12 @@ const MemberChangeComponent = ({profileImage0, images, memberItem, setSelectedMe
           <label style={{ width: '80px', fontWeight: 500}}>프로필</label>
           <div className="profile-edit__image-row">
             <div className="image-wrapper">
-              <img className="profile-edit__image" src={profileImage || profileImage0}/>
-              <Button className="image-btn" onClick={() => {setProfileImage(profileImage0)}}>
+              {profileImage ? (
+                <img className="profile-edit__image" src={profileImage}/>
+              ) : (
+                <SmileOutlined  style={{ fontSize: '112px' }} />
+              )}
+              <Button className="image-btn" onClick={() => {setProfileImage("")}}>
                 X
               </Button>            
             </div>
@@ -42,7 +46,7 @@ const MemberChangeComponent = ({profileImage0, images, memberItem, setSelectedMe
           <Modal
             open={profileModalOpen}
             title="프로필 이미지 선택"
-            footer={null}
+            footer={null}  
             onCancel={() => setProfileModalOpen(false)}
             width={400}
             styles={{body: { display: 'flex', justifyContent: 'center', padding: '12px'}}}
