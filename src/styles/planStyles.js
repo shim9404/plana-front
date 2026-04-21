@@ -34,4 +34,19 @@ export const TableStyles = {
   },
 };
 
+export const ScrollStyle = {
+  scrollX: {
+    overflowX: "auto",
+    overflowY: "hidden",
+    scrollbarWidth: "thin",
+    scrollbarColor: "rgba(0,0,0,0.25) transparent",
+  },
+  scrollY: {
+    overflowX: "hidden",
+    overflowY: "auto",
+    scrollbarWidth: "thin",
+    scrollbarColor: "rgba(0,0,0,0.25) transparent",
+  },
+};
+
 export const PlanSortableStyles = {};

@@ -30,6 +30,7 @@ export const MenuButton = ({
   type = "default",
   iconSize = "24px",
   fontSize = "12px",
+  ...rest
 }) => {
 
   const menuButtonStyle = {
@@ -49,6 +50,7 @@ export const MenuButton = ({
       type={type}
       style={{ ...buttonStyle, ...menuButtonStyle }}
       onClick={handleOnClick}
+      {...rest}
     >
       <div style={{ fontSize: iconSize, ...iconStyle }}>{children}</div>
       <div style={{ fontSize, ...textStyle }}>{name}</div>
@@ -65,7 +67,8 @@ export const TextButton = ({
   fontSize = "12px",
   fontWeight = 500,
   danger = false,
-  disabled = false
+  disabled = false,
+  ...rest
 }) => {
 
   let handleOnClick = () => {
@@ -79,6 +82,7 @@ export const TextButton = ({
       disabled={disabled ? true : false}
       style={{ width, height, fontWeight, ...buttonStyle }}
       onClick={handleOnClick}
+      {...rest}
     >
       <div style={{ fontSize, ...textStyle }}>{children}</div>
     </Button>
@@ -93,7 +97,8 @@ export const IconButton = ({
   height = "auto",
   fontSize = "24px",
   danger = false,
-  disabled = false
+  disabled = false,
+  ...rest
 }) => {
   
   let handleOnClick = () => {
@@ -107,6 +112,7 @@ export const IconButton = ({
       disabled={disabled ? true : false}
       style={{ width, height, ...buttonStyle }}
       onClick={handleOnClick}
+      {...rest}
     >
       <div style={{ fontSize, ...iconStyle }}>{children}</div>
     </Button>

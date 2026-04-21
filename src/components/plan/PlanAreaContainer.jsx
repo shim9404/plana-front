@@ -6,6 +6,7 @@ import AreaItem from "./area/AreaItem";
 import { useEffect, useRef, useState } from "react";
 import SearchInput from "./area/SearchInput";
 import { BookmarkPopup } from "./area/BookmarkPopup";
+import { ScrollStyle } from "../../styles/planStyles";
 
 // API 적용 전 테스트용 더미 데이터
 const DUMMY_DATAS = {
@@ -468,10 +469,7 @@ const PlanAreaContainer = () => {
         </FlexBox>
         {/* 리스트 콘텐츠 */}
         <FlexBox h="75%" settings={{ isVertical: true, justify: "flex-start" }} 
-          style={{ padding: "12px 0px",
-          overflowY: "auto",
-          scrollbarWidth: "thin",
-          scrollbarColor: "rgba(0,0,0,0.25) transparent", }}
+          style={{ padding: "12px 0px", ...ScrollStyle.scrollY }}
           ref={listRef}
           >
           {/* 아이템 map */}

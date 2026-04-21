@@ -8,7 +8,7 @@ export const FlexBox = ({ children, settings, w="100%", h="100%", bg, style, ...
       align={settings?.align ?? "center"}
       justify={settings?.justify ?? "space-between"}
       flex={settings?.flex}
-      ref={rest.ref}
+      {...rest}
     >
       {children}
     </Flex>
@@ -16,7 +16,7 @@ export const FlexBox = ({ children, settings, w="100%", h="100%", bg, style, ...
 };
 
 export const TextBox = ( { children, w="100%", h="100%", size="12px", weight=500, color="#A8A8A8", 
-  alignW="center", alignH="center", bg, style } ) => {
+  alignW="center", alignH="center", bg, style, ...rest } ) => {
   const justify = alignW === "left" ? "flex-start" : alignW === "right" ? "flex-end" : "center";
   const align = alignH === "top" ? "start" : alignH === "bottom" ? "end" : "center";
 
@@ -26,6 +26,7 @@ export const TextBox = ( { children, w="100%", h="100%", size="12px", weight=500
       align={align ?? "center"}
       justify={justify ?? "center"}
       flex={1}
+      {...rest}
     >
       {children}
     </Flex>

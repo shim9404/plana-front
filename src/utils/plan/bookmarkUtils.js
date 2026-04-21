@@ -16,6 +16,22 @@ export const getBookmarkColor = (type) => {
       return "#A8A8A8";
   }
 }
+export const getBookmarkSubColor = (type) => {
+  switch (type) {
+    case "RED": 
+      return BOOKMARK_COLOR.RED.bg2;
+    case "YELLOW":
+      return BOOKMARK_COLOR.YELLOW.bg2;
+    case "GREEN":
+      return BOOKMARK_COLOR.GREEN.bg2;
+    case "BLUE":
+      return BOOKMARK_COLOR.BLUE.bg2;
+    case "PURPLE":
+      return BOOKMARK_COLOR.PURPLE.bg2;
+    default:
+      return "#565656";
+  }
+}
 
 export const getBookmarkActiveColor = (type) => {
   switch (type) {
@@ -30,6 +46,6 @@ export const getBookmarkActiveColor = (type) => {
     case "PURPLE":
       return BOOKMARK_COLOR.PURPLE.color;
     default:
-      return "#A8A8A8";
+      return "#565656";
   }
 }

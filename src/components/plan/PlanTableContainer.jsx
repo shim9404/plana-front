@@ -1,5 +1,5 @@
 import { FlexContainer } from "../common/PLA_Containers";
-import { TableStyles } from "../../styles/planStyles";
+import { ScrollStyle, TableStyles } from "../../styles/planStyles";
 import { IconButton } from "../common/PLA_Buttons";
 import { FlexBox } from "../common/PLA_FlexBox";
 import {
@@ -53,11 +53,7 @@ const PlanTableContainer = () => {
         <FlexBox
           h="80%"
           bg="none"
-          style={{
-            overflowY: "auto",
-            scrollbarWidth: "thin",
-            scrollbarColor: "rgba(0,0,0,0.25) transparent",
-          }}
+          style={ ScrollStyle.scrollY }
           settings={{ justify: "flex-start" }}
         >
           <PlanTableContent style={TableStyles.tableStyle} />

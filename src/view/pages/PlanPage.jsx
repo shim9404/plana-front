@@ -1,12 +1,12 @@
 import { Layout, Splitter } from "antd";
 import { Header } from "antd/es/layout/layout";
 import PageLayout from "../../components/common/PageLayout";
-import { FlexContainer } from "../../components/common/PLA_Containers";
 import { useState } from "react";
 import PlanTableContainer from "../../components/plan/PlanTableContainer";
 import { FlexBox } from "../../components/common/PLA_FlexBox";
 import { PlanTableContext } from "../../hooks/plan/PlanTableContext";
 import PlanAreaContainer from "../../components/plan/PlanAreaContainer";
+import PlanBookmarkContainer from "../../components/plan/PlanBookmarkContainer";
 const { Sider, Content } = Layout;
 
 const layoutStyle = {
@@ -65,7 +65,7 @@ const PlanPage = () => {
         {/* 북마크 리스트 영역 */}
         <Header style={bookmarkListStyle}>
           <FlexBox bg="none">
-            <FlexContainer />
+            <PlanBookmarkContainer/>
           </FlexBox>
         </Header>
         {/* 3분할 영역 - 장소 목록 / 지도 / 여행 계획표 */}
