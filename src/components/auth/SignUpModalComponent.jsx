@@ -41,6 +41,7 @@ const SignUpModalComponent = ({ open, onClose }) => {
 
   return (
     <Modal
+      transitionName="ant-fade"
       title="회원가입"
       open={open}
       onCancel={handleClose}

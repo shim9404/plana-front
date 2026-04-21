@@ -57,6 +57,7 @@ const LoginModalComponent = ({ open, onClose }) => {
 
   return (
     <Modal
+      transitionName="ant-fade"
       title="로그인"
       open={open}
       onCancel={handleClose}
