@@ -1,17 +1,25 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
+import { useAuth } from "../hooks/AuthContext";
+import { useModal } from "../hooks/ModalProvider";
 
-const PrivateRouter = ({ role, children, allowedRoles }) => {
-  const userRole = role ?? "";
-  console.log("유저 역할" + role);
-  console.log(allowedRoles);
+//  role 체크 (권한 여부) 
+const PrivateRouter = ({ children, allowedRoles }) => {
+  const location = useLocation();
+  const { isLoggedIn, userRole } = useAuth();
+  const { openLoginModal } = useModal();
 
-  if (!userRole.trim()) {
-    return <Navigate to="/" replace />;
+  // 비로그인
+  if (!isLoggedIn) {
+    openLoginModal();
+    return <Navigate to="/" replace state={{ from: location }} />;
   }
 
+  // 권한 있음
   if (allowedRoles.includes(userRole)) {
     return children;
   }
+
+  // 권한 없음
   return <Navigate to="/error" replace />;
 };
 

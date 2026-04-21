@@ -1,5 +1,5 @@
-import { Form, Layout } from "antd";
-import { Link } from "react-router-dom";
+import { Form, Layout, message } from "antd";
+import { Link, useNavigate } from "react-router-dom";
 import { MenuButton } from "../../components/common/PLA_Buttons";
 import {
   CompassOutlined,
@@ -12,6 +12,10 @@ import { useState } from "react";
 
 import LoginModalComponent from "../../components/auth/LoginModalComponent";
 import SignUpModalComponent from "../../components/auth/SignUpModalComponent";
+import { useAuth } from "../../hooks/AuthContext";
+import { useModal } from "../../hooks/ModalProvider";
+import { logoutApi } from "../../services/authApi";
+import axiosInstance from "../../services/axiosInstance";
 const { Header } = Layout;
 
 const headerStyle = {
@@ -54,111 +58,56 @@ const ButtonContainer = {
 };
 
 const HeaderMain = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userRole, setUserRole] = useState("");
-  const [isPlanning, setIsPlanning] = useState(false);
-  const isAdmin = isLoggedIn && userRole === "ROLE_ADMIN";
+  const navigate = useNavigate();
+  const { isLoggedIn, logout, email, accessToken, userRole, memberId } = useAuth();
+  const { openLoginModal } = useModal();
 
-  
-  const [loginForm] = Form.useForm();
-  const [signUpForm] = Form.useForm();
+  const isAdmin = isLoggedIn && userRole === 'ADMIN';
 
-  const [loginModalOpen, setLoginModalOpen] = useState(false);    // 로그인 창 열기/닫기
-  const [loginError, setLoginError] = useState('');               // 로그인 에러
-  const [loginSubmitting, setLoginSubmitting] = useState(false);  // 로그인 로딩 표시
-
-  const [signUpModalOpen, setSignUpModalOpen] = useState(false);  // 회원가입 창 열기/닫기
-  const [signUpSubmitting, setSignUpSubmitting] = useState(false);   // 회원가입 에러
-
-  const closeLoginModal = () => { // 로그인 창 닫기
-    setLoginModalOpen(false);
-    loginForm.resetFields(); // 값 초기화
-    loginForm.setFields([]); // 에러 상태 초기화
-    setLoginError('');
-  };
-
-  const handleLoginSubmit = () => { // 로그인 버튼 클릭 (TODO: 로그인 데이터 저장)
-    setLoginSubmitting(true);
-  }
-
-  const openSignUpFromLogin = () => { // 회원가입 창 열기(회원가입 버튼 클릭)
-    setSignUpModalOpen(true);
-  };
-
-  const closeSignUpModal = () => { // 회원가입 창 닫기
-    setSignUpModalOpen(false);
-    signUpForm.resetFields(); // 값 초기화
-    signUpForm.setFields([]); // 에러 상태 초기화
-  };
-
-  const afterSignUpSuccessOpenLogin = () => { // 로그인 창 열기(가입 버튼 클릭)
-    setLoginModalOpen(true);
+  const handleLogout = async () => {
+    try {
+      await logoutApi({ email, accessToken });
+    } catch (error) {
+      console.error('로그아웃 API 실패:', error);
+    } finally {
+      logout();
+      message.success('로그아웃되었습니다.');
+      navigate('/');
+    }
   };
 
   return (
     <Header style={headerStyle}>
-      {/* 로고 영역 */}
+      {/* 로고 */}
       <div style={LogoContainer}>
         <Link to="/" className="header-trip__brand">
-          <img
-            src="../../../public/images/svg/logos/plana-logo.svg"
-            alt="logo"
-            width="137px"
-            left="13%"
-            height="52px"
-          />
+          <img src="../../../public/images/svg/logos/plana-logo.svg"
+            alt="logo" width="137px" height="52px" />
         </Link>
       </div>
-      {/* 여행 계획 페이지 활성: 여행 정보 영역 */}
-      {isPlanning ? (
-        <div style={PlanContainer}>
-          <PlanHeader />
-        </div>
-      ) : null}
-      {/* 메뉴 버튼 영역 */}
+      {/* 메뉴 버튼 */}
       <div style={ButtonContainer}>
-        {isAdmin ? (
+        {isAdmin && (
           <MenuButton name="관리자 페이지" type="primary">
             <SlidersOutlined />
           </MenuButton>
-        ) : null}
-        <MenuButton name="내 여행">
+        )}
+        <MenuButton name="내 여행" onClickEvent={() => navigate('/mytrip')}>
           <CompassOutlined />
         </MenuButton>
-        <MenuButton name="내 프로필">
+        <MenuButton name="내 프로필" onClickEvent={() => navigate('/mypage')}>
           <UserOutlined />
         </MenuButton>
         {isLoggedIn ? (
-          <MenuButton name="로그아웃">
+          <MenuButton name="로그아웃" onClickEvent={handleLogout}>
             <LogoutOutlined />
           </MenuButton>
         ) : (
-          <MenuButton name="로그인" 
-            onClickEvent={() => setLoginModalOpen(true)}>
+          <MenuButton name="로그인" onClickEvent={openLoginModal}>
             <LoginOutlined />
           </MenuButton>
         )}
       </div>
-
-      <LoginModalComponent
-        open={loginModalOpen}     // 로그인 창 열기
-        onClose={closeLoginModal} // 로그인 창 닫기
-        form={loginForm}          // 로그인 Form
-        onFinish={handleLoginSubmit} // 로그인 버튼 클릭
-        submitting={loginSubmitting} // 로그인 로딩 표시
-        onRequestSignUp={openSignUpFromLogin} // 회원가입 창 열기(회원가입 버튼 클릭)
-        loginError={loginError}   // 로그인 에러
-      />
-
-      <SignUpModalComponent
-        open={signUpModalOpen}     // 회원가입 창 열기
-        onClose={closeSignUpModal} // 회원가입 창 닫기
-        form={signUpForm}          // 회원가입 Form
-        submitting={signUpSubmitting} // 회원가입 로딩 표시
-        setSubmitting={setSignUpSubmitting}
-        onRegisterSuccess={afterSignUpSuccessOpenLogin} // 회원가입 창 닫기(가입 버튼 클릭)
-      />
-
     </Header>
   );
 };
