@@ -205,7 +205,7 @@ const MyTripPage = () => {
                 <div className="trip-info">
                   <div className="trip-name">내 여행 계획</div>
                   <TextButton type="primary" width="160px" height="35px" fontSize="15px" 
-                    onClickEvent={() => { navigate("/Plan"); }}>
+                    onClickEvent={() => { navigate("/plan"); }}>
                     <FormOutlined /> 새 여행 계획하기
                   </TextButton>
                 </div>
@@ -282,7 +282,7 @@ const MyTripPage = () => {
                     <Trash2 size={20} />
                   </IconButton>
                   <IconButton type="default" width="50px" height="40px"
-                    onClickEvent={() => navigate("/Plan")}>
+                    onClickEvent={() => navigate("/plan")}>
                     <FilePenLine size={20} />
                   </IconButton>
                   <IconButton type="default" width="50px" height="40px" onClickEvent={handleDownloadPdf}>
