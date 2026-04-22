@@ -6,6 +6,7 @@ import HeaderMain from "./view/layouts/HeaderMain";
 import { RegionProvider } from "./hooks/home/RegionContext.jsx";
 import { TripInfoProvider } from "./hooks/TripInfoContext.jsx";
 import { useModal } from "./hooks/ModalProvider.jsx";
+import { TripPlanProvider } from "./hooks/plan/PlanTripContext.jsx";
 
 
 function App() {
@@ -28,16 +29,18 @@ function App() {
   return (
     <RegionProvider>
       <TripInfoProvider>
-        <LoginModalComponent
-          open={isLoginOpen}
-          onClose={closeLoginModal}
-        />
-        <SignUpModalComponent
-          open={isSignupOpen}
-          onClose={closeSignupModal}
-        />
-        <HeaderMain />
-        <AppRouter />
+        <TripPlanProvider>
+          <LoginModalComponent
+            open={isLoginOpen}
+            onClose={closeLoginModal}
+          />
+          <SignUpModalComponent
+            open={isSignupOpen}
+            onClose={closeSignupModal}
+          />
+          <HeaderMain />
+          <AppRouter />
+        </TripPlanProvider>
       </TripInfoProvider>
     </RegionProvider>
   );

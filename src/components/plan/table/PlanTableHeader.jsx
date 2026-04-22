@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { FlexBox } from "../../common/PLA_FlexBox";
 import { DeleteFilled } from "@ant-design/icons";
-import { PlanTableContext } from "../../../hooks/plan/PlanTableContext";
+import { useTripPlan } from "../../../hooks/plan/PlanTripContext";
 
 // 708px
 const DefaultHeaderContents = ({ styles }) => {
@@ -67,7 +67,7 @@ const ExpandedHeaderContents = ({ styles }) => {
 };
 
 const PlanTableHeader = ({ styles }) => {
-  const { isExpanded } = useContext(PlanTableContext);
+  const { isExpanded } = useTripPlan();
 
   return (
     <FlexBox h="30px" style={styles.headerStyle}>

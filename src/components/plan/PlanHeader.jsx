@@ -7,7 +7,14 @@ import { CheckCircleTwoTone, SyncOutlined } from "@ant-design/icons";
 import { useState } from "react";
 
 const PlanHeader = () => {
-  const { selectedZdo, setSelectedZdo, selectedSigu, setSelectedSigu } = useTripInfo();
+  const {
+    selectedZdo,
+    setSelectedZdo,
+    selectedSigu,
+    setSelectedSigu,
+    tripName,
+    setTripName,
+  } = useTripInfo();
   const [isSaving, setIsSaving] = useState(false);
 
   const cascaderValue = selectedSigu
@@ -18,7 +25,7 @@ const PlanHeader = () => {
 
   const textboxStyle = { minWidth: "60px", marginLeft: "8px" };
 
-  const handleValuesChange = (value) => {
+  const handleChangeRegion = (value) => {
     // value는 [zdoCode, siguId] 배열 형태
     if (value == null || value.length === 0) {
       setSelectedZdo(null);
@@ -29,6 +36,10 @@ const PlanHeader = () => {
     setSelectedZdo(value[0] ?? null);
     setSelectedSigu(value[1] ?? `${value[0]}000`);
   };
+
+  const handleChangeTripName = (value) => {
+    setTripName(value);
+  }
   
   return (
     <FlexBox h="64px" style={{ position: "absolute", zIndex: 100, top: "0px", margin: "18px 0px", minWidth: "708px", pointerEvents: "none" }} settings={{ justify: "center" }}>
@@ -49,8 +60,8 @@ const PlanHeader = () => {
           <TripRegionPicker
             width="220px" height="48px"
             value={cascaderValue}
-            onChange={handleValuesChange}
-            changeOnSelect={handleValuesChange}
+            onChange={handleChangeRegion}
+            changeOnSelect={handleChangeRegion}
             />
         </FlexBox>
         {/* 여행명 영역 */}
@@ -59,7 +70,8 @@ const PlanHeader = () => {
             여행 이름
           </TextBox>
           <FlexBox h="48px" style={{ position: "relative" }}>
-            <Input showCount maxLength={30} style={{ height: "48px", fontSize:"16px", color:"#565656", padding: "8px 56px 8px 18px"}}/>
+            <Input showCount maxLength={30} style={{ height: "48px", fontSize:"16px", color:"#565656", padding: "8px 56px 8px 18px"}}
+            value={tripName} onChange={(e) => handleChangeTripName(e.target.value)}/>
             <FlexBox w="52px" h="52px" settings={{ justify:"center" }} style={{ fontSize:"20px", right: "0%", position: "absolute", zIndex: 10 }}>
               {
                 isSaving?

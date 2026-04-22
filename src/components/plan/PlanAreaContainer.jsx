@@ -7,10 +7,13 @@ import { useEffect, useRef, useState } from "react";
 import SearchInput from "./area/SearchInput";
 import { BookmarkPopup } from "./area/BookmarkPopup";
 import { ScrollStyle } from "../../styles/planStyles";
+import { getAreaApi } from "../../services/areaApi";
+import { useTripInfo } from "../../hooks/TripInfoContext";
+import { useTripPlan } from "../../hooks/plan/PlanTripContext";
 
 // API 적용 전 테스트용 더미 데이터
 const DUMMY_DATAS = {
-    totalCount: 16,
+  totalCount: 16,
   regionId: "25020",
   place: {
     searchType: "PLACE",
@@ -354,6 +357,9 @@ const PlanAreaContainer = () => {
   const [arrFood, setArrFood] = useState([]);
   const [arrDisplay, setArrDisplay] = useState([]);
 
+  const { selectedSigu } = useTripInfo();
+  const { areas, setAreas } = useTripPlan();
+
   //#region 북마크 팝업
   const listRef = useRef();
   const [popupPosY, setPopupPosY] = useState(0);
@@ -423,21 +429,43 @@ const PlanAreaContainer = () => {
     setSelectedAreaId("");
     // TODO: selectedAreaId의 장소 북마크를 param의 type으로 지정
   }
+  
+  // 장소 목록 API 호출
+  const loadAreaData = async() => {
+    // 선택한 지역에 따른 AREA 검색 API 호출
+    try {
+      const response = await getAreaApi(selectedSigu)
+      setAreas(response.data);
+    } catch(error) {
+      const status = error?.response?.status;
+      const body = error?.response?.data;
+      const msg = body?.message || body?.detail || null;
+      console.warn(`장소 데이터 호출 오류 >> status: ${status}, msg: ${msg}`);
+    }
+  }
+
+  // 선택 지역 데이터 변동 시
+  useEffect(() => {
+    loadAreaData();
+  }, [selectedSigu])
+
+  // 장소 데이터 변동 시
+  useEffect(() => {
+    // 유효 데이터 확인
+    if (areas === null || areas === undefined || areas.length <= 0) return;
+    // 각 배열에 담기
+    if (areas?.place.areaCount > 0) setArrPlace(areas?.place.areas);
+    if (areas?.spot.areaCount > 0) setArrSpot(areas?.spot.areas);
+    if (areas?.food.areaCount > 0) setArrFood(areas?.food.areas);
+    // 초기값 설정
+    setArrDisplay(areas.place.areas);
+  }, [areas])
 
   // 초기화
   useEffect(() => {
     if (listRef && listRef.current) {
       listRef.current.addEventListener("scroll", scrollEvent);
     }
-
-    // TODO: 장소 검색 API 호출
-    const data = DUMMY_DATAS;
-    // 각 배열에 담기
-    if (data.place.areaCount > 0) setArrPlace(data.place.areas);
-    if (data.spot.areaCount > 0) setArrSpot(data.spot.areas);
-    if (data.food.areaCount > 0) setArrFood(data.food.areas);
-    // 초기값 설정
-    setArrDisplay(data.place.areas);
   }, [])
 
   useEffect(() => {

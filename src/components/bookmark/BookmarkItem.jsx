@@ -60,10 +60,8 @@ const BookmarkItem = ({ bookmark, ...rest }) => {
     setIsMouseOver(false);
   };
 
-  console.log(bookmark?.areaInfo?.category);
-
-  const CategoryIcon = CATEGORY_ICON[bookmark?.areaInfo?.category || "AD5"];
-  const categoryName = CATEGORY_NAME[bookmark?.areaInfo?.category || "AD5"];
+  const CategoryIcon = CATEGORY_ICON[bookmark?.areaInfo?.category || "etc"];
+  const categoryName = CATEGORY_NAME[bookmark?.areaInfo?.category || "etc"];
 
   return (
     <FlexBox
