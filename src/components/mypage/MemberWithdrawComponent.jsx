@@ -113,7 +113,7 @@ const MemberWithdrawComponent = ({memberId, email, accessToken, logout, setSelec
                   optionActiveBg: '#fafafa',
                   optionSelectedColor: '#000'}}}}>
               <Select className="edit__input" style={{ flex: 1 }} placeholder="선택해주세요"
-                value={withdrawReason}
+                value={withdrawReason || undefined}
                 onChange={(value) => setWithdrawReason(value)} 
                 options={[
                   { value: '1', label: '서비스가 불편해요' },
