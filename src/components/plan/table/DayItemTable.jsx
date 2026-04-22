@@ -14,10 +14,10 @@ import {
   ExportOutlined,
   HolderOutlined,
 } from "@ant-design/icons";
-import { PlanTableContext } from "../../../hooks/plan/PlanTableContext";
 import { IconButton } from "../../common/PLA_Buttons";
 import { FlexBox } from "../../common/PLA_FlexBox";
 import { EditableCell } from "./EditableCell";
+import { useTripPlan } from "../../../hooks/plan/PlanTripContext";
 
 /**
  * DAY 리스트 내부에 존재하는 SCHEDULE 단위의 테이블 역할
@@ -25,7 +25,7 @@ import { EditableCell } from "./EditableCell";
  * @returns
  */
 const DayItemTable = ({ dayId, schedules, onSchedulesChange }) => {
-  const { isExpanded } = useContext(PlanTableContext);
+  const { isExpanded } = useTripPlan();
 
   const [form] = Form.useForm();
   const [editingKey, setEditingKey] = useState("");
