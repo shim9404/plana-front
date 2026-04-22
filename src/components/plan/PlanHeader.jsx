@@ -59,8 +59,8 @@ const PlanHeader = () => {
             여행 이름
           </TextBox>
           <FlexBox h="48px" style={{ position: "relative" }}>
-            <Input style={{ height: "48px", padding: "8px 18px"}}/>
-            <FlexBox w="52px" h="52px" settings={{ justify:"center" }} style={{ fontSize:"20px", right: "0%", position: "absolute" }}>
+            <Input showCount maxLength={30} style={{ height: "48px", fontSize:"16px", color:"#565656", padding: "8px 56px 8px 18px"}}/>
+            <FlexBox w="52px" h="52px" settings={{ justify:"center" }} style={{ fontSize:"20px", right: "0%", position: "absolute", zIndex: 10 }}>
               {
                 isSaving?
                 <SyncOutlined spin /> : <CheckCircleTwoTone twoToneColor="#52c41a" />

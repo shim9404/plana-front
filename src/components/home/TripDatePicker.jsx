@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { DatePicker } from 'antd';
 import styles from "../../styles/TripInfoSelector.module.css"
 import { TextButton } from '../common/PLA_Buttons';
@@ -8,7 +8,7 @@ const { RangePicker } = DatePicker;
 
 const TripDatePicker = ({ width="400px", height="52px", placement }) => {
   // 최종 확정 날짜 ["YYYY-MM-DD","YYYY-MM-DD"] (확인 버튼 클릭 시에만 업데이트)
-  const { setConfirmedDates } = useTripInfo();
+  const { confirmedDates, setConfirmedDates } = useTripInfo();
 
   // 임시 선택 날짜 ["YYYY-MM-DD","YYYY-MM-DD"] (달력에서 클릭할 때마다 변함)
   const [tempDates, setTempDates] = useState([]);
@@ -52,6 +52,10 @@ const TripDatePicker = ({ width="400px", height="52px", placement }) => {
     setDisabled(true);
     setOpen(false);
   }
+  
+  useEffect(() => {
+    setTempDates(confirmedDates);
+  }, [])
 
   return (
     <RangePicker
