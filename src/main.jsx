@@ -10,7 +10,8 @@ import { GLOBAL_TOKEN } from "./styles/antdDesignTokens.js";
 import { ModalProvider, useModal } from "./hooks/ModalProvider.jsx";
 import { AuthProvider } from "./hooks/AuthContext.jsx";
 import { useEffect } from "react";
-
+import { RegionProvider } from "./hooks/home/RegionContext.jsx";
+import { TripInfoProvider } from "./hooks/TripInfoContext.jsx";
 
 const GlobalEventHandler = () => {
   const { openLoginModal } = useModal();
@@ -40,19 +41,23 @@ createRoot(document.getElementById("root")).render(
         <AntdApp>
           <AuthProvider>
             <ModalProvider>
-              <GlobalEventHandler />
-              <HeaderMain />
-              <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route
-                  path="/*"
-                  element={
-                    <ProtectedRoute>
-                      <App />
-                    </ProtectedRoute>
-                  }
-                />
-              </Routes>
+              <RegionProvider>
+                <TripInfoProvider>
+                  <GlobalEventHandler />
+                  <HeaderMain />
+                  <Routes>
+                    <Route path="/" element={<HomePage />} />
+                    <Route
+                      path="/*"
+                      element={
+                        <ProtectedRoute>
+                          <App />
+                        </ProtectedRoute>
+                      }
+                    />
+                  </Routes>
+                </TripInfoProvider>
+              </RegionProvider>
             </ModalProvider>
           </AuthProvider>
         </AntdApp>
