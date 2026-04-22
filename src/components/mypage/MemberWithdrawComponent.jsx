@@ -1,12 +1,56 @@
 import React, { useState } from 'react'
-import { ConfigProvider, Input, Select, Typography } from 'antd';
+import { ConfigProvider, Input, message, Select, Typography } from 'antd';
 import { ProfileOutlined } from '@ant-design/icons';
 import '../../styles/mypage.css';
 import { TextButton } from '../common/PLA_Buttons';
+import axiosInstance from '../../services/axiosInstance';
+import { logoutApi } from '../../services/authApi';
+import { useNavigate } from 'react-router-dom';
 
-const MemberWithdrawComponent = ({setSelectedMenu}) => {
+const MemberWithdrawComponent = ({memberId, email, accessToken, logout, setSelectedMenu}) => {
+  const navigate = useNavigate();
+
   // 탈퇴 사유 초기 값
   const [withdrawReason, setWithdrawReason] = useState('');
+
+  // 탈퇴할 회원 정보 초기 값
+  const [objectWithdrawMember, setObjectWithdrawMember] = useState({
+    email: "",
+    name: "",
+    password: ""
+  })
+
+  // 회원 탈퇴 함수
+  const handleLogout = async () => { // 로그아웃
+    try {
+      await logoutApi({ email, accessToken });
+    } catch (error) {
+      console.error('로그아웃 API 실패:', error);
+    } finally {
+      logout();
+      message.success('로그아웃되었습니다.');
+      navigate('/');
+    }
+  }; 
+
+  const handleWithdrawMember = async() => { // 회원 탈퇴
+  try {
+      const uri = `/api/members/${memberId}/withdraw`;
+      const body = {
+        email: objectWithdrawMember.email,
+        name: objectWithdrawMember.name,
+        password: objectWithdrawMember.password
+      };
+      
+      console.log(body)
+      await axiosInstance.patch(uri, body);
+      message.success("정상적으로 탈퇴되었습니다.")
+      handleLogout();
+    } catch (error) {
+      console.log(error);
+      message.error("회원 정보가 일치하지 않습니다. 다시 입력해주세요.")
+    }
+  }
 
   return (
     <>
@@ -43,15 +87,18 @@ const MemberWithdrawComponent = ({setSelectedMenu}) => {
         </div>
         <div className="edit__row">
           <label>이메일</label>
-          <Input className="edit__input" placeholder="이메일 입력"/>
+          <Input className="edit__input" placeholder="이메일 입력" 
+            onChange={(e) => setObjectWithdrawMember({...objectWithdrawMember, email: e.target.value})}/>
         </div>
         <div className="edit__row">
           <label>이름</label>
-          <Input className="edit__input" placeholder="이름 입력"/>
+          <Input className="edit__input" placeholder="이름 입력"
+            onChange={(e) => setObjectWithdrawMember({...objectWithdrawMember, name: e.target.value})}/>
         </div>
         <div className="edit__row">
           <label>비밀번호</label>
-          <Input.Password className="edit__input" placeholder="비밀번호 입력"/>
+          <Input.Password className="edit__input" placeholder="비밀번호 입력"
+            onChange={(e) => setObjectWithdrawMember({...objectWithdrawMember, password: e.target.value})}/>
         </div>
         <div className="edit__row">
           <label>탈퇴사유</label>
@@ -84,7 +131,8 @@ const MemberWithdrawComponent = ({setSelectedMenu}) => {
           <TextButton type="primary" width="80px" height="45px" fontSize="17px" onClickEvent={() => setSelectedMenu('1')}> 
             취소 
           </TextButton>
-          <TextButton type="primary" width="180px" height="45px" fontSize="17px"> 
+          <TextButton type="primary" width="180px" height="45px" fontSize="17px"
+            onClickEvent={()=>handleWithdrawMember()}> 
             탈퇴 신청하기
           </TextButton>
         </div>
