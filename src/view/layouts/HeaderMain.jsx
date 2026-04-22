@@ -1,5 +1,5 @@
 import { Layout, message } from "antd";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { MenuButton } from "../../components/common/PLA_Buttons";
 import {
   CompassOutlined,
@@ -12,6 +12,8 @@ import {
 import { useAuth } from "../../hooks/AuthContext";
 import { useModal } from "../../hooks/ModalProvider";
 import { logoutApi } from "../../services/authApi";
+import { FlexBox } from "../../components/common/PLA_FlexBox";
+import { useEffect, useRef } from "react";
 const { Header } = Layout;
 
 const headerStyle = {
@@ -27,38 +29,15 @@ const headerStyle = {
   borderBottom: "solid 2px #A8A8A8",
 };
 
-const LogoContainer = {
-  // backgroundColor: "green",
-  display: "flex",
-  height: "auto",
-  justifyContent: "flex-end",
-  width: "14%",
-  minWidth: "140px",
-  padding: "",
-};
-
-const PlanContainer = {
-  // backgroundColor: "yellow",
-  display: "flex",
-  width: "80%",
-  height: "60%",
-};
-
-const ButtonContainer = {
-  // backgroundColor: "orange",
-  display: "flex",
-  justifyContent: "flex-start",
-  alignItems: "center",
-  width: "26%",
-  height: "100%",
-};
-
 const HeaderMain = () => {
   const navigate = useNavigate();
+  const loaction = useLocation();
   const { isLoggedIn, logout, email, accessToken, userRole, memberId } = useAuth();
   const { openLoginModal } = useModal();
 
   const isAdmin = isLoggedIn && userRole === 'ADMIN';
+  const isPlanning = location.pathname === "/plan";
+  const buttonsRef = useRef(null);
 
   const handleLogout = async () => {
     try {
@@ -80,38 +59,83 @@ const HeaderMain = () => {
     navigate(path);
   };
 
+  // 조건에 따라 표시할 메뉴 버튼 정의
+  const menuButtons = [
+    {
+      key: "ADMIN",
+      isVisiable: isLoggedIn && isAdmin && !isPlanning,
+      name: "관리자 페이지",
+      type: "primary", 
+      onClickEvent: () => handleProtectedNav('/admin'),
+      icon: <SlidersOutlined />
+    },
+    {
+      key: "MYTRIP",
+      isVisiable: true,
+      name: "내 여행",
+      type: "default", 
+      onClickEvent: () => { handleProtectedNav('/mytrip') },
+      icon: <CompassOutlined />
+    },
+    {
+      key: "MYPAGE",
+      isVisiable: !isPlanning,
+      name: "내 프로필",
+      type: "default", 
+      onClickEvent: () => { handleProtectedNav('/mypage') },
+      icon: <UserOutlined />
+    },
+    {
+      key: "LOGIN",
+      isVisiable: !isLoggedIn,
+      name: "로그인",
+      type: "default", 
+      onClickEvent: openLoginModal,
+      icon: <LoginOutlined />
+    },
+    {
+      key: "LOGOUT",
+      isVisiable: isLoggedIn,
+      name: "로그아웃",
+      type: "default", 
+      onClickEvent: handleLogout,
+      icon: <LogoutOutlined />
+    },
+  ]
+
+  useEffect(() => {
+
+  }, [loaction])
+
   return (
     <Header style={headerStyle}>
-      {/* 로고 */}
-      <div style={LogoContainer}>
-        <Link to="/" className="header-trip__brand">
-          <img src="../../../public/images/svg/logos/plana-logo.svg"
-            alt="logo" width="137px" height="52px" />
-        </Link>
-      </div>
-      {/* 메뉴 버튼 */}
-      <div style={ButtonContainer}>
-        {isAdmin && (
-          <MenuButton name="관리자 페이지" type="primary" onClickEvent={() => handleProtectedNav('/admin')} >
-            <SlidersOutlined />
-          </MenuButton>
-        )}
-        <MenuButton name="내 여행" onClickEvent={() => handleProtectedNav('/mytrip')}>
-          <CompassOutlined />
-        </MenuButton>
-        <MenuButton name="내 프로필" onClickEvent={() => handleProtectedNav('/mypage')}>
-          <UserOutlined />
-        </MenuButton>
-        {isLoggedIn ? (
-          <MenuButton name="로그아웃" onClickEvent={handleLogout}>
-            <LogoutOutlined />
-          </MenuButton>
-        ) : (
-          <MenuButton name="로그인" onClickEvent={openLoginModal}>
-            <LoginOutlined />
-          </MenuButton>
-        )}
-      </div>
+      <FlexBox settings={{justify: "center"}}>
+        <FlexBox w={isPlanning ? "100%" : "80%"} bg="none" style={{ margin: "48px" }}>
+          {/* 로고 */}
+          <FlexBox w="200px" bg="none">
+            <Link to="/" className="header-trip__brand">
+              <img src="../../../public/images/svg/logos/plana-logo.svg"
+                alt="logo" width="137px" height="52px" />
+            </Link>
+          </FlexBox>
+          {/* 계획 페이지 헤더 영역 */}
+          <FlexBox w={`calc(100vw - ${120 + 210 + 200}px)`} bg="none">
+            
+          </FlexBox>
+          {/* 메뉴 버튼 */}
+          <FlexBox w="auto" bg="none" settings={{justify: "flex-end"}} ref={buttonsRef}>
+            {
+              menuButtons.map((menu) => {
+                return (menu.isVisiable &&
+                  <MenuButton key={menu.key} name={menu.name} type={menu.type} onClickEvent={menu.onClickEvent}>
+                    {menu.icon}
+                  </MenuButton>
+                )
+              })
+            }
+          </FlexBox>
+        </FlexBox>
+      </FlexBox>
     </Header>
   );
 };

@@ -1,15 +1,14 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { DatePicker } from 'antd';
-import { labelStyle } from '../../styles/homeStyles';
 import styles from "../../styles/TripInfoSelector.module.css"
 import { TextButton } from '../common/PLA_Buttons';
 import { useTripInfo } from '../../hooks/TripInfoContext';
 
 const { RangePicker } = DatePicker;
 
-const TripDatePicker = ({ placement }) => {
+const TripDatePicker = ({ width="400px", height="52px", placement }) => {
   // 최종 확정 날짜 ["YYYY-MM-DD","YYYY-MM-DD"] (확인 버튼 클릭 시에만 업데이트)
-  const { setConfirmedDates } = useTripInfo();
+  const { confirmedDates, setConfirmedDates } = useTripInfo();
 
   // 임시 선택 날짜 ["YYYY-MM-DD","YYYY-MM-DD"] (달력에서 클릭할 때마다 변함)
   const [tempDates, setTempDates] = useState([]);
@@ -17,6 +16,14 @@ const TripDatePicker = ({ placement }) => {
   // 팝업 열림 제어
   const [open, setOpen] = useState(false);
   const [disabled, setDisabled] = useState(true);
+
+  const labelStyle = {
+    justifyContent: "flex-start",
+    color: "#565656",
+    width: width,
+    height: height,
+    fontSize: "16px"
+  }
 
   const handleConfirm = () => {
     if (tempDates?.[0] && tempDates?.[1]) {
@@ -45,6 +52,10 @@ const TripDatePicker = ({ placement }) => {
     setDisabled(true);
     setOpen(false);
   }
+  
+  useEffect(() => {
+    setTempDates(confirmedDates);
+  }, [])
 
   return (
     <RangePicker

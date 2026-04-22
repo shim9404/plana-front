@@ -1,21 +1,17 @@
 import { FloatingContainer } from '../common/PLA_Containers'
 import { FlexBox } from '../common/PLA_FlexBox'
-import { Button, Cascader } from 'antd'
 import { TextButton } from '../common/PLA_Buttons'
-import { flexStyle, labelStyle } from '../../styles/homeStyles'
-import { useRef, useState } from 'react'
-import { useRegion } from '../../hooks/home/RegionContext'
+import { flexStyle } from '../../styles/homeStyles'
+import { useRef } from 'react'
 import styles from "../../styles/TripInfoSelector.module.css"
 import TripDatePicker from './TripDatePicker'
 import { useTripInfo } from '../../hooks/TripInfoContext'
 import { useNavigate } from 'react-router-dom'
+import TripRegionPicker from './TripRegionPicker'
 
 const TripInfoSelector = ({ setHoveredId }) => {
   const navigate = useNavigate();
   const { selectedZdo, setSelectedZdo, selectedSigu, setSelectedSigu } = useTripInfo();
-
-  const { regionData } = useRegion();
-  const { cascaderOptions } = regionData;
 
   const hoverTimerRef = useRef(null); // 호버 유예 시간
 
@@ -65,36 +61,31 @@ const TripInfoSelector = ({ setHoveredId }) => {
               <FlexBox w="100%" h="50%" settings={{ align: "center", justify: "center" }} style={flexStyle}>
                 <FlexBox h="20%" style={{ fontSize: "20px" }}>어디로 가볼까요?</FlexBox>
                 <FlexBox h="50%">
-                  {cascaderOptions && cascaderOptions.length > 0 ?
-                    <Cascader
-                      value={cascaderValue}
-                      options={cascaderOptions}
-                      onChange={handleValuesChange}
-                      changeOnSelect={handleValuesChange}
-                      popupRender={(menus) => (
-                        <div
-                          onMouseLeave={() => {
-                            if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current);
-                            setHoveredId(null);
-                          }}
-                        >
-                          {menus}
-                        </div>
-                      )}
-                      // 드롭다운 아이템에 마우스를 올렸을 때 지도에 신호를 보냄
-                      optionRender={(option) => (
-                        <div
-                          onMouseEnter={() => handleMouseEnter(option.value)}
-                          onMouseLeave={() => handleMouseLeave}
-                          style={{ width: '100%' }}
-                        >
-                          {option.label}
-                        </div>
-                      )}
-                      rootClassName={styles.customPopup}
-                      style={labelStyle}
-                      placeholder="여행 지역을 선택해 주세요" />
-                    : <p>데이터 로딩중...</p>}
+                  <TripRegionPicker
+                    value={cascaderValue}
+                    onChange={handleValuesChange}
+                    changeOnSelect={handleValuesChange}
+                    popupRender={(menus) => (
+                      <div
+                        onMouseLeave={() => {
+                          if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current);
+                          setHoveredId(null);
+                        }}
+                      >
+                        {menus}
+                      </div>
+                    )}
+                    // 드롭다운 아이템에 마우스를 올렸을 때 지도에 신호를 보냄
+                    optionRender={(option) => (
+                      <div
+                        onMouseEnter={() => handleMouseEnter(option.value)}
+                        onMouseLeave={() => handleMouseLeave}
+                        style={{ width: '100%' }}
+                      >
+                        {option.label}
+                      </div>
+                    )}
+                    rootClassName={styles.customPopup}/>
                 </FlexBox>
               </FlexBox>
               {/* 언제 출발할까요? */}
