@@ -7,12 +7,14 @@ import Mypage from "../view/pages/Mypage";
 import MyTripPage from "../view/pages/MyTripPage";
 import AdminPage from "../view/pages/AdminPage";
 import ErrorPage from "../view/pages/ErrorPage";
+import HomePage from "../view/pages/HomePage";
 
 const AppRouter = () => {
 
   return (
     <Routes>
       {/* 공개 페이지: 누구나 접근 가능 */}
+      <Route path="/" element={<HomePage />} />
       <Route path="/error" element={<ErrorPage />}></Route>
 
       {/* 권한 필요: ADMIN 또는 MANAGER, MEMBER만 접근 가능 */}

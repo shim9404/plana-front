@@ -1,5 +1,3 @@
-import LoginModalComponent from '../components/auth/LoginModalComponent';
-import SignUpModalComponent from '../components/auth/SignUpModalComponent';
 import { ModalContext } from './ModalContext';
 import { useState, useCallback, useContext } from 'react';
 
@@ -19,15 +17,8 @@ export const ModalProvider = ({ children }) => {
     <ModalContext.Provider value={{
       isLoginOpen, openLoginModal, closeLoginModal,
       isSignupOpen, openSignupModal, closeSignupModal
-
     }}>
       {children}
-      <LoginModalComponent
-        open={isLoginOpen}
-        onClose={closeLoginModal} />
-      <SignUpModalComponent
-        open={isSignupOpen}
-        onClose={closeSignupModal} />
     </ModalContext.Provider>
   );
 };
