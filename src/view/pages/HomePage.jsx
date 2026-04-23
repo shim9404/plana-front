@@ -5,10 +5,15 @@ import TripInfoSelector from "../../components/home/TripInfoSelector";
 import { useCallback, useEffect, useRef } from "react";
 import { useRegion } from "../../hooks/home/RegionContext";
 import { getRegionDataForCascader } from "../../services/regionDataParser";
+import { getRegionApi } from "../../services/regionApi";
+import { fetchWithRetry } from "../../utils/apiUtil.js";
+import { oneBtnPreset } from "../../utils/alertModalPreset.js";
+import { useModal } from "../../hooks/ModalProvider.jsx";
 
 const MainContents = () => {
   const hoveredIdRef = useRef(null);
-  const { updateRegionData } = useRegion();
+  const { regionData, updateRegionData } = useRegion();
+  const { openOneBtnModal } = useModal();
   const layoutStyle = {
     position: "relative",
     backgroundColor: "#D0DBEB",
@@ -34,13 +39,22 @@ const MainContents = () => {
 
   // 컴포넌트 마운트 시 DB 데이터 불러오기
   useEffect(() => {
-    try {
-      // const response = await axios.get('/api/regions'); 
-      const regionData = getRegionDataForCascader(null);
-      if (regionData) updateRegionData(regionData);
-    } catch (error) {
-      console.error("데이터 로드 실패:", error);
+    // 데이터가 이미 있으면 요청 안함
+    if (regionData && regionData.lenght > 0) return;
+
+    async function fetchRegionData() {
+      console.log("지역(REGION) 데이터 요청");
+      try {
+        // 3번 요청
+        const response = await fetchWithRetry(() => getRegionApi());
+        const regionData = getRegionDataForCascader(response.data.regions);
+        if (regionData) updateRegionData(regionData);
+      } catch (error) {
+        openOneBtnModal(oneBtnPreset.retryOver);
+        console.error("데이터 로드 실패:", error);
+      }
     }
+    fetchRegionData();
   }, []);
 
   return (
