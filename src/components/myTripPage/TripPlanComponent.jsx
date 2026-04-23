@@ -6,7 +6,7 @@ import '../../styles/myTripPage.css';
 import { BOOKMARK_COLOR } from "../../Constants/bookmarkColor";
 
 {/* 여행 계획표 */}
-const TripPlanComponent = ({tripList, tripDate, bookmarkList, schedulelist, selectedMenu}) => {
+const TripPlanComponent = ({arrTripList, tripDate, arrBookmarkList, schedulelist, selectedMenu}) => {
 
     // ! 데이터 표현 함수 모음 !
   // 날짜 변환 함수(yyyy.mm.dd)
@@ -115,20 +115,20 @@ const TripPlanComponent = ({tripList, tripDate, bookmarkList, schedulelist, sele
                     </div>
                     <div className="schedule-table-body">
                       {day.schedules.map((item) => {
-                        const bookmark = bookmarkList.find((b) => b.bookmarkId === item.bookmarkId);
+                        const bookmark = arrBookmarkList.find((b) => b.bookmarkId === item.bookmarkId);
                         const colorKey = bookmark?.bookmarkType || "default";
                         const color = BOOKMARK_COLOR[colorKey];
-                        const url = bookmark?.link || item.link;
+                        const url = bookmark?.areaInfo?.link || item.link;
                         return (
                           <div key={item.tripScheduleId || item.indexSort} className="schedule-table-row">
                             <div>{item.indexSort}</div>
                             <div>{item.startTime || "-"}</div>
                             <div>{item.endTime || "-"}</div>
                             <div>
-                              {bookmark?.category || item.category || "-"}
+                              {bookmark?.areaInfo?.category || item.category || "-"}
                             </div>
                             <div style={{width: "100%", borderRadius: "20px", background: color.bg}}>
-                              {bookmark?.title || item.context || "-"}
+                              {bookmark?.areaInfo?.name || item.context || "-"}
                             </div>
                             <div>{item.memo || "-"}</div>
                             <div>{item.price ? item.price.toLocaleString() : "-"}</div>
@@ -162,7 +162,7 @@ const TripPlanComponent = ({tripList, tripDate, bookmarkList, schedulelist, sele
                   <div className="summary-item">
                     <span>참여 인원</span>
                     <span className="summary-value" style={{width: '50px'}}>
-                      {tripList.find((trip) => trip.tripId === selectedMenu)?.entryCount}
+                      {arrTripList.find((trip) => trip.tripId === selectedMenu)?.entryCount}
                     </span>
                   </div>
                   <div className="summary-item">
@@ -174,7 +174,7 @@ const TripPlanComponent = ({tripList, tripDate, bookmarkList, schedulelist, sele
                   <div className="summary-item">
                     <span>인당</span>
                     <span className="summary-value" style={{width: '100px'}}>
-                      {( totalPrice / (tripList.find((trip) => trip.tripId === selectedMenu)?.entryCount || 1)).toLocaleString()} 원
+                      {( totalPrice / (arrTripList.find((trip) => trip.tripId === selectedMenu)?.entryCount || 1)).toLocaleString()} 원
                     </span>
                   </div>
                 </div>

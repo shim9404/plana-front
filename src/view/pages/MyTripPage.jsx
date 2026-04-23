@@ -11,6 +11,8 @@ import '../../styles/myTripPage.css';
 import BookmarkComponent from "../../components/myTripPage/BookmarkComponent";
 import TripPlanComponent from "../../components/myTripPage/TripPlanComponent";
 import TripTrashComponent from "../../components/myTripPage/TripTrashComponent";
+import { useAuth } from "../../hooks/AuthContext";
+import axiosInstance from "../../services/axiosInstance";
 
 const { Sider, Content } = Layout;
 
@@ -34,49 +36,56 @@ const contentStyle = {
 const MyTripPage = () => {
   // 경로 설정
   const navigate = useNavigate();
+  // 회원 전역 변수
+  const { memberId } = useAuth();
 
   // 여행 목록(간단)초기값
-  const [tripItem, setTripItem] = useState([
-    { tripId: "T1", name: "여행을 떠나요", entryCount: 2, status: "ACTIVE" },
-    { tripId: "T2", name: "즐거운 마음으로", entryCount: 2, status: "ACTIVE" },
-    { tripId: "T3", name: "모두 함께 떠나요 ~ ! 예예예예예예예예예예예예", entryCount: 2, status: "ACTIVE" },
-    { tripId: "T4", name: "글자 수량 제한이 꼭 꼭 필요합니다. 20?30?글자 제한 필요합니다!!얍얍", entryCount: 1, status: "ACTIVE" },
-    { tripId: "T9", name: "집에 보내줘요", entryCount: 1, status: "INACTIVE" },
-    { tripId: "T11", name: "나 말리지마", entryCount: 1, status: "INACTIVE" },
-    { tripId: "T50", name: "노는게 제일 좋아~ 뽀로로 언제나! 노는게!!!!!", entryCount: 1, status: "INACTIVE" },
-    { tripId: "T51", name: "집에 보내줘", entryCount: 1, status: "INACTIVE" },
-    { tripId: "T52", name: "집에 보내줘요", entryCount: 1, status: "INACTIVE" },
-    { tripId: "T53", name: "집에 보내줘요", entryCount: 1, status: "INACTIVE" },
-    { tripId: "T54", name: "집에 보내줘요", entryCount: 1, status: "INACTIVE" }
-  ]);
+  const [arrTripItem, setArrTripItem] = useState([]);
+  useEffect(() => {
+    const getTrip = async () => {
+      try {
+        const uri = `/api/members/${memberId}/trips`;
+        const result = await axiosInstance.get(uri, null);
+        const trip = result.data.data.member.trips;
 
+        setArrTripItem(trip);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    getTrip();
+  }, [memberId])
   // 여행 목록(간단) - ACTIVE(활성) 초기값
-  const tripList = tripItem.filter((item) => item.status === "ACTIVE");
-
+  const arrTripList = arrTripItem.filter((item) => item.status === "ACTIVE");
   // 여행 목록(간단) - INACTIVE(비활성-휴지통) 초기값
-  const trashPlanList = tripItem.filter((item) => item.status === "INACTIVE");
+  const arrtrashPlanList = arrTripItem.filter((item) => item.status === "INACTIVE");
+
+  // 메뉴 - 여행 목록 선택
+  const [selectedMenu, setSelectedMenu] = useState("");
+  useEffect(() => { // 메뉴 선택의 초기 선택값 설정
+    if (arrTripList.length > 0 && !arrTripList.some(trip => trip.tripId === selectedMenu)) {
+      setSelectedMenu(arrTripList[0].tripId);}
+  }, [arrTripList, selectedMenu]);
 
   // 북마크 목록(전부) 초기값
-  const [bookmarkList, setBookmarkList] = useState([
-    {bookmarkId: "BM1", areaId: "A1", areaCategory: "FD6", // 음식점
-      title: "맛있는 초밥집", address: "대구 수성구 달구벌대로489안길 40-1", link: "http://naver.com", telephon: "0000-000-0000", bookmarkType: "YELLOW"},
-    {bookmarkId: "BM2", areaId: "A1", areaCategory: "CE7",  // 카페
-      title: "성심당 본점 랄랄랄랄랄랄랄랄랄랄", address: "대전광역시 중구 대종로480번길 15", link: "http://naver.com", telephon: "0000-000-0000", bookmarkType: "YELLOW"},
-    {bookmarkId: "BM3", areaId: "A32", areaCategory: "AT4", // 관광명소
-      title: "미륵원지", address: "대전광역시 동구 냉천로152번길 80 (마산동)", link: "http://naver.com", telephon: "0000-000-0000",bookmarkType: "GREEN"},
-    {bookmarkId: "BM4", areaId: "A33", areaCategory: "etc", // 기타
-      title: "커피사피엔스 가산어반워크점", address: "대전광역시 동구 냉천로152번길 80 (마산동)", bookmarkType: "ORANGE"},
-    {bookmarkId: "BM5", areaId: "A34", areaCategory: "PK6", // 주차장
-      title: "예시2-주차장", address: "대전광역시 동구 냉천로152번길 80 (마산동)", bookmarkType: "BLUE"},
-    {bookmarkId: "BM6", areaId: "A35", areaCategory: "PO3", // 공공기관
-      title: "예시3-공공기관", address: "대전광역시 동구 냉천로152번길 80 (마산동)", bookmarkType: "PURPLE"},
-    {bookmarkId: "BM7", areaId: "A36", areaCategory: "AT4", // 관광명소
-      title: "예시4-관광명소", address: "대전광역시 동구 냉천로152번길 80 (마산동)", bookmarkType: "PURPLE"},
-    {bookmarkId: "BM8", areaId: "A37", areaCategory: "SC4", // 학교
-      title: "예시5-학교", address: "대전광역시 동구 냉천로152번길 80 (마산동)", bookmarkType: "PURPLE"},
-    {bookmarkId: "BM9", areaId: "A38", areaCategory: "AD5", // 숙박
-      title: "예시6-숙박", address: "대전광역시 동구 냉천로152번길 80 (마산동)", bookmarkType: "PURPLE"}
-  ]);
+  const [arrBookmarkList, setArrBookmarkList] = useState([]);
+  useEffect(() => {
+    const getTripDetail = async () => {
+      try {
+        const uri = `/api/trips/${selectedMenu}`;
+        const result = await axiosInstance.get(uri, null);
+        const bookmark = result.data.data.bookmarks;
+        console.log(bookmark)
+
+        setArrBookmarkList(bookmark);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    getTripDetail();
+  }, [selectedMenu])
   
   // 여행 일자 초기값
   const [tripDate, setTripDate] = useState({
@@ -91,15 +100,15 @@ const MyTripPage = () => {
       indexSort: 1,
       schedules: [
         {tripScheduleId: "TS123", indexSort: 1, context: "부산으로 ㄱㄱ", startTime: "10:00", endTime: "13:00", category: "이동", price: 10000, memo: "택시 타기"},
-        {tripScheduleId: "TS365", indexSort: 2, bookmarkId: "BM1", startTime: "14:00", endTime: "15:00", category: "식사", price: 50000, memo: "방문 전 예약 필수! 예약 실패 시, 1시간 대기",}
+        {tripScheduleId: "TS365", indexSort: 2, bookmarkId: "BM43", startTime: "14:00", endTime: "15:00", category: "식사", price: 50000, memo: "방문 전 예약 필수! 예약 실패 시, 1시간 대기",}
       ]
     },
     {
       tripDayId: "TD27",
       indexSort: 2,
       schedules: [
-        {tripScheduleId: "TS257", indexSort: 1, bookmarkId: "BM2", startTime: "10:00", endTime: "11:00", category: "이동", memo: ""},
-        {tripScheduleId: "TS258", indexSort: 2, bookmarkId: "BM3", startTime: "13:00", endTime: "14:00", category: "카페", price: 30000, memo: "딸기라떼 + 티라미수 필수"},
+        {tripScheduleId: "TS257", indexSort: 1, bookmarkId: "BM11", startTime: "10:00", endTime: "11:00", category: "이동", memo: ""},
+        {tripScheduleId: "TS258", indexSort: 2, bookmarkId: "BM12", startTime: "13:00", endTime: "14:00", category: "카페", price: 30000, memo: "딸기라떼 + 티라미수 필수"},
         {tripScheduleId: "TS260", indexSort: 3, bookmarkId: "BM4", startTime: "14:00", endTime: "15:00", category: "관광명소", memo: "사진 찍기"},
         {tripScheduleId: "TS261", indexSort: 4, context: "", startTime: "15:00", endTime: "16:00", category: "기타", memo: "소화 시킬겸 주변 공원 산책"},
         {tripScheduleId: "TS262", indexSort: 5, bookmarkId: "BM5", startTime: "16:00", endTime: "17:00", category: "주차장", price: 3000, memo: ""},
@@ -136,14 +145,7 @@ const MyTripPage = () => {
   const trashList = trashPlanItem.filter((item) => item.status === "INACTIVE");
 
   // ==========
-  // 메뉴 - 여행 목록 선택
-  const [selectedMenu, setSelectedMenu] = useState("");
 
-  // 메뉴 선택의 초기 선택값 설정
-  useEffect(() => {
-    if (tripList.length > 0 && !tripList.some(trip => trip.tripId === selectedMenu)) {
-      setSelectedMenu(tripList[0].tripId);}
-  }, [tripList, selectedMenu]);
 
   // 메뉴 하단 - 휴지통 버튼 선택
   const [selectedTrash, setSelectedTrash] = useState(false);
@@ -152,7 +154,7 @@ const MyTripPage = () => {
   const [isTrashModalOpen, setIsTrashModalOpen] = useState(false); // 경고창 모달
   const [selectedTrashTripId, setSelectedTrashTripId] = useState(""); // 휴지통에 보낼 여행 목록 id
   const trashshowModal = (tripId) => { // 모달 open
-    if (trashPlanList.length >= 10) {
+    if (arrtrashPlanList.length >= 10) {
       message.warning("휴지통이 가득 찼습니다. (10 / 10)")
       return;
     }
@@ -160,7 +162,7 @@ const MyTripPage = () => {
     setIsTrashModalOpen(true);
   }; 
   const trashhandleOk = () => { // 확인
-    setTripItem(prev =>
+    setArrTripItem(prev =>
       prev.map(item =>
         item.tripId === selectedTrashTripId? { ...item, status: "INACTIVE" }: item));
     setIsTrashModalOpen(false);
@@ -212,7 +214,7 @@ const MyTripPage = () => {
               </div>
             {/* 메뉴 */}
             <div className="trip-list">
-              {tripList.map((trip) => (
+              {arrTripList.map((trip) => (
                 <div
                   key={trip.tripId}
                   className={`trip-item ${selectedMenu === trip.tripId && !selectedTrash ? "active" : ""}`}
@@ -227,19 +229,19 @@ const MyTripPage = () => {
           {/* 하단 영역 - 추가 박스(저장량 표시 및 휴지통) */}
           <div className="menu-extra">
             <div className="menu-extra-text">
-              저장 여행 {tripList.length} / 5개
+              저장 여행 {arrTripList.length} / 5개
             </div>
             <TextButton type="default" width="270px" height="35px" fontSize="15px" 
               onClickEvent={() => setSelectedTrash(false)}
             >
               <div
                 className="menu-extra-button-fill"
-                style={{ width: `${(tripList.length / 5) * 100}%` }}
+                style={{ width: `${(arrTripList.length / 5) * 100}%` }}
               />
               <div className="menu-extra-button-position">
                 <CompassOutlined style={{ zIndex: 1, fontSize: "18px" }} />
                 <span style={{ zIndex: 1 }}>
-                  {tripList.length}개 사용 중
+                  {arrTripList.length}개 사용 중
                 </span>
               </div>
             </TextButton>
@@ -249,12 +251,12 @@ const MyTripPage = () => {
             >
               <div
                 className="menu-extra-button-fill-trash"
-                style={{ width: `${(trashPlanList.length / 10) * 100}%` }}
+                style={{ width: `${(arrtrashPlanList.length / 10) * 100}%` }}
               />
               <div className="menu-extra-button-position">
                 <Trash2 size={18} style={{ zIndex: 1 }} />
                 <span style={{ zIndex: 1 }}>
-                  휴지통 ({trashPlanList.length} / 10)
+                  휴지통 ({arrtrashPlanList.length} / 10)
                 </span>
               </div>
             </TextButton>
@@ -263,7 +265,7 @@ const MyTripPage = () => {
         {/* == 콘텐츠 영역 == */}
         {selectedTrash === false ? ( // 휴지통 버튼 클릭 여부
           <Content style={contentStyle}>
-            {tripList.length === 0 ? ( // 여행 목록 없는 경우
+            {arrTripList.length === 0 ? ( // 여행 목록 없는 경우
               <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: 'calc(100vh - 300px)'}}>
                 <Empty description={"여행 계획이 없습니다."}/>
               </div>
@@ -274,7 +276,7 @@ const MyTripPage = () => {
                 <div className="trip-content-header">
                   <CompassOutlined style={{fontSize: '35px'}} />
                   <span className="trip-content-header__title">
-                    {tripList.find((trip) => trip.tripId === selectedMenu)?.name}
+                    {arrTripList.find((trip) => trip.tripId === selectedMenu)?.name}
                   </span>
                 </div>
                 <div className="trip-content-header_button">
@@ -291,13 +293,13 @@ const MyTripPage = () => {
                 </div>
               </div>
               {/* 북마크 카드 */}
-              <BookmarkComponent bookmarkList = {bookmarkList}/>
+              <BookmarkComponent arrBookmarkList = {arrBookmarkList}/>
               <div id="pdf-area">
                 {/* 여행 계획표 카드 */}
                 <TripPlanComponent
-                  tripList={tripList}
+                  arrTripList={arrTripList}
                   tripDate={tripDate}
-                  bookmarkList={bookmarkList}
+                  arrBookmarkList={arrBookmarkList}
                   schedulelist={schedulelist}
                   selectedMenu={selectedMenu}
                 />
@@ -321,8 +323,8 @@ const MyTripPage = () => {
               </div>
               {/* 휴지통 리스트 */}
               <TripTrashComponent 
-                setTripItem = {setTripItem}
-                tripList = {tripList}
+                setArrTripItem = {setArrTripItem}
+                arrTripList = {arrTripList}
                 setTrashPlanItem = {setTrashPlanItem}
                 trashList = {trashList} 
               />

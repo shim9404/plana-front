@@ -2,19 +2,19 @@ import React, { useState } from 'react'
 import { Button, Card, Empty } from 'antd';
 import { StarOutlined } from '@ant-design/icons';
 import '../../styles/myTripPage.css';
-import { CATEGORY_ICON } from "../../Constants/categoryIcon";
 import { BOOKMARK_COLOR } from "../../Constants/bookmarkColor";
+import BookmarkItem from '../bookmark/BookmarkItem';
 
 
 {/* 북마크 카드*/}
-const BookmarkComponent = ({bookmarkList}) => {
+const BookmarkComponent = ({arrBookmarkList}) => {
   // 색상 (색 버튼 클릭) 
   const [selectedColor, setSelectedColor] = useState("");
 
   // 색상 별 리스트
   const filteredList = selectedColor? 
-    bookmarkList.filter(item => item.bookmarkType === selectedColor)
-    : bookmarkList; // 전체
+    arrBookmarkList.filter(item => item.bookmarkType === selectedColor)
+    : arrBookmarkList; // 전체
 
   return (
     <>
@@ -44,6 +44,7 @@ const BookmarkComponent = ({bookmarkList}) => {
                 onClick={()=>setSelectedColor("PURPLE")}/>
             </div>
           </div>} >
+
         {/* 내용 */}
         {filteredList.length === 0 ? ( // 북마크 리스트 여부
           <div className="bookmark-list" style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
@@ -51,30 +52,12 @@ const BookmarkComponent = ({bookmarkList}) => {
           </div>
           ) : (
             <div className="bookmark-list">
-              {filteredList.map((item) => {
-                const Icon = CATEGORY_ICON[item.areaCategory] || CATEGORY_ICON.default;
-                const colorData = BOOKMARK_COLOR[item.bookmarkType] || BOOKMARK_COLOR.default;
+              {filteredList?.map((item) => {
                 return (
-                  <div key={item.bookmarkId} className="bookmark-card" style={{ background: colorData.bg }}>
-                    <div className="bookmark-card_title">
-                      {item.title}
-                    </div>
-                    <div className="bookmark-card_title_full" style={{ background: colorData.bg }}>
-                      {item.title}
-                    </div>
-                    <div className="bookmark-card_icon-box">
-                      <div className="bookmark-card_icon">
-                        <Icon size={50} />
-                      </div>
-                    </div>
-                    <div className="bookmark-card_address" style={{ background: colorData.bg2 }}>
-                      {item.address}
-                    </div>
-                    <div className="bookmark-card_address_full" style={{ background: colorData.bg2 }}>
-                      <div>{item.address}</div>
-                      <div>T. {item.telephon}</div>
-                    </div>
-                  </div>
+                <BookmarkItem
+                  bookmark={item}
+                  id={item.bookmarkId}
+                />
                 );
               })}
             </div>
