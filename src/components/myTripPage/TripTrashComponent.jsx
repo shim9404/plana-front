@@ -4,13 +4,13 @@ import '../../styles/myTripPage.css';
 import { IconButton } from '../common/PLA_Buttons';
 import { message, Modal } from 'antd';
 
-const TripTrashComponent = ({setTripItem, tripList, setTrashPlanItem, trashList}) => {
+const TripTrashComponent = ({setArrTripItem, arrTripList, setTrashPlanItem, trashList}) => {
 
   // 복구 버튼 선택
   const [isRestoreModalOpen, setIsRestoreModalOpen] = useState(false); // 경고창 모달
   const [selectedRestoreTripId, setSelectedRestoreTripId] = useState(""); // 복구할 여행 목록 id
   const restoreshowModal = (tripId) => { // 모달 open
-    if (tripList.length >= 5) {
+    if (arrTripList.length >= 5) {
       message.warning("여행 목록이 가득 찼습니다. (5 / 5)")
       return;
     }
@@ -18,7 +18,7 @@ const TripTrashComponent = ({setTripItem, tripList, setTrashPlanItem, trashList}
     setIsRestoreModalOpen(true);
   }; 
   const restorehandleOk = () => { // 확인
-    setTripItem(prev =>
+    setArrTripItem(prev =>
       prev.map(item =>
         item.tripId === selectedRestoreTripId? { ...item, status: "ACTIVE" }: item));
     setTrashPlanItem(prev =>
@@ -37,7 +37,7 @@ const TripTrashComponent = ({setTripItem, tripList, setTrashPlanItem, trashList}
     setIsDeleteModalOpen(true);
   }; 
   const deletehandleOk = () => { // 확인
-  setTripItem(prev =>
+  setArrTripItem(prev =>
     prev.map(item =>
       item.tripId === selectedDeleteTripId? { ...item, status: "DELECTED" }: item)
   );

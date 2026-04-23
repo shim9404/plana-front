@@ -202,101 +202,14 @@
 /* 북마크 내용 */
 .bookmark-list {
   display: flex;
-  gap: 20px;
-  overflow-x: auto;
+  gap: 8px;
   overflow-y: hidden;
-  white-space: nowrap;
   align-items: flex-start;
   padding-bottom: 10px;
   padding: 10px 10px 10px 10px;
   height: 190px;
 }
 
-.bookmark-card {
-  width: 150px;
-  border-radius: 10px;
-  box-shadow: 0 1px 6px rgba(0,0,0,0.5);
-  overflow: hidden;
-  cursor: pointer;
-  transition: 0.2s;
-  flex-shrink: 0;
-  position: relative;
-}
-
-.bookmark-card_title {
-  display: block;
-  padding: 5px 15px;
-  font-weight: 600;
-  border-bottom: 1px solid #c4c4c4;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;;
-}
-
-.bookmark-card_title_full {
-  position: absolute;
-  top: 2px;
-  left: 0;
-  padding: 5px 15px;
-  width: 100%;
-  padding: 3px 15px;
-  border-radius: 10px 10px 0 0;
-  font-weight: 600;
-  white-space: normal;
-  word-break: break-word;
-  display: none;
-  z-index: 10;
-}
-
-.bookmark-card:hover .bookmark-card_title_full {
-  display: block;
-}
-
-.bookmark-card_icon-box {
-  height: 90px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #c4c4c4;
-}
-
-.bookmark-card_icon {
-  width: 60px;
-  height: 60px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #fafafa;
-  border-radius: 5px;
-}
-
-.bookmark-card_address {
-  padding: 5px;
-  font-size: 11px;
-  color: #555555;
-  white-space: nowrap;    
-  overflow: hidden;    
-  text-overflow: ellipsis;
-}
-
-.bookmark-card_address_full {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  padding: 11px;
-  font-size: 11px;
-  border-radius: 0 0 10px 10px;
-  white-space: normal;
-  word-break: break-word;
-  display: none;
-  z-index: 10;
-}
-
-.bookmark-card:hover .bookmark-card_title_full,
-.bookmark-card:hover .bookmark-card_address_full {
-  display: block;
-}
 
 /* == 여행 계획표 == */
 /* 여행 계획표 상단 표시 */
@@ -541,14 +454,4 @@
 /* ============== PDF  ================ */
 .pdf-mode * {
   box-shadow: none !important;
-}
-
-/* ============== message  ================ */
-.ant-message-notice-content {
-  padding: 16px 24px !important;
-  font-size: 16px !important;
-}
-
-.ant-message-custom-content {
-  font-size: 16px !important;
 }
