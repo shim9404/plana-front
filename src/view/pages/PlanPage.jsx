@@ -1,4 +1,4 @@
-import { Layout, Splitter } from "antd";
+import { Layout } from "antd";
 import { useEffect } from "react";
 import { FlexBox } from "../../components/common/PLA_FlexBox";
 import { getRegionDataForCascader } from "../../services/regionDataParser";
@@ -32,6 +32,7 @@ const contentStyle = {
   backgroundColor: "rgba(128, 128, 128, 0)", // 레이아웃 확인용 색상 (개발 완료 후 색상 제거)
   display: "flex",
   margin: "8px 0px",
+  pointerEvents: "none",
   zIndex: 1
 };
 
@@ -40,6 +41,7 @@ const areaListStyle = {
   width: "388px",
   // height: "720px",
   lineHeight: "120px",
+  pointerEvents: "auto",
 };
 
 const mapStyle = {
@@ -48,15 +50,9 @@ const mapStyle = {
 }
 
 const PlanPage = () => {
-  const { isExpanded, setIsExpanded } = useTripPlan();
+  const { isExpanded } = useTripPlan();
   const { regionData, updateRegionData } = useRegion();
   const { cascaderOptions } = regionData;
-
-  const handleCollapse = (collapsed, size) => {
-    // console.log(collapsed, size);
-    setIsExpanded(size[0] === 0);
-    // 왼쪽 패널이 collapse되면 오른쪽이 전체를 차지
-  };
 
   // 컴포넌트 마운트 시 Region 데이터 검증
   useEffect(() => {
@@ -89,22 +85,12 @@ const PlanPage = () => {
           <Sider width="388px" style={areaListStyle}>
             <PlanAreaContainer />
           </Sider>
-          {/* 지도 표시용 여백 영역 (공백) */}
+          {/* 계획표(확장 영역 포함) */}
           <Content>
-            <FlexBox bg="none">
-              <Splitter onCollapse={handleCollapse}>
-                <Splitter.Panel
-                  // flex={1}
-                  collapsible
-                  resizable={false}
-                  size={isExpanded ? 0 : undefined}
-                />
-                <Splitter.Panel size={isExpanded ? "100%" : 752}>
-                  <FlexBox style={{ overflowX: "hidden" }}>
-                      <PlanTableContainer />
-                  </FlexBox>
-                </Splitter.Panel>
-              </Splitter>
+            <FlexBox bg="none" settings={{justify: "flex-end"}}>
+              <FlexBox w={isExpanded ? "100%" : 752} style={{ overflowX: "hidden", pointerEvents: "auto" }}>
+                <PlanTableContainer />
+              </FlexBox>
             </FlexBox>
           </Content>
         </Layout>
