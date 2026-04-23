@@ -5,6 +5,7 @@ import { useState, useCallback, useContext } from 'react';
 export const ModalProvider = ({ children }) => {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isSignupOpen, setIsSignupOpen] = useState(false);
+  const [oneBtnModal, setOneBtnModal] = useState(false);
 
   const openLoginModal = useCallback(() => setIsLoginOpen(true), []);
   const closeLoginModal = useCallback(() => setIsLoginOpen(false), []);
@@ -13,10 +14,19 @@ export const ModalProvider = ({ children }) => {
   const closeSignupModal = useCallback(() => setIsSignupOpen(false), []);
 
 
+  const openOneBtnModal = useCallback((props = {}) => {
+    setOneBtnModal({ isOpen: true, props });
+  }, []);
+  const closeOneBtnModal = useCallback((props = {}) => {
+    setOneBtnModal({ isOpen: false, props });
+  }, []);
+
+
   return (
     <ModalContext.Provider value={{
       isLoginOpen, openLoginModal, closeLoginModal,
-      isSignupOpen, openSignupModal, closeSignupModal
+      isSignupOpen, openSignupModal, closeSignupModal,
+      oneBtnModal, openOneBtnModal, closeOneBtnModal
     }}>
       {children}
     </ModalContext.Provider>

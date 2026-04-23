@@ -10,6 +10,8 @@ import PlanAreaContainer from "../../components/plan/PlanAreaContainer";
 import PlanBookmarkContainer from "../../components/plan/PlanBookmarkContainer";
 import PlanHeader from "../../components/plan/PlanHeader";
 import PlanMap from "../../components/plan/map/PlanMap";
+import { useModal } from "../../hooks/ModalProvider";
+import { oneBtnPreset } from "../../utils/alertModalPreset";
 const { Header, Sider, Content } = Layout;
 
 const layoutStyle = {
@@ -53,19 +55,25 @@ const PlanPage = () => {
   const { isExpanded } = useTripPlan();
   const { regionData, updateRegionData } = useRegion();
   const { cascaderOptions } = regionData;
+  const { openOneBtnModal } = useModal();
 
   // 컴포넌트 마운트 시 Region 데이터 검증
   useEffect(() => {
     // Region 데이터가 유효하지 않은 경우 재요청 (홈을 통해 접근하지 않았을 경우 등)
     if (regionData && cascaderOptions.length > 0) return;
-    console.log("지역(REGION) 데이터 재요청");
-    try {
-      // const response = await axios.get('/api/regions');
-      const regionData = getRegionDataForCascader(null);
-      if (regionData) updateRegionData(regionData);
-    } catch (error) {
-      console.error("데이터 로드 실패:", error);
+
+    async function fetchRegionData() {
+      console.log("지역(REGION) 데이터 재요청");
+      try {
+        const response = await getRegionApi();
+        const regionData = getRegionDataForCascader(response.data.regions);
+        if (regionData) updateRegionData(regionData);
+      } catch (error) {
+        openOneBtnModal(oneBtnPreset.retryOver);
+        console.error("데이터 로드 실패:", error);
+      }
     }
+    fetchRegionData();
   }, []);
 
   return (
@@ -87,7 +95,7 @@ const PlanPage = () => {
           </Sider>
           {/* 계획표(확장 영역 포함) */}
           <Content>
-            <FlexBox bg="none" settings={{justify: "flex-end"}}>
+            <FlexBox bg="none" settings={{ justify: "flex-end" }}>
               <FlexBox w={isExpanded ? "100%" : 752} style={{ overflowX: "hidden", pointerEvents: "auto" }}>
                 <PlanTableContainer />
               </FlexBox>
@@ -97,7 +105,7 @@ const PlanPage = () => {
       </Layout>
       {/* 지도 영역 : absolut */}
       <FlexBox style={mapStyle} bg="#E4EAD7">
-        <PlanMap/>
+        <PlanMap />
       </FlexBox>
     </PageLayout>
   );

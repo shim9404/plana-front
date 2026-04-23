@@ -7,6 +7,7 @@ import { RegionProvider } from "./hooks/home/RegionContext.jsx";
 import { TripInfoProvider } from "./hooks/TripInfoContext.jsx";
 import { useModal } from "./hooks/ModalProvider.jsx";
 import { TripPlanProvider } from "./hooks/plan/PlanTripContext.jsx";
+import { OneBtnModal } from "../src/view/modals/OneBtnModal.jsx";
 
 
 function App() {
@@ -14,7 +15,8 @@ function App() {
   const {
     isLoginOpen, closeLoginModal,
     isSignupOpen, closeSignupModal,
-    openLoginModal
+    openLoginModal,
+    oneBtnModal, closeOneBtnModal
   } = useModal();
 
   useEffect(() => {
@@ -38,6 +40,12 @@ function App() {
             open={isSignupOpen}
             onClose={closeSignupModal}
           />
+          {oneBtnModal.isOpen && (
+            <OneBtnModal
+              {...oneBtnModal.props}
+              onClose={closeOneBtnModal}
+            />
+          )}
           <HeaderMain />
           <AppRouter />
         </TripPlanProvider>
