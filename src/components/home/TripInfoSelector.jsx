@@ -6,12 +6,13 @@ import { useRef } from 'react'
 import styles from "../../styles/TripInfoSelector.module.css"
 import TripDatePicker from './TripDatePicker'
 import { useTripInfo } from '../../hooks/TripInfoContext'
-import { useNavigate } from 'react-router-dom'
 import TripRegionPicker from './TripRegionPicker'
+import { NAV_PRESET } from '../../utils/protectedNavPreset'
+import useProtectedNavigate from '../../hooks/useProtectedNavigate'
 
 const TripInfoSelector = ({ setHoveredId }) => {
-  const navigate = useNavigate();
   const { selectedZdo, setSelectedZdo, selectedSigu, setSelectedSigu } = useTripInfo();
+  const protectedNavigate = useProtectedNavigate();
 
   const hoverTimerRef = useRef(null); // 호버 유예 시간
 
@@ -23,7 +24,7 @@ const TripInfoSelector = ({ setHoveredId }) => {
 
   // plan page로 이동
   const handleStart = () => {
-    navigate("/plan");
+    protectedNavigate(NAV_PRESET.PLAN);
   }
 
   const handleValuesChange = (value) => {
@@ -85,7 +86,7 @@ const TripInfoSelector = ({ setHoveredId }) => {
                         {option.label}
                       </div>
                     )}
-                    rootClassName={styles.customPopup}/>
+                    rootClassName={styles.customPopup} />
                 </FlexBox>
               </FlexBox>
               {/* 언제 출발할까요? */}

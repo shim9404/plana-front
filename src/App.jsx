@@ -8,25 +8,31 @@ import { TripInfoProvider } from "./hooks/TripInfoContext.jsx";
 import { useModal } from "./hooks/ModalProvider.jsx";
 import { TripPlanProvider } from "./hooks/plan/PlanTripContext.jsx";
 import { OneBtnModal } from "../src/view/modals/OneBtnModal.jsx";
+import { oneBtnPreset } from "./utils/alertModalPreset.js";
+import { SESSION_EXPIRED_NOTICE_KEY } from "./services/axiosInstance.js";
 
 
 function App() {
 
   const {
-    isLoginOpen, closeLoginModal,
+    isLoginOpen, openLoginModal, closeLoginModal,
     isSignupOpen, closeSignupModal,
-    openLoginModal,
-    oneBtnModal, closeOneBtnModal
+    oneBtnModal, openOneBtnModal, closeOneBtnModal
   } = useModal();
 
-  useEffect(() => {
-    const handleExpired = () => {
-      message.warning('세션이 만료되었습니다. 다시 로그인해 주세요.');
+useEffect(() => {
+  const checkExpired = () => {
+    if (sessionStorage.getItem(SESSION_EXPIRED_NOTICE_KEY)) {
+      sessionStorage.removeItem(SESSION_EXPIRED_NOTICE_KEY);
+      openOneBtnModal(oneBtnPreset.expiredToken);
       openLoginModal();
-    };
-    window.addEventListener('trip-session-expired', handleExpired);
-    return () => window.removeEventListener('trip-session-expired', handleExpired);
-  }, []);
+    }
+  };
+
+  checkExpired(); // 마운트 시 즉시 체크 (직접 접근 케이스)
+  window.addEventListener("trip-session-expired", checkExpired); // 인터셉터 refresh 실패 케이스
+  return () => window.removeEventListener("trip-session-expired", checkExpired);
+}, []);
 
   return (
     <RegionProvider>

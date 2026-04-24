@@ -14,6 +14,8 @@ import { useModal } from "../../hooks/ModalProvider";
 import { logoutApi } from "../../services/authApi";
 import { FlexBox } from "../../components/common/PLA_FlexBox";
 import { useEffect, useRef } from "react";
+import useProtectedNavigate from "../../hooks/useProtectedNavigate";
+import { NAV_PRESET } from "../../utils/protectedNavPreset";
 const { Header } = Layout;
 
 const headerStyle = {
@@ -30,13 +32,13 @@ const headerStyle = {
 };
 
 const HeaderMain = () => {
-  const navigate = useNavigate();
   const loaction = useLocation();
-  const { isLoggedIn, logout, email, accessToken, userRole, memberId } = useAuth();
+  const { isLoggedIn, logout, email, accessToken, userRole } = useAuth();
   const { openLoginModal } = useModal();
+  const protectedNavigate = useProtectedNavigate();
 
   const isAdmin = isLoggedIn && userRole === 'ADMIN';
-  const isPlanning = location.pathname === "/plan";
+  const isPlanning = location.pathname === NAV_PRESET.PLAN.path;
   const buttonsRef = useRef(null);
 
   const handleLogout = async () => {
@@ -45,18 +47,12 @@ const HeaderMain = () => {
     } catch (error) {
       console.error('로그아웃 API 실패:', error);
     } finally {
+      console.log("추가!")
+      sessionStorage.setItem("isLogout", "true"); // 추가  
       logout();
+      protectedNavigate(NAV_PRESET.HOME);
       message.success('로그아웃되었습니다.');
-      navigate('/');
     }
-  };
-
-  const handleProtectedNav = (path) => {
-    if (!isLoggedIn) {
-      openLoginModal();
-      return;
-    }
-    navigate(path);
   };
 
   // 조건에 따라 표시할 메뉴 버튼 정의
@@ -65,31 +61,31 @@ const HeaderMain = () => {
       key: "ADMIN",
       isVisiable: isLoggedIn && isAdmin && !isPlanning,
       name: "관리자 페이지",
-      type: "primary", 
-      onClickEvent: () => handleProtectedNav('/admin'),
+      type: "primary",
+      onClickEvent: () => protectedNavigate(NAV_PRESET.ADMIN),
       icon: <SlidersOutlined />
     },
     {
       key: "MYTRIP",
       isVisiable: true,
       name: "내 여행",
-      type: "default", 
-      onClickEvent: () => { handleProtectedNav('/mytrip') },
+      type: "default",
+      onClickEvent: () => { protectedNavigate(NAV_PRESET.MYTRIP) },
       icon: <CompassOutlined />
     },
     {
       key: "MYPAGE",
       isVisiable: !isPlanning,
       name: "내 프로필",
-      type: "default", 
-      onClickEvent: () => { handleProtectedNav('/mypage') },
+      type: "default",
+      onClickEvent: () => { protectedNavigate(NAV_PRESET.MYPAGE) },
       icon: <UserOutlined />
     },
     {
       key: "LOGIN",
       isVisiable: !isLoggedIn,
       name: "로그인",
-      type: "default", 
+      type: "default",
       onClickEvent: openLoginModal,
       icon: <LoginOutlined />
     },
@@ -97,7 +93,7 @@ const HeaderMain = () => {
       key: "LOGOUT",
       isVisiable: isLoggedIn,
       name: "로그아웃",
-      type: "default", 
+      type: "default",
       onClickEvent: handleLogout,
       icon: <LogoutOutlined />
     },
@@ -109,7 +105,7 @@ const HeaderMain = () => {
 
   return (
     <Header style={headerStyle}>
-      <FlexBox settings={{justify: "center"}}>
+      <FlexBox settings={{ justify: "center" }}>
         <FlexBox w={isPlanning ? "100%" : "80%"} bg="none" style={{ margin: "48px" }}>
           {/* 로고 */}
           <FlexBox w="200px" bg="none">
@@ -120,10 +116,10 @@ const HeaderMain = () => {
           </FlexBox>
           {/* 계획 페이지 헤더 영역 */}
           <FlexBox w={`calc(100vw - ${120 + 210 + 200}px)`} bg="none">
-            
+
           </FlexBox>
           {/* 메뉴 버튼 */}
-          <FlexBox w="auto" bg="none" settings={{justify: "flex-end"}} ref={buttonsRef}>
+          <FlexBox w="auto" bg="none" settings={{ justify: "flex-end" }} ref={buttonsRef}>
             {
               menuButtons.map((menu) => {
                 return (menu.isVisiable &&
