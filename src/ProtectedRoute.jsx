@@ -2,7 +2,8 @@ import PropTypes from "prop-types";
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "./hooks/AuthContext";
 import { useModal } from "./hooks/ModalProvider";
-import { useEffect } from "react";
+import { oneBtnPreset } from "./utils/alertModalPreset";
+import { isTokenExpired } from "./utils/auth/jwtUtil";
 
 
 /**
@@ -14,21 +15,14 @@ import { useEffect } from "react";
 const PUBLIC_PATHS_WITHOUT_AUTH = new Set(["/", "/error"]);
 
 
-// 인증이 필요한 라우트를 보호하는 컴포넌트
+// 인증이 필요한 라우트를 보호하는 컴포넌트 url다이렉트로 들어올때 검증 위주
 const ProtectedRoute = ({ children }) => {
   const location = useLocation();
   const { isLoggedIn } = useAuth();
-  const { openLoginModal } = useModal();
 
   const allowWithoutToken = PUBLIC_PATHS_WITHOUT_AUTH.has(location.pathname);
 
-  useEffect(() => {
-    if (!isLoggedIn && !allowWithoutToken) {
-      openLoginModal();
-    }
-  }, [isLoggedIn]);
-
-  if (!isLoggedIn && !allowWithoutToken) {
+  if (!allowWithoutToken && !isLoggedIn) {
     return <Navigate to="/" replace state={{ from: location }} />;
   }
 
