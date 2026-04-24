@@ -96,7 +96,7 @@ const PlanPage = () => {
           {/* 계획표(확장 영역 포함) */}
           <Content>
             <FlexBox bg="none" settings={{ justify: "flex-end" }}>
-              <FlexBox w={isExpanded ? "100%" : 752} style={{ overflowX: "hidden", pointerEvents: "auto" }}>
+              <FlexBox w={isExpanded ? "1392px" : "752px"} style={{ overflowX: "hidden", pointerEvents: "auto" }}>
                 <PlanTableContainer />
               </FlexBox>
             </FlexBox>

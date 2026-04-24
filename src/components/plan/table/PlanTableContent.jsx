@@ -1,140 +1,261 @@
-import { useEffect, useState } from "react";
-import { DndContext } from "@dnd-kit/core";
-import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
-import {
-  arrayMove,
-  SortableContext,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import { List } from "antd";
-import SortableDayItem from "./SortableDayItem";
+import { useSortable } from "@dnd-kit/react/sortable";
+import { FlexContainer } from "../../common/PLA_Containers";
+import { FlexBox, TextBox } from "../../common/PLA_FlexBox";
+import { DragDropProvider } from "@dnd-kit/react";
+import { useState } from "react";
+import { arrayMove } from "@dnd-kit/helpers";
+import { DUMMY_DAYS } from "./PLAN_DUMMY";
+import { Button, Input } from "antd";
+import { CloseSquareOutlined, HolderOutlined } from "@ant-design/icons";
+import { IconButton } from "../../common/PLA_Buttons";
+import { useTripPlan } from "../../../hooks/plan/PlanTripContext";
 
-// 더미 데이터 (indexSort 기준 정렬)
-const DUMMY_DAYS = [
-  {
-    tripDayId: "TD11",
-    indexSort: 1,
-    schedules: [
+const ScheduleEditableItem = ({value, isEditing, setIsEditing, ...rest}) => {
+  return (
+    <FlexBox {...rest}>
       {
-        tripScheduleId: "TS123",
-        indexSort: 1,
-        context: "있던 1일차 데이터 수정",
-        startTime: "AM 10:00",
-        endTime: "PM 01:00",
-        category: "이동",
-        memo: "메모 내용 존재",
-        price: 50000,
-        link: "https://www.naver.com"
-      },
-      { tripScheduleId: "TS124",indexSort: 2, startTime: "10:00", endTime: "13:00", category: "이동" },
-      {
-        tripScheduleId: "TS126",
-        indexSort: 3,
-        context: "데이터에 없는 장소 직접 입력",
-        startTime: "14:00",
-        endTime: "15:00",
-        category: "식사",
-        price: 3040,
-        link: "https://www.daum.net"
-      },
-    ],
-  },
-  {
-    tripDayId: "TD12",
-    indexSort: 2,
-    schedules: [
-      { tripScheduleId: "TS129", indexSort: 2, context: "데이터" },
-      { tripScheduleId: "TS135",indexSort: 1, context: "신규생성 2일차 데이터" },
-    ],
-  },
-  {
-    tripDayId: "TD13",
-    indexSort: 4,
-    schedules: [
-      {
-        tripScheduleId: "TS153",
-        indexSort: 1,
-        context: "있던 3일차 데이터 수정",
-        startTime: "10:00",
-        endTime: "13:00",
-        category: "이동",
-      },
-    ],
-  },
-  {
-    tripDayId: "TD18",
-    indexSort: 5,
-    schedules: [
-      {
-        tripScheduleId: "TS183",
-        indexSort: 1,
-        context: "5일차 데이터 수정",
-        startTime: "10:00",
-        endTime: "13:00",
-        category: "이동",
-      },
-    ],
-  },
-  {
-    tripDayId: "TD14",
-    indexSort: 3,
-    schedules: [{ tripScheduleId: "TS184", indexSort: 1, context: "ddd" }, { tripScheduleId: "TS186", indexSort: 2 }],
-  },
-].sort((a, b) => a.indexSort - b.indexSort);
+        isEditing ?
+        <Input value={value}/>
+        :
+        <TextBox h="75%" color="#565656" style={{backgroundColor: "none"}}
+        onClick={() => {setIsEditing(true)}}>
+          {value}
+        </TextBox>
+      }
+    </FlexBox>
+  );
+};
+
+const SortableScheduleItem = ({ id, index, schedule, isOnly }) => {
+  const { ref, handleRef, isDragging } = useSortable({ id, index, type: "item" });
+  const { isExpanded } = useTripPlan();
+  const [isEditing, setIsEditing] = useState(false);
+  const [isHover, setIsHover] = useState(false);
+  return (
+    <FlexBox
+      ref={ref} h="32px"
+      style={{ opacity: isDragging ? 0.75 : 1 }}
+      settings={{justify: "flex-start"}}
+      onMouseOver={() => setIsHover(true)}
+      onMouseLeave={() => setIsHover(false)}
+    >
+      <FlexBox
+        ref={handleRef}
+        w="28px"
+        h="100%"
+        style={{
+          cursor: "grab",
+          padding: "4px",
+          background: "none",
+          visibility: !isOnly && isHover ? "visible" : "hidden"
+        }}
+      >
+        <HolderOutlined style={{ color: "#565656" }} />
+      </FlexBox>
+      <FlexBox w="auto" bg="none">
+        <FlexBox w="auto" settings={{justify: "flex-start"}}>
+          <ScheduleEditableItem isEditing={isEditing} setIsEditing={setIsEditing} w="092px" bg="none" value={"AM 00:00"}/>
+          <ScheduleEditableItem isEditing={isEditing} setIsEditing={setIsEditing} w="092px" bg="none" value={"AM 00:00"}/>
+          <ScheduleEditableItem isEditing={isEditing} setIsEditing={setIsEditing} w="088px" bg="none" value={"식사"}/>
+          <ScheduleEditableItem isEditing={isEditing} setIsEditing={setIsEditing} w="300px" bg="none" value={schedule.context || "-"}/>
+        </FlexBox>
+        {
+          isExpanded ? 
+          <FlexBox w="auto" settings={{justify: "flex-start"}}>
+            <ScheduleEditableItem isEditing={isEditing} setIsEditing={setIsEditing} w="380px" bg="none" value={schedule.memo || "(메모 없음)"}/>
+            <ScheduleEditableItem isEditing={isEditing} setIsEditing={setIsEditing} w="160px" bg="none" value={"5600"}/>
+            <ScheduleEditableItem isEditing={isEditing} setIsEditing={setIsEditing} w="100px" bg="none" value={null}/>
+          </FlexBox> : <></>
+        }
+          
+        <FlexBox w="36px" settings={{justify: "center"}}>
+          <IconButton
+            width="32px"
+            height="32px"
+            fontSize="10px"
+            ghost={isHover ? false : true}
+            danger
+            onClickEvent={() => {
+              // 행 삭제 이벤트 연결
+            }}
+          >
+            <CloseSquareOutlined />
+          </IconButton>
+        </FlexBox>
+      </FlexBox>
+      
+    </FlexBox>
+  );
+};
+
+const SortableDayItem = ({ id, index, schedules }) => {
+  const { ref, handleRef, isDragging } = useSortable({
+    id,
+    index,
+    type: "list",
+    accept: ["list"],
+  });
+
+  const rotateStyle = {
+    minWidth: "32px",
+    maxHeight: "20px",
+    lineHeight: "100%",
+    fontSize: "12px",
+    fontWeight: "500",
+    color: "#FFFFFF",
+    transform: "rotate(-90deg) translate(0, 0%)",
+  };
+
+  
+  return (
+    <FlexContainer ref={ref}>
+      <FlexBox settings={{ justify: "flex-start" }} style={{opacity: isDragging ? 0.75 : 1}}>
+        {/* 드래그 가능한 핸들 영역 */}
+        <FlexBox w="56px" bg="rgba(168, 168, 168, 1)">
+          <FlexBox
+            w="28px"
+            ref={handleRef}
+            style={{
+              cursor: "grab",
+              background: "none",
+            }}
+            settings={{ justify: "center" }}
+          >
+            <HolderOutlined style={{ width:"16px", fontSize:"16px", color: "#FFFFFF", backgroundColor:"none" }} />
+          </FlexBox>
+          <FlexBox w="28px" bg="none">
+            <TextBox justify="center" align="left" style={rotateStyle} bg="none">
+              {`${index + 1}일차`}
+            </TextBox>
+          </FlexBox>
+        </FlexBox>
+        {/* 스케줄 리스트 영역 */}
+        <FlexBox 
+          w="auto"
+          settings={{ isVertical: true, justify: "flex-start" }}
+          style={{ gap: "2px" }}
+          bg="none"
+        >
+          {schedules.map((schedule, index) => (
+            <SortableScheduleItem
+              key={schedule.tripScheduleId}
+              id={schedule.tripScheduleId}
+              dayId={id}
+              index={index}
+              schedule={schedule}
+              isOnly={schedules.length <= 1}
+            />
+          ))}
+        {/* ADD BUTTON */}
+        <FlexBox h="28px" settings={{justify: "center"}}>
+          <Button style={{width:"100%", height: "24px", margin: "1px 2px 2px 1px", padding: "0px", overflow: "hidden"}}
+          onClick={null}>
+            <FlexBox settings={{isVertical: false}}>
+            <FlexBox w="20px" h="100%" bg="#A8a8a8" settings={{justify: "center"}}>
+              +
+            </FlexBox>
+            <FlexBox settings={{justify: "center"}}>
+              계획 추가
+            </FlexBox>
+            </FlexBox>
+          </Button>
+        </FlexBox>
+        </FlexBox>
+      </FlexBox>
+    </FlexContainer>
+  );
+};
 
 const PlanTableContent = () => {
-  const [arrDay, setArrDay] = useState(DUMMY_DAYS);
+  const [days, setDays] = useState(DUMMY_DAYS);
 
-  // 일자 순서 변경
-  const onDayDragEnd = ({ active, over }) => {
-    if (!over || active.id === over.id) return;
-    setArrDay((prev) => {
-      const oldIdx = prev.findIndex((d) => d.tripDayId === active.id);
-      const newIdx = prev.findIndex((d) => d.tripDayId === over.id);
+  // 드래그 이벤트 (일자 및 스케줄 통합)
+  const handleMove = (event) => {
+    const { source, target } = event.operation;
+    if (!source || !target) return;
+    // console.log("source id:", source.id);
+    // console.log("source type:", source.type);
+    // console.log("target id:", target.id);
+    // console.log("target type:", target.type);
 
-      const updateData = arrayMove(prev, oldIdx, newIdx);
-      updateData.map((day, idx) => {
-        day.indexSort = idx + 1;
-      });
-      console.log(updateData);
-      return updateData;
+    const sourceId = source.id;
+    const targetId = target.id;
+    const sourceType = source.type;
+
+    setDays((prev) => {
+      // 리스트 재정렬
+      if (sourceType === "list") {
+        const oldIndex = prev.findIndex((d) => d.tripDayId === sourceId);
+        const newIndex = prev.findIndex((d) => d.tripDayId === targetId);
+        if (oldIndex === -1 || newIndex === -1 || oldIndex === newIndex)
+          return prev;
+        return arrayMove(prev, oldIndex, newIndex);
+      }
+
+      // 아이템 재정렬
+      if (sourceType === "item") {
+        const sourceDayIndex = prev.findIndex((d) =>
+          d.schedules.some((s) => s.tripScheduleId === sourceId),
+        );
+        const targetDayIndex = prev.findIndex((d) =>
+          d.schedules.some((s) => s.tripScheduleId === targetId),
+        );
+        if (sourceDayIndex === -1 || targetDayIndex === -1) return prev;
+
+        const newDays = prev.map((d) => ({
+          ...d,
+          schedules: [...d.schedules],
+        }));
+        const sourceSchedules = newDays[sourceDayIndex].schedules;
+        const targetSchedules = newDays[targetDayIndex].schedules;
+
+        const oldIndex = sourceSchedules.findIndex(
+          (s) => s.tripScheduleId === sourceId,
+        );
+        const newIndex = targetSchedules.findIndex(
+          (s) => s.tripScheduleId === targetId,
+        );
+        if (oldIndex === -1 || newIndex === -1) return prev;
+
+        // 같은 리스트 내 이동
+        if (sourceDayIndex === targetDayIndex) {
+          newDays[sourceDayIndex].schedules = arrayMove(
+            sourceSchedules,
+            oldIndex,
+            newIndex,
+          );
+        } else {
+          // 다른 리스트로 이동
+          const [removed] = sourceSchedules.splice(oldIndex, 1);
+          targetSchedules.splice(newIndex, 0, removed);
+        }
+
+        return newDays;
+      }
+
+      return prev;
     });
   };
 
-  // 특정 일자의 스케줄 순서 변경
-  const handleSchedulesChange = (tripDayId, newSchedules) => {
-    setArrDay((prev) =>
-      prev.map((d) =>
-        d.tripDayId === tripDayId ? { ...d, schedules: newSchedules } : d,
-      ),
-    );
-  };
-
   return (
-    <DndContext
-      id="plan-day-dnd"
-      modifiers={[restrictToVerticalAxis]}
-      onDragEnd={onDayDragEnd}
+    <DragDropProvider
+      onDragOver={handleMove} // 드래그 중 실시간 미리보기
+      onDragEnd={handleMove} // 드롭 시 최종 반영
     >
-      <SortableContext
-        items={arrDay.map((d) => d.tripDayId)}
-        strategy={verticalListSortingStrategy}
-      >
-        <List
-          style={{ width: "100%", height: "100%", backgroundColor: "none" }}
-          dataSource={arrDay}
-          renderItem={(day) => (
+      <FlexBox settings={{ isVertical: true }} style={{ gap: "8px" }}>
+        {days.map((day, index) => {
+          return (
             <SortableDayItem
               key={day.tripDayId}
-              itemKey={day.tripDayId}
-              day={day}
-              onSchedulesChange={handleSchedulesChange}
+              id={day.tripDayId}
+              index={index}
+              schedules={day.schedules}
             />
-          )}
-        />
-      </SortableContext>
-    </DndContext>
+          );
+        })}
+      </FlexBox>
+    </DragDropProvider>
   );
-};
+}
 
 export default PlanTableContent;
