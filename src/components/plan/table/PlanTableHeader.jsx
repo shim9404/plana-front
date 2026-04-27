@@ -11,10 +11,10 @@ const DefaultHeaderContents = ({ styles }) => {
       <FlexBox w="92px" bg="none" style={styles.headerTextStyle}>
         도착시간
       </FlexBox>
-      <FlexBox w="88px" bg="none" style={styles.headerTextStyle}>
+      <FlexBox w="108px" bg="none" style={styles.headerTextStyle}>
         구분
       </FlexBox>
-      <FlexBox w="300px" bg="none" style={styles.headerTextStyle}>
+      <FlexBox w="280px" bg="none" style={styles.headerTextStyle}>
         장소
       </FlexBox>
     </FlexBox>
@@ -30,10 +30,10 @@ const ExpandedHeaderContents = ({ styles }) => {
       <FlexBox w="92px" bg="none" style={styles.headerTextStyle}>
         도착시간
       </FlexBox>
-      <FlexBox w="88px" bg="none" style={styles.headerTextStyle}>
+      <FlexBox w="108px" bg="none" style={styles.headerTextStyle}>
         구분
       </FlexBox>
-      <FlexBox w="300px" bg="none" style={styles.headerTextStyle}>
+      <FlexBox w="280px" bg="none" style={styles.headerTextStyle}>
         장소
       </FlexBox>
       <FlexBox w="380px" bg="none" style={styles.headerTextStyle}>

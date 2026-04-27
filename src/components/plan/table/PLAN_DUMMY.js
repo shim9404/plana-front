@@ -7,9 +7,10 @@ export const DUMMY_DAYS = [
       {
         tripScheduleId: "TS123",
         indexSort: 1,
-        context: "있던 1일차 데이터 수정",
-        startTime: "AM 10:00",
-        endTime: "PM 01:00",
+        bookmarkId: "BM12",
+        context: "북마크 된 것 테스트",
+        startTime: "10:00",
+        endTime: "13:00",
         category: "이동",
         memo: "메모 내용 존재",
         price: 50000,

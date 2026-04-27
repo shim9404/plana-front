@@ -68,6 +68,7 @@ export const TextButton = ({
   fontWeight = 500,
   danger = false,
   disabled = false,
+  style
 }) => {
 
   let handleOnClick = () => {
@@ -79,7 +80,7 @@ export const TextButton = ({
       type={type}
       danger={danger ? true : false}
       disabled={disabled ? true : false}
-      style={{ width, height, fontWeight, ...buttonStyle }}
+      style={{ width, height, fontWeight, ...buttonStyle, ...style }}
       onClick={handleOnClick}
     >
       <div style={{ fontSize, ...textStyle }}>{children}</div>
@@ -96,6 +97,7 @@ export const IconButton = ({
   fontSize = "24px",
   danger = false,
   disabled = false,
+  style,
   ...rest
 }) => {
   
@@ -108,7 +110,7 @@ export const IconButton = ({
       type={type}
       danger={danger ? true : false}
       disabled={disabled ? true : false}
-      style={{ width, height, ...buttonStyle }}
+      style={{ width, height, ...buttonStyle, ...style }}
       onClick={handleOnClick}
       {...rest}
     >
