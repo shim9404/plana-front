@@ -244,6 +244,13 @@ const SortableScheduleItem = ({ id, index, schedule, isOnly, editingSchedule, se
   const [isHover, setIsHover] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
+  const mergeRefs = (...refs) => (node) => {
+    refs.forEach((ref) => {
+      if (typeof ref === "function") ref(node);  // 함수형 ref면 호출
+      else if (ref) ref.current = node;          // 객체형 ref면 current에 할당
+    });
+  };
+
   // 편집할 스케줄 선택
   const handleSelectEditing = () => {
     console.log(editingSchedule);
@@ -315,10 +322,7 @@ const SortableScheduleItem = ({ id, index, schedule, isOnly, editingSchedule, se
 
   return (
     <FlexBox
-      ref={(node) => {
-        sortableRef.current = node;
-        itemRef.current = node;
-      }}
+      ref={mergeRefs(sortableRef, itemRef)}
       onBlur={handleBlur}
       tabIndex={-1}
       id="schedule-item"
