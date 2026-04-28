@@ -34,7 +34,10 @@ const SignUpModalComponent = ({ open, onClose }) => {
   // api 대기 
   const [nicknameLoading, setNicknameLoading] = useState(false);
 
-  const onChangeNickname = () => {
+  const onChangeNickname = (e) => {
+    const value = e.currentTarget.value.replace(/\s/g, ''); // 공백 제거
+    form.setFieldsValue({ nickname: value });
+
     if (!isNicknameChange) setIsNicknameChange(true); // 수정되면 다시 확인 필요
   };
 
@@ -112,11 +115,11 @@ const SignUpModalComponent = ({ open, onClose }) => {
       await sendEmailApi(email);
       setIsEmailSent(true);
     } catch {
-      message.error("이메일 전송에 실패하였습니다.");
+      setEmailStatus({ status: 'error', help: '잠시 후 다시 시도해 주세요.' });
     } finally {
       setEmailLoading(false);
     }
-  };
+  }; // end of handleEmailSend
 
   // 이메일 인증번호 검증 
   const handleEmailVertify = async () => {
@@ -253,7 +256,7 @@ const SignUpModalComponent = ({ open, onClose }) => {
               <Input placeholder="이메일" autoComplete="off" onChange={onChangeEmail}
                 style={{ height: '35px', boxShadow: '0 2px 2px rgba(0,0,0,0.2)', fontSize: '12px' }} />
             </Form.Item>
-            <Button type="default" loading={emailLoading} onClick={handleEmailSend} className={styles.InputCheckBtn} >
+            <Button type="default" disabled={isVerified} loading={emailLoading} onClick={handleEmailSend} className={styles.InputCheckBtn} >
               인증
             </Button>
           </div>
@@ -343,7 +346,7 @@ const SignUpModalComponent = ({ open, onClose }) => {
             <Form.Item name="nickname" noStyle
               rules={[
                 { required: true, message: '닉네임을 입력하세요.' },
-                { max: 20, message: '최대 20자까지 입력 가능합니다.' },
+                { max: 20, message: '최대 20자까지 입력 가능합니다.' }
               ]}
             >
               <Input placeholder="닉네임" maxLength={20} showCount onChange={onChangeNickname} style={{ height: '35px', boxShadow: '0 2px 2px rgba(0,0,0,0.2)', fontSize: '12px' }} />
