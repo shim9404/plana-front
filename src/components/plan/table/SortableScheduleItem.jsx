@@ -9,17 +9,33 @@ import { CloseCircleFilled, CloseSquareOutlined, HolderOutlined, LinkOutlined, P
 import dayjs from "dayjs";
 import { getBookmarkActiveColor, getBookmarkColor } from "../../../utils/plan/bookmarkUtils";
 
-const ScheduleDroppableItem = ({ id, bookmarkId, value, isEditing, onChange, onClick }) => {
+const ScheduleDroppableItem = ({ bookmarkId, value, isEditing, onChange, onClick }) => {
   const {isDropTarget, ref} = useDroppable({id: 'droppable'});
-  const {editingSchedule, bookmarks} = useTripPlan();
+  const {bookmarks} = useTripPlan();
+  const [inputValue, setInputValue] = useState(value);
   const [isHover, setIsHover] = useState(false);
+
+  const handleOnChange = (e) => {
+    setInputValue(e.target.value);
+  }
+
+  const debounce = (func, timeout = 150) => {
+    let timer;
+    return (...args) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        func.apply(this, args);
+      }, timeout);
+    };
+  }
+  const processChange = debounce(() => onChange('context', inputValue));
 
   const getBookmarkType = () => {
     return bookmarks.find(b => b.bookmarkId === bookmarkId).bookmarkType;
   }
 
   return (
-    <FlexBox ref={ref}>
+    <FlexBox ref={ref} >
       <FlexBox w="98%" h="80%" bg={bookmarkId ? `${getBookmarkColor(getBookmarkType())}` : "#d9d9d9"} settings={{justify: "center"}} 
         style={{borderRadius: "16px", padding: "8px", overflow: "hidden",
           // border: isDropTarget ? `solid 1px ${getBookmarkActiveColor(getBookmarkType())}` : isHover ? "solid 1px #A8A8A8": "none"
@@ -30,8 +46,10 @@ const ScheduleDroppableItem = ({ id, bookmarkId, value, isEditing, onChange, onC
         onMouseLeave={() => setIsHover(false)}>
           { 
             (bookmarkId == null || bookmarkId <= 0) ? 
-            editingSchedule && isEditing ?
-            <Input maxLength={20} value={editingSchedule['context']} placeholder={value || "직접입력"} onChange={e => onChange('context', e.target.value)}
+            isEditing ?
+            <Input maxLength={20} value={inputValue} placeholder={value || "직접입력"} onChange={handleOnChange} 
+            onKeyUp={processChange}
+            onFo
             style={{width:"100%", height:"auto", border: "none", padding:"0px", textAlign:"center", backgroundColor:"rgba(0,0,0,0)"}}
             /> : <TextBox size="12px" color="#565656">{value}</TextBox>
             : <FlexBox>
@@ -73,9 +91,9 @@ const ScheduleTimePicker = ({ prevValue, onChange, containerRef }) => {
 
 const ScheduleCategorySelector = ({ prevValue, onChange, containerRef }) => {
   const {scheduleCategorys, setScheduleCategorys} = useTripPlan();
+  const [selectValue, setSelectValue] = useState(prevValue);
   const [inputValue, setInputValue] = useState("");
-  const {editingSchedule} = useTripPlan();
-  const [open, setOpen] = useState(false);  // 드롭다운 열림 상태 추가
+  const [isOpen, setIsOpen] = useState(false); 
 
   const addItem = () => {
     if (!inputValue || inputValue.trim().length == 0) {
@@ -84,16 +102,18 @@ const ScheduleCategorySelector = ({ prevValue, onChange, containerRef }) => {
     }
     const existItem = scheduleCategorys.find(category => category == inputValue);
     console.log(inputValue, existItem);
-    if (existItem) {
-      onChange(inputValue);
-      setInputValue("");
-    } else {
+    if (!existItem) {
       setScheduleCategorys(prev => [...prev, inputValue]);
-      onChange(inputValue);
-      setInputValue("");
     }
-    setOpen(false);
+    selectItem(inputValue);
     containerRef?.current?.focus();
+  }
+
+  const selectItem = (item) => {
+    onChange(item); 
+    setSelectValue(item);
+    setIsOpen(false);
+    setInputValue("");
   }
 
   return (
@@ -105,12 +125,11 @@ const ScheduleCategorySelector = ({ prevValue, onChange, containerRef }) => {
       })}
       style={{height: "75%", width: "90%", textAlign:"center"}}
       placeholder={prevValue}
-      value={editingSchedule?.category || ""}
-      open={open}                     // 열림 상태 제어
-      onOpenChange={setOpen}  // 외부 클릭 등으로 닫힐 때 동기화
+      value={selectValue || ""}
+      open={isOpen}                     // 열림 상태 제어
+      onOpenChange={setIsOpen}  // 외부 클릭 등으로 닫힐 때 동기화
       onChange={v => {
-        onChange(v); 
-        setOpen(false);
+        selectItem(v);
       }}
       popupRender={menu => (
         <FlexBox w="100%" style={{overflow: "hidden"}} settings={{isVertical: true, align:"stretch"}}>
@@ -141,26 +160,38 @@ const ScheduleCategorySelector = ({ prevValue, onChange, containerRef }) => {
 }
 
 const ScheduleMemoInput = ({ id, prevValue, onChange }) => {
-  const {editingSchedule} = useTripPlan();
-  const [inputValue, setInputValue] = useState(editingSchedule?.memo);
+  // const {editingSchedule} = useTripPlan();
+  const [inputValue, setInputValue] = useState(prevValue);
 
   const handleOnChange = (e) => {
     setInputValue(e.target.value);
-    onChange(e.target.value);
+    // onChange(e.target.value);
   }
 
+  const debounce = (func, timeout = 150) => {
+    let timer;
+    return (...args) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        func.apply(this, args);
+      }, timeout);
+    };
+  }
+  const processChange = debounce(() => onChange(inputValue));
+  
   return (
     <Input id={id} placeholder={prevValue} 
     value={inputValue}
     maxLength={30}
+    onKeyUp={processChange}
     onChange={handleOnChange} 
     style={{height: "75%", width: "90%", textAlign:"center"}}/>
   )
 };
 
 const SchedulePriceInput = ({ id, prevValue, onChange }) => {
-  const {editingSchedule} = useTripPlan();
-  const [inputValue, setInputValue] = useState(editingSchedule?.price);
+  // const {editingSchedule} = useTripPlan();
+  const [inputValue, setInputValue] = useState(prevValue);
 
   const handleOnChange = (v) => {
     setInputValue(v);
@@ -177,7 +208,7 @@ const SchedulePriceInput = ({ id, prevValue, onChange }) => {
   )
 };
 
-const ScheduleEditableItem = ({ columnId, value, isEditing, onClick, onChange, ...rest }) => {
+const ScheduleEditableItem = ({ columnId, value, isEditing, editingSchedule, onClick, onChange, ...rest }) => {
   
   const editInput = () => {
     switch (columnId) {
@@ -185,13 +216,11 @@ const ScheduleEditableItem = ({ columnId, value, isEditing, onClick, onChange, .
       case "endTime" :
         return <ScheduleTimePicker id={columnId} prevValue={value} containerRef={rest.containerRef} onChange={v => onChange(columnId, v)}/>
       case "category" :
-        return <ScheduleCategorySelector id={columnId} prevValue={value} containerRef={rest.containerRef} onChange={v => {console.log(columnId, v); onChange(columnId, v)}}/>;
-      // case "context": 
-      //   return <ScheduleDroppableItem id={columnId} prevValue={value} onChange={v => onChange(columnId, v)}/>;
+        return <ScheduleCategorySelector id={columnId} prevValue={value} editingValue={editingSchedule?.category} containerRef={rest.containerRef} onChange={v => {console.log(columnId, v); onChange(columnId, v)}}/>;
       case "memo": 
-        return <ScheduleMemoInput id={columnId} prevValue={value} onChange={v => onChange(columnId, v)}/>
+        return <ScheduleMemoInput id={columnId} prevValue={value} editingValue={editingSchedule?.memo} onChange={v => onChange(columnId, v)}/>
       case "price":
-        return <SchedulePriceInput id={columnId} prevValue={value} onChange={v => onChange(columnId, v)}/>
+        return <SchedulePriceInput id={columnId} prevValue={value} editingValue={editingSchedule?.price} onChange={v => onChange(columnId, v)}/>
     }
   }
   return (
@@ -209,12 +238,11 @@ const ScheduleEditableItem = ({ columnId, value, isEditing, onClick, onChange, .
   );
 };
 
-const SortableScheduleItem = ({ id, index, schedule, isOnly, saveScheduleEvent, deleteScheduleEvent }) => {
+const SortableScheduleItem = ({ id, index, schedule, isOnly, editingSchedule, setEditingSchedule, saveScheduleEvent, deleteScheduleEvent }) => {
   const { ref: sortableRef, handleRef, isDragging } = useSortable({ id, index, type: "item" });
   const itemRef = useRef(null);
-  const { isExpanded, editingSchedule, setEditingSchedule } = useTripPlan();
+  const { isExpanded } = useTripPlan();
   const [isHover, setIsHover] = useState(false);
-  
   const [isEditing, setIsEditing] = useState(false);
 
   // 편집할 스케줄 선택
@@ -242,7 +270,6 @@ const SortableScheduleItem = ({ id, index, schedule, isOnly, saveScheduleEvent, 
   };
 
   const handleBlur = (e) => {
-    // return;
     const currentTarget = e.currentTarget;
     console.log(currentTarget)
     setTimeout(() => {
@@ -309,10 +336,9 @@ const SortableScheduleItem = ({ id, index, schedule, isOnly, saveScheduleEvent, 
       </FlexBox>
       <FlexBox w="auto" bg="none">
         <FlexBox w="auto" settings={{justify: "flex-start"}}>
-          <ScheduleEditableItem isEditing={isEditing} columnId="startTime" onChange={handleChangeEditing} onClick={handleSelectEditing} w="092px" bg="none" containerRef={itemRef} value={schedule.startTime || "00:00"}/>
-          <ScheduleEditableItem isEditing={isEditing} columnId="endTime"   onChange={handleChangeEditing} onClick={handleSelectEditing} w="092px" bg="none" containerRef={itemRef} value={schedule.endTime || "00:00"}/>
-          <ScheduleEditableItem isEditing={isEditing} columnId="category"  onChange={handleChangeEditing} onClick={handleSelectEditing} w="108px" bg="none" containerRef={itemRef} value={schedule.category}/>
-          {/* <ScheduleEditableItem isEditing={isEditing} columnId="context"   onChange={handleChangeEditing} onClick={handleSelectEditing} w="280px" bg="none" value={schedule.context || "-"}/> */}
+          <ScheduleEditableItem isEditing={isEditing} columnId="startTime" onChange={handleChangeEditing} onClick={handleSelectEditing} w="092px" containerRef={itemRef} value={schedule.startTime || "00:00"}/>
+          <ScheduleEditableItem isEditing={isEditing} columnId="endTime"   onChange={handleChangeEditing} onClick={handleSelectEditing} w="092px" containerRef={itemRef} value={schedule.endTime || "00:00"}/>
+          <ScheduleEditableItem isEditing={isEditing} columnId="category"  onChange={handleChangeEditing} onClick={handleSelectEditing} w="108px" containerRef={itemRef} value={schedule.category}/>
           <FlexBox w="280px" >
             <ScheduleDroppableItem isEditing={isEditing} value={schedule.context || "-"} bookmarkId={schedule.bookmarkId}
             onChange={handleChangeEditing}
@@ -322,8 +348,8 @@ const SortableScheduleItem = ({ id, index, schedule, isOnly, saveScheduleEvent, 
         {
           isExpanded ? 
           <FlexBox w="auto" settings={{justify: "flex-start"}}>
-            <ScheduleEditableItem isEditing={isEditing} columnId="memo"  onChange={handleChangeEditing} onClick={handleSelectEditing} w="380px" bg="none" value={schedule.memo}/>
-            <ScheduleEditableItem isEditing={isEditing} columnId="price" onChange={handleChangeEditing} onClick={handleSelectEditing} w="160px" bg="none" value={schedule.price}/>
+            <ScheduleEditableItem isEditing={isEditing} columnId="memo"  onChange={handleChangeEditing} onClick={handleSelectEditing} w="380px" value={schedule.memo}/>
+            <ScheduleEditableItem isEditing={isEditing} columnId="price" onChange={handleChangeEditing} onClick={handleSelectEditing} w="160px" value={schedule.price}/>
             <FlexBox w="100px" settings={{justify: "center"}}>
               <IconButton
                 width="32px"

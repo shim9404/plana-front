@@ -17,13 +17,6 @@ export const TripPlanProvider = ({ children }) => {
   // 여행 스케줄 카테고리(구분)
   const [scheduleCategorys, setScheduleCategorys] = useState([]);
 
-  // === 스케줄 편집기 ===================================
-  const [editingSchedule, setEditingSchedule] = useState(null);
-
-  useEffect(() => {
-    console.log("스케줄데이터변화", editingSchedule);
-  }, [editingSchedule])
-
   return(
     <TripPlanContext.Provider value={{ 
       isExpanded, setIsExpanded,
@@ -31,7 +24,6 @@ export const TripPlanProvider = ({ children }) => {
       areas, setAreas,
       planDays, setPlanDays,
       scheduleCategorys, setScheduleCategorys,
-      editingSchedule, setEditingSchedule,
     }}>
       {children}
     </TripPlanContext.Provider>

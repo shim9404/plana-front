@@ -6,7 +6,7 @@ import { FlexContainer } from "../../common/PLA_Containers";
 import { Button } from "antd";
 import SortableScheduleItem from "./SortableScheduleItem";
 
-const SortableDayItem = ({ id, index, schedules, saveScheduleEvent, addScheduleEvent, deleteScheduleEvent }) => {
+const SortableDayItem = ({ id, index, schedules, editingSchedule, setEditingSchedule, saveScheduleEvent, addScheduleEvent, deleteScheduleEvent }) => {
   const { ref, handleRef, isDragging } = useSortable({
     id,
     index,
@@ -14,7 +14,7 @@ const SortableDayItem = ({ id, index, schedules, saveScheduleEvent, addScheduleE
     accept: ["list"],
   });
 
-  const {editingSchedule} = useTripPlan();
+  // const {editingSchedule} = useTripPlan();
 
   const rotateStyle = {
     minWidth: "32px",
@@ -64,6 +64,8 @@ const SortableDayItem = ({ id, index, schedules, saveScheduleEvent, addScheduleE
                 index={index}
                 schedule={schedule}
                 isOnly={schedules.length <= 1}
+                editingSchedule={editingSchedule}
+                setEditingSchedule={setEditingSchedule}
                 saveScheduleEvent={() => saveScheduleEvent()}
                 deleteScheduleEvent={(scheduleId) => deleteScheduleEvent(id, scheduleId)}
               />

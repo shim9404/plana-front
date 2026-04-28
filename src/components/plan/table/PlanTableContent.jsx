@@ -1,13 +1,14 @@
 import { FlexBox } from "../../common/PLA_FlexBox";
 import { DragDropProvider } from "@dnd-kit/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { arrayMove } from "@dnd-kit/helpers";
 import { DUMMY_BOOKMARKS, DUMMY_DAYS } from "./PLAN_DUMMY";
 import { useTripPlan } from "../../../hooks/plan/PlanTripContext";
 import SortableDayItem from "./SortableDayItem";
 
 const PlanTableContent = () => {
-  const {planDays, setPlanDays, editingSchedule, setEditingSchedule, setBookmarks} = useTripPlan();
+  const {planDays, setPlanDays, setBookmarks} = useTripPlan();
+  const [editingSchedule, setEditingSchedule] = useState(null);
 
   useEffect(() => {
     // 초기 데이터 설정
@@ -162,6 +163,8 @@ const PlanTableContent = () => {
               id={day.tripDayId}
               index={index}
               schedules={day.schedules}
+              editingSchedule={editingSchedule}
+              setEditingSchedule={setEditingSchedule}
               saveScheduleEvent={handleSaveSchedule}
               addScheduleEvent={handleAddSchedule}
               deleteScheduleEvent={handleDeleteSchedule}
