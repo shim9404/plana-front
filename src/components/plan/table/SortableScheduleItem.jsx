@@ -1,0 +1,368 @@
+import { useSortable } from "@dnd-kit/react/sortable";
+import { useDroppable } from "@dnd-kit/react";
+import { useEffect, useRef, useState } from "react";
+import { useTripPlan } from "../../../hooks/plan/PlanTripContext";
+import { Button, Input, InputNumber, Select, TimePicker } from "antd";
+import { FlexBox, TextBox } from "../../common/PLA_FlexBox";
+import { IconButton } from "../../common/PLA_Buttons";
+import { CloseCircleFilled, CloseSquareOutlined, HolderOutlined, LinkOutlined, PlusOutlined } from "@ant-design/icons";
+import dayjs from "dayjs";
+import { getBookmarkActiveColor, getBookmarkColor } from "../../../utils/plan/bookmarkUtils";
+
+const ScheduleDroppableItem = ({ id, bookmarkId, value, isEditing, onChange, onClick }) => {
+  const {isDropTarget, ref} = useDroppable({id: 'droppable'});
+  const {editingSchedule, bookmarks} = useTripPlan();
+  const [isHover, setIsHover] = useState(false);
+
+  const getBookmarkType = () => {
+    return bookmarks.find(b => b.bookmarkId === bookmarkId).bookmarkType;
+  }
+
+  return (
+    <FlexBox ref={ref}>
+      <FlexBox w="98%" h="80%" bg={bookmarkId ? `${getBookmarkColor(getBookmarkType())}` : "#d9d9d9"} settings={{justify: "center"}} 
+        style={{borderRadius: "16px", padding: "8px", overflow: "hidden",
+          // border: isDropTarget ? `solid 1px ${getBookmarkActiveColor(getBookmarkType())}` : isHover ? "solid 1px #A8A8A8": "none"
+          border: isHover || isEditing ? "solid 1px #A8A8A8": "none"
+        }}
+        onClick={onClick}
+        onMouseOver={() => setIsHover(true)}
+        onMouseLeave={() => setIsHover(false)}>
+          { 
+            (bookmarkId == null || bookmarkId <= 0) ? 
+            editingSchedule && isEditing ?
+            <Input maxLength={20} value={editingSchedule['context']} placeholder={value || "직접입력"} onChange={e => onChange('context', e.target.value)}
+            style={{width:"100%", height:"auto", border: "none", padding:"0px", textAlign:"center", backgroundColor:"rgba(0,0,0,0)"}}
+            /> : <TextBox size="12px" color="#565656">{value}</TextBox>
+            : <FlexBox>
+                <TextBox h="auto" style={{paddingLeft: "16px"}} color={ `${getBookmarkActiveColor(getBookmarkType())}` } bg="none">
+                  {value || "-"}
+                </TextBox>
+                <IconButton width="auto" height="auto" fontSize="12px" danger 
+                style={{ 
+                  margin: "0px", padding: "2px", 
+                  border:"solid 1px rgba(255,255,255,0.75)",
+                  visibility: isHover ? "visible" : "hidden"
+                }}>
+                  <CloseCircleFilled style={{}}/>
+                </IconButton>
+              </FlexBox>
+          }
+      </FlexBox>
+    </FlexBox>
+  )
+};
+
+const ScheduleTimePicker = ({ prevValue, onChange, containerRef }) => {
+  return (
+    <TimePicker
+      format={"HH:mm"}
+      defaultValue={dayjs(prevValue, 'HH:mm')}
+      minuteStep={5}
+      showNow={false}
+      placeholder={prevValue}
+      onChange={(date, time) => onChange(time)}
+      style={{ height: "75%", width: "90%", textAlign: "center" }}
+      onOk={(date) => {
+        // confirm 후 포커스를 컴포넌트로 복구
+        containerRef?.current?.focus();
+      }}
+    />
+  );
+};
+
+const ScheduleCategorySelector = ({ prevValue, onChange, containerRef }) => {
+  const {scheduleCategorys, setScheduleCategorys} = useTripPlan();
+  const [inputValue, setInputValue] = useState("");
+  const {editingSchedule} = useTripPlan();
+  const [open, setOpen] = useState(false);  // 드롭다운 열림 상태 추가
+
+  const addItem = () => {
+    if (!inputValue || inputValue.trim().length == 0) {
+      setInputValue("");
+      return;
+    }
+    const existItem = scheduleCategorys.find(category => category == inputValue);
+    console.log(inputValue, existItem);
+    if (existItem) {
+      onChange(inputValue);
+      setInputValue("");
+    } else {
+      setScheduleCategorys(prev => [...prev, inputValue]);
+      onChange(inputValue);
+      setInputValue("");
+    }
+    setOpen(false);
+    containerRef?.current?.focus();
+  }
+
+  return (
+    <Select options={scheduleCategorys.map((item) => {
+      return {
+          label: item,
+          value: item
+        }
+      })}
+      style={{height: "75%", width: "90%", textAlign:"center"}}
+      placeholder={prevValue}
+      value={editingSchedule?.category || ""}
+      open={open}                     // 열림 상태 제어
+      onOpenChange={setOpen}  // 외부 클릭 등으로 닫힐 때 동기화
+      onChange={v => {
+        onChange(v); 
+        setOpen(false);
+      }}
+      popupRender={menu => (
+        <FlexBox w="100%" style={{overflow: "hidden"}} settings={{isVertical: true, align:"stretch"}}>
+          {menu}
+          <FlexBox settings={{isVertical: true}} style={{borderTop: "solid 1px #D9D9D9", padding: "4px 0px"}}>
+            <Input
+              placeholder="직접입력"
+              value={inputValue}
+              maxLength={6}
+              style={{fontSize: "12px", textAlign: "center", padding:"4px 2px", borderRadius: "8px 8px 0px 0px"}}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyDown={e => {
+                e.stopPropagation();
+                if (e.key === "Enter") addItem();
+              }}
+            />
+            <Button type="primary" height="24px" style={{ width:"100%", borderRadius: "0px 0px 8px 8px"}} onClick={addItem} >
+              <FlexBox style={{gap: "4px"}}>
+                <PlusOutlined style={{fontSize: "12px"}} />
+                <TextBox color="#FFFFFF">추가</TextBox>
+              </FlexBox>
+            </Button>
+          </FlexBox>
+        </FlexBox>
+      )}
+    />
+  );
+}
+
+const ScheduleMemoInput = ({ id, prevValue, onChange }) => {
+  const {editingSchedule} = useTripPlan();
+  const [inputValue, setInputValue] = useState(editingSchedule?.memo);
+
+  const handleOnChange = (e) => {
+    setInputValue(e.target.value);
+    onChange(e.target.value);
+  }
+
+  return (
+    <Input id={id} placeholder={prevValue} 
+    value={inputValue}
+    maxLength={30}
+    onChange={handleOnChange} 
+    style={{height: "75%", width: "90%", textAlign:"center"}}/>
+  )
+};
+
+const SchedulePriceInput = ({ id, prevValue, onChange }) => {
+  const {editingSchedule} = useTripPlan();
+  const [inputValue, setInputValue] = useState(editingSchedule?.price);
+
+  const handleOnChange = (v) => {
+    setInputValue(v);
+    onChange(v);
+  }
+
+  return (
+    
+    <InputNumber id={id} placeholder={prevValue}
+    value={inputValue}
+    min={1} max={999999999} step={100}
+    onChange={handleOnChange} 
+    style={{height: "75%", width: "90%", textAlign:"center"}}/>
+  )
+};
+
+const ScheduleEditableItem = ({ columnId, value, isEditing, onClick, onChange, ...rest }) => {
+  
+  const editInput = () => {
+    switch (columnId) {
+      case "startTime" :
+      case "endTime" :
+        return <ScheduleTimePicker id={columnId} prevValue={value} containerRef={rest.containerRef} onChange={v => onChange(columnId, v)}/>
+      case "category" :
+        return <ScheduleCategorySelector id={columnId} prevValue={value} containerRef={rest.containerRef} onChange={v => {console.log(columnId, v); onChange(columnId, v)}}/>;
+      // case "context": 
+      //   return <ScheduleDroppableItem id={columnId} prevValue={value} onChange={v => onChange(columnId, v)}/>;
+      case "memo": 
+        return <ScheduleMemoInput id={columnId} prevValue={value} onChange={v => onChange(columnId, v)}/>
+      case "price":
+        return <SchedulePriceInput id={columnId} prevValue={value} onChange={v => onChange(columnId, v)}/>
+    }
+  }
+  return (
+    <FlexBox {...rest} settings={{justify:"center"}}>
+      {
+        isEditing ?
+          editInput()
+        :
+        <TextBox h="75%" color="#565656" style={{backgroundColor: "none"}}
+        onClick={onClick}>
+          {value || " "}
+        </TextBox>
+      }
+    </FlexBox>
+  );
+};
+
+const SortableScheduleItem = ({ id, index, schedule, isOnly, saveScheduleEvent, deleteScheduleEvent }) => {
+  const { ref: sortableRef, handleRef, isDragging } = useSortable({ id, index, type: "item" });
+  const itemRef = useRef(null);
+  const { isExpanded, editingSchedule, setEditingSchedule } = useTripPlan();
+  const [isHover, setIsHover] = useState(false);
+  
+  const [isEditing, setIsEditing] = useState(false);
+
+  // 편집할 스케줄 선택
+  const handleSelectEditing = () => {
+    console.log(editingSchedule);
+    // 이전에 선택했던 스케줄이 있고 동일함
+    if (editingSchedule && editingSchedule.tripScheduleId === id) return;
+    // 이전에 선택했던 스케줄이 있고 동일하지 않음
+    if (editingSchedule && editingSchedule.tripScheduleId !== schedule.tripScheduleId) {
+      // 이전 스케줄 저장
+      saveScheduleEvent?.();
+    }
+    // TODO: 저장 후 성공 시 편집 시작
+    setEditingSchedule({...schedule});
+    // console.log(schedule);
+  };
+
+  const handleChangeEditing = (key, value) => {
+    setEditingSchedule(prev => {
+      const schedule = {...prev}
+      schedule[key] = value;
+      console.log(schedule);
+      return schedule;
+    });
+  };
+
+  const handleBlur = (e) => {
+    // return;
+    const currentTarget = e.currentTarget;
+    console.log(currentTarget)
+    setTimeout(() => {
+      const active = document.activeElement;
+
+      // 1. 현재 컴포넌트 내부로 포커스 이동 시 유지
+      if (currentTarget.contains(active)) return;
+
+      // 2. antd 포털 영역으로 포커스 이동 시 유지
+      //    (Select, TimePicker 드롭다운 등)
+      const antdPopups = [
+        ".ant-select-dropdown",
+        ".ant-picker-dropdown",
+        ".ant-picker-panel-container",
+        ".ant-picker-footer",      // TimePicker 하단 confirm 버튼 영역
+        ".ant-picker-ok",          // confirm 버튼
+        ".ant-select-item",
+      ];
+      const isAntdPopup = antdPopups.some((selector) =>
+        active?.closest(selector)
+      );
+      if (isAntdPopup) return;
+      
+      const isOtherScheduleItem = active?.closest("#schedule-item");
+      if (isOtherScheduleItem) return;  // 별도로 저장 처리를 하고 있음
+
+      saveScheduleEvent?.();
+    }, 150);
+  };
+
+
+  useEffect(() => {
+    setIsEditing(schedule.tripScheduleId === editingSchedule?.tripScheduleId);
+    // console.log(editingSchedule);
+  }, [editingSchedule?.tripScheduleId])
+
+  return (
+    <FlexBox
+      ref={(node) => {
+        sortableRef.current = node;
+        itemRef.current = node;
+      }}
+      onBlur={handleBlur}
+      tabIndex={-1}
+      id="schedule-item"
+      h="32px"
+      style={{ borderBottom: "solid 1px #F4F4F4", opacity: isDragging ? 0.75 : 1 }}
+      settings={{justify: "flex-start"}}
+      onMouseOver={() => setIsHover(true)}
+      onMouseLeave={() => setIsHover(false)}
+    >
+      <FlexBox
+        ref={handleRef}
+        w="28px"
+        h="100%"
+        style={{
+          cursor: "grab",
+          padding: "4px",
+          background: "none",
+          visibility: !isOnly && isHover ? "visible" : "hidden"
+        }}
+      >
+        <HolderOutlined style={{ color: "#565656" }} />
+      </FlexBox>
+      <FlexBox w="auto" bg="none">
+        <FlexBox w="auto" settings={{justify: "flex-start"}}>
+          <ScheduleEditableItem isEditing={isEditing} columnId="startTime" onChange={handleChangeEditing} onClick={handleSelectEditing} w="092px" bg="none" containerRef={itemRef} value={schedule.startTime || "00:00"}/>
+          <ScheduleEditableItem isEditing={isEditing} columnId="endTime"   onChange={handleChangeEditing} onClick={handleSelectEditing} w="092px" bg="none" containerRef={itemRef} value={schedule.endTime || "00:00"}/>
+          <ScheduleEditableItem isEditing={isEditing} columnId="category"  onChange={handleChangeEditing} onClick={handleSelectEditing} w="108px" bg="none" containerRef={itemRef} value={schedule.category}/>
+          {/* <ScheduleEditableItem isEditing={isEditing} columnId="context"   onChange={handleChangeEditing} onClick={handleSelectEditing} w="280px" bg="none" value={schedule.context || "-"}/> */}
+          <FlexBox w="280px" >
+            <ScheduleDroppableItem isEditing={isEditing} value={schedule.context || "-"} bookmarkId={schedule.bookmarkId}
+            onChange={handleChangeEditing}
+            onClick={handleSelectEditing}/>
+          </FlexBox>
+        </FlexBox>
+        {
+          isExpanded ? 
+          <FlexBox w="auto" settings={{justify: "flex-start"}}>
+            <ScheduleEditableItem isEditing={isEditing} columnId="memo"  onChange={handleChangeEditing} onClick={handleSelectEditing} w="380px" bg="none" value={schedule.memo}/>
+            <ScheduleEditableItem isEditing={isEditing} columnId="price" onChange={handleChangeEditing} onClick={handleSelectEditing} w="160px" bg="none" value={schedule.price}/>
+            <FlexBox w="100px" settings={{justify: "center"}}>
+              <IconButton
+                width="32px"
+                height="28px"
+                fontSize="12px"
+                disabled={isOnly ? true : false}
+                ghost={isHover ? false : true}
+                style={{visibility: schedule.link?.length > 0 ? "visible" : "hidden"}}
+                onClickEvent={() => {
+                  // 행 삭제 이벤트 연결
+                  window.open(schedule.link, "_blank");
+                }}
+              >
+                <LinkOutlined />
+              </IconButton>
+            </FlexBox>  
+          </FlexBox> : <></>
+        }
+          
+        <FlexBox w="36px" settings={{justify: "center"}}>
+          <IconButton
+            width="32px"
+            height="28px"
+            fontSize="12px"
+            disabled={isOnly ? true : false}
+            ghost={isHover ? false : true}
+            danger
+            onClickEvent={() => {
+              // 행 삭제 이벤트 연결
+              deleteScheduleEvent?.(id);
+            }}
+          >
+            <CloseSquareOutlined />
+          </IconButton>
+        </FlexBox>
+      </FlexBox>
+      
+    </FlexBox>
+  );
+};
+
+export default SortableScheduleItem;

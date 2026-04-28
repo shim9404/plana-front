@@ -63,7 +63,7 @@ const PlanTableContainer = () => {
         {/* 여행 계획표 타이틀 영역 */}
         <FlexBox h="52px" bg="none">
           <FlexBox w="auto" h="auto" bg="none" style={TableStyles.titleStyle} settings={{ justify: "flex-start" }}>
-            <EnvironmentFilled />
+            <EnvironmentFilled style={{marginRight: "8px"}}/>
             여행 계획표
           </FlexBox>
           <FlexBox w="108px" bg="none">
