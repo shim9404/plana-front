@@ -63,7 +63,7 @@ axiosInstance.interceptors.response.use(
 
     console.log("에러발생!:: ", error.response);
 
-    if (error.response?.status === 403 || error.response?.status === 401) {
+    if (error.response?.status === 401) {
 
       if (isRefreshing) {
         return new Promise((resolve, reject) => {

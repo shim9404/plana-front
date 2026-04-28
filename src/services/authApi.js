@@ -36,3 +36,23 @@ export const existsEmailApi = async (email) => {
   console.log(payload);
   return Boolean(payload.email);
 };
+
+/**
+ * 이메일 보내기
+ */
+/** @param {string} email */
+export const sendEmailApi = async (email) => {
+  const response = await axiosInstance.post('/api/auth/email/send', { email: email });
+  const payload = response.data ?? {};
+  return payload.success;
+};
+
+/**
+ * 이메일 보내기
+ */
+/** @param {{ email: string, authCode: string }} payload  */
+export const verifyEmailApi = async (payload) => {
+  const response = await axiosInstance.post('/api/auth/email/verify', payload);
+  const reulst = response.data ?? {};
+  return reulst.success;
+};
