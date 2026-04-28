@@ -1,5 +1,4 @@
 import { useSortable } from "@dnd-kit/react/sortable";
-import { useTripPlan } from "../../../hooks/plan/PlanTripContext";
 import { HolderOutlined } from "@ant-design/icons";
 import { FlexBox, TextBox } from "../../common/PLA_FlexBox";
 import { FlexContainer } from "../../common/PLA_Containers";
@@ -13,8 +12,6 @@ const SortableDayItem = ({ id, index, schedules, editingSchedule, setEditingSche
     type: "list",
     accept: ["list"],
   });
-
-  // const {editingSchedule} = useTripPlan();
 
   const rotateStyle = {
     minWidth: "32px",

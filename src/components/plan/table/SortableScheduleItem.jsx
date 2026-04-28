@@ -160,7 +160,6 @@ const ScheduleCategorySelector = ({ prevValue, onChange, containerRef }) => {
 }
 
 const ScheduleMemoInput = ({ id, prevValue, onChange }) => {
-  // const {editingSchedule} = useTripPlan();
   const [inputValue, setInputValue] = useState(prevValue);
 
   const handleOnChange = (e) => {
@@ -190,7 +189,6 @@ const ScheduleMemoInput = ({ id, prevValue, onChange }) => {
 };
 
 const SchedulePriceInput = ({ id, prevValue, onChange }) => {
-  // const {editingSchedule} = useTripPlan();
   const [inputValue, setInputValue] = useState(prevValue);
 
   const handleOnChange = (v) => {
@@ -202,7 +200,7 @@ const SchedulePriceInput = ({ id, prevValue, onChange }) => {
     
     <InputNumber id={id} placeholder={prevValue}
     value={inputValue}
-    min={1} max={999999999} step={100}
+    min={0} max={999999999} step={100}
     onChange={handleOnChange} 
     style={{height: "75%", width: "90%", textAlign:"center"}}/>
   )
@@ -241,6 +239,7 @@ const ScheduleEditableItem = ({ columnId, value, isEditing, editingSchedule, onC
 const SortableScheduleItem = ({ id, index, schedule, isOnly, editingSchedule, setEditingSchedule, saveScheduleEvent, deleteScheduleEvent }) => {
   const { ref: sortableRef, handleRef, isDragging } = useSortable({ id, index, type: "item" });
   const itemRef = useRef(null);
+  const isDeleteRef = useRef(false);
   const { isExpanded } = useTripPlan();
   const [isHover, setIsHover] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -271,8 +270,16 @@ const SortableScheduleItem = ({ id, index, schedule, isOnly, editingSchedule, se
 
   const handleBlur = (e) => {
     const currentTarget = e.currentTarget;
-    console.log(currentTarget)
+    console.log(currentTarget.id);
+    console.log(isDeleteRef);
+
     setTimeout(() => {
+      // 삭제 버튼 클릭 시 저장 건너뜀
+      if (isDeleteRef.current) {
+        isDeleteRef.current = false;
+        return;
+      }
+
       const active = document.activeElement;
 
       // 1. 현재 컴포넌트 내부로 포커스 이동 시 유지
@@ -371,6 +378,7 @@ const SortableScheduleItem = ({ id, index, schedule, isOnly, editingSchedule, se
           
         <FlexBox w="36px" settings={{justify: "center"}}>
           <IconButton
+            id="delete-schedule-btn"
             width="32px"
             height="28px"
             fontSize="12px"
@@ -378,6 +386,7 @@ const SortableScheduleItem = ({ id, index, schedule, isOnly, editingSchedule, se
             ghost={isHover ? false : true}
             danger
             onClickEvent={() => {
+              isDeleteRef.current = true;  // 삭제 전 플래그 설정
               // 행 삭제 이벤트 연결
               deleteScheduleEvent?.(id);
             }}

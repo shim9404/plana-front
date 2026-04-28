@@ -141,7 +141,6 @@ const PlanTableContent = () => {
    */
   const handleSaveSchedule = () => {
     const dayId = planDays.find((item) => item.schedules.find(sItem => sItem.tripScheduleId === editingSchedule.tripScheduleId)).tripDayId;
-    console.log(dayId);
     const schedules = planDays.find(d => d.tripDayId === dayId).schedules;
     const newSchedules = schedules.map((item) => item.tripScheduleId === editingSchedule.tripScheduleId ? editingSchedule : item )
     setPlanDays((prev) => prev.map((d) => d.tripDayId === dayId ? {...d, schedules : newSchedules} : d));
