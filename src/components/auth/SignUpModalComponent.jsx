@@ -73,14 +73,13 @@ const SignUpModalComponent = ({ open, onClose }) => {
 
 
   // 이메일 input이 변경될 때
-  const onChangeEmail = (e) => {
-    if (!isVerified) return; // 인증 완료 전에는 초기화 불필요
+  const onChangeEmail = () => {
+    if (!isVerified && !isEmailSent) return; // 인증 완료 전에는 초기화 불필요
 
     // 다시 검증 필요
     setIsEmailSent(false);
     setIsVerified(false)
     setEmailStatus({ status: '', help: '' });
-
   }
 
   // 이메일 인증 발송
@@ -256,7 +255,7 @@ const SignUpModalComponent = ({ open, onClose }) => {
               <Input placeholder="이메일" autoComplete="off" onChange={onChangeEmail}
                 style={{ height: '35px', boxShadow: '0 2px 2px rgba(0,0,0,0.2)', fontSize: '12px' }} />
             </Form.Item>
-            <Button type="default" disabled={isVerified} loading={emailLoading} onClick={handleEmailSend} className={styles.InputCheckBtn} >
+            <Button type="default" disabled={isVerified || isEmailSent} loading={emailLoading} onClick={handleEmailSend} className={styles.InputCheckBtn} >
               인증
             </Button>
           </div>
