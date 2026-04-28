@@ -74,10 +74,6 @@ export const AuthProvider = ({ children }) => {
     setAccessToken('')
     setRefreshToken('')
 
-    if (isExpired || sessionStorage.getItem(SESSION_EXPIRED_NOTICE_KEY)) {
-      sessionStorage.removeItem(SESSION_EXPIRED_NOTICE_KEY); // 플래그 제거
-      console.log("토큰이 만료되어 로그아웃되었습니다.")
-    }
     window.dispatchEvent(new Event('trip-auth-profile-updated'));
   }, []);
 
