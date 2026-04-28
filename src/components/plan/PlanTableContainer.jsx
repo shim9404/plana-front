@@ -3,6 +3,8 @@ import { ScrollStyle, TableStyles } from "../../styles/planStyles";
 import { IconButton } from "../common/PLA_Buttons";
 import { FlexBox } from "../common/PLA_FlexBox";
 import {
+  CaretLeftOutlined,
+  CaretRightOutlined,
   DownloadOutlined,
   EnvironmentFilled,
   ShareAltOutlined,
@@ -10,6 +12,9 @@ import {
 import PlanTableHeader from "./table/PlanTableHeader";
 import PlanTableContent from "./table/PlanTableContent";
 import PlanTableFooter from "./table/PlanTableFooter";
+import { Button } from "antd";
+import { useState } from "react";
+import { useTripPlan } from "../../hooks/plan/PlanTripContext";
 
 const containerSetting = {
   isVertical: true,
@@ -24,17 +29,41 @@ const containerSetting = {
  * @returns
  */
 const PlanTableContainer = () => {
+  const [isExpandHover, setIsExpandHover] = useState(false);
+  const { isExpanded, setIsExpanded } = useTripPlan();
   return (
     <FlexContainer settings={containerSetting}>
       <FlexBox
         settings={{ isVertical: true }}
-        style={{ padding: "8px 20px" }}
+        style={{ padding: "8px 20px", position: "relative" }}
         bg="none"
       >
+        {/* absolute: 확장 및 축소 버튼 */}
+        <FlexBox w="12px" bg="none" style={{ position: "absolute", top: "0px", left: "0px",}}>
+          <Button type="default" 
+            style={{height: "100%", width: "100%", 
+              padding: "0px", margin: "0px",
+              border: "0px", borderRadius: "6px 0px 0px 6px", 
+              backgroundColor: isExpandHover ? "#D9D9D9" : "#FFFFFF",
+              opacity: isExpandHover ? 0.75 : 0.1
+            }}
+            onMouseOver={() => setIsExpandHover(true)}
+            onMouseLeave={() => setIsExpandHover(false)}
+            onClick={() => setIsExpanded(prev => !prev)}
+          >
+            {
+              isExpanded ? 
+              <CaretRightOutlined/>
+              :
+              <CaretLeftOutlined/>
+            }
+          </Button>
+        </FlexBox>
+
         {/* 여행 계획표 타이틀 영역 */}
         <FlexBox h="52px" bg="none">
           <FlexBox w="auto" h="auto" bg="none" style={TableStyles.titleStyle} settings={{ justify: "flex-start" }}>
-            <EnvironmentFilled />
+            <EnvironmentFilled style={{marginRight: "8px"}}/>
             여행 계획표
           </FlexBox>
           <FlexBox w="108px" bg="none">
@@ -47,6 +76,7 @@ const PlanTableContainer = () => {
           </FlexBox>
         </FlexBox>
 
+        {/* 여행 계획표 헤더 영역 */}
         <PlanTableHeader styles={TableStyles} />
 
         {/* 여행 계획표 테이블 영역 */}

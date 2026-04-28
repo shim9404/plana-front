@@ -1,109 +1,91 @@
-import { createContext, useContext, useMemo } from "react";
-import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+import { useSortable } from "@dnd-kit/react/sortable";
 import { HolderOutlined } from "@ant-design/icons";
-import { Button, Flex, List } from "antd";
+import { FlexBox, TextBox } from "../../common/PLA_FlexBox";
 import { FlexContainer } from "../../common/PLA_Containers";
-import DayItemTable from "./DayItemTable";
+import { Button } from "antd";
+import SortableScheduleItem from "./SortableScheduleItem";
 
-const dayStyle = {
-  backgroundColor: "rgba(168, 168, 168, 1)",
-  width: "48px",
-  alignItems: "center",
-  overflow: "hidden",
-};
+const SortableDayItem = ({ id, index, schedules, editingSchedule, setEditingSchedule, saveScheduleEvent, addScheduleEvent, deleteScheduleEvent }) => {
+  const { ref, handleRef, isDragging } = useSortable({
+    id,
+    index,
+    type: "list",
+    accept: ["list"],
+  });
 
-const textRotateStyle = {
-  // backgroundColor: "rgba(128, 64, 12, 0.75)",
-  padding: "0px",
-  margin: "0px",
-  fontSize: "12px",
-  fontWeight: "500",
-  color: "#FFFFFF",
-  transform: "rotate(-90deg)",
-};
-
-const SortableListItemContext = createContext({});
-
-/**
- * DAY 아이템 전용 Drag Handle
- * @param {*} param0 
- * @returns 
- */
-const DayDragHandle = ({ dayIndex }) => {
-  const { setActivatorNodeRef, listeners, attributes } = useContext(SortableListItemContext);
-  return (
-    <Button
-      type="text"
-      size="small"
-      style={{ cursor: "move", width: "100%", height: "100%" }}
-      ref={setActivatorNodeRef}
-      {...attributes}
-      {...listeners}
-    >
-      <Flex>
-        <HolderOutlined style={{ color: "#FFFFFF" }}/>
-        <Flex style={textRotateStyle} justify="center" align="center">
-          {`${dayIndex}일차`}
-        </Flex>
-      </Flex>
-      </Button>
-  );
-};
-
-/**
- * 드래그&드롭으로 정렬 가능한 DAY 아이템
- * 일자 하위의 스케줄이 Table 컴포넌트로 삽입
- * @param {*} param0 
- * @returns 
- */
-const SortableDayItem = ({ itemKey, day, onSchedulesChange }) => {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    setActivatorNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: itemKey });
-
-  const listStyle = {
-    display: "block",
-    marginTop: "4px",
-    marginBottom: "4px",
-    padding: "0px",
-    transform: CSS.Translate.toString(transform),
-    transition,
-    ...(isDragging ? { position: "relative", zIndex: 9999 } : {}),
+  const rotateStyle = {
+    minWidth: "32px",
+    maxHeight: "20px",
+    lineHeight: "100%",
+    fontSize: "12px",
+    fontWeight: "500",
+    color: "#FFFFFF",
+    transform: "rotate(-90deg) translate(0, 0%)",
   };
 
-  const memoizedValue = useMemo(
-    () => ({ setActivatorNodeRef, listeners, attributes }),
-    [setActivatorNodeRef, listeners, attributes]
-  );
-
   return (
-    <SortableListItemContext.Provider value={memoizedValue}>
-      <List.Item ref={setNodeRef} style={listStyle}>
-        <FlexContainer>
-          {/* Day 핸들 영역 */}
-          <Flex style={dayStyle}>
-            <DayDragHandle dayIndex={day?.indexSort}/>
-          </Flex>
-          {/* 하위 스케줄 테이블 리스트 영역 */}
-          <DayItemTable
-            dayId={day?.tripDayId}
-            schedules={day?.schedules}
-            onSchedulesChange={(newSchedules) =>
-              onSchedulesChange?.(day?.tripDayId, newSchedules)
-            }
-          />
+    <FlexBox h="auto" id="day-item" ref={ref}>
+      <FlexContainer>
+        <FlexBox h="auto" settings={{ justify: "flex-start" }} style={{opacity: isDragging ? 0.75 : 1}}>
+          {/* 드래그 가능한 핸들 영역 */}
+          <FlexBox w="56px" bg="rgba(168, 168, 168, 1)">
+            <FlexBox
+              w="28px"
+              ref={handleRef}
+              style={{
+                cursor: "grab",
+                background: "none",
+              }}
+              settings={{ justify: "center" }}
+            >
+              <HolderOutlined style={{ width:"16px", fontSize:"16px", color: "#FFFFFF", backgroundColor:"none" }} />
+            </FlexBox>
+            <FlexBox w="28px" bg="none">
+              <TextBox justify="center" align="left" style={rotateStyle} bg="none">
+                {`${index + 1}일차`}
+              </TextBox>
+            </FlexBox>
+          </FlexBox>
+          {/* 스케줄 리스트 영역 */}
+          <FlexBox 
+            w="auto"
+            settings={{ isVertical: true, justify: "flex-start" }}
+            style={{ gap: "2px" }}
+            bg="none"
+          >
+            {schedules.map((schedule, index) => (
+              <SortableScheduleItem
+                key={schedule.tripScheduleId}
+                id={schedule.tripScheduleId}
+                dayId={id}
+                index={index}
+                schedule={schedule}
+                isOnly={schedules.length <= 1}
+                editingSchedule={editingSchedule}
+                setEditingSchedule={setEditingSchedule}
+                saveScheduleEvent={() => saveScheduleEvent()}
+                deleteScheduleEvent={(scheduleId) => deleteScheduleEvent(id, scheduleId)}
+              />
+            ))}
+          {/* ADD BUTTON */}
+          <FlexBox h="28px" settings={{justify: "center"}}>
+            <Button style={{width:"100%", height: "24px", margin: "1px 2px 2px 1px", padding: "0px", overflow: "hidden"}}
+            onClick={() => addScheduleEvent?.(id)} disabled={editingSchedule ? true : false}>
+              <FlexBox settings={{isVertical: false}}>
+              <FlexBox w="20px" h="100%" bg="#A8a8a8" settings={{justify: "center"}}>
+                +
+              </FlexBox>
+              <FlexBox settings={{justify: "center"}}>
+                계획 추가
+              </FlexBox>
+              </FlexBox>
+            </Button>
+          </FlexBox>
+          </FlexBox>
+        </FlexBox>
       </FlexContainer>
-      </List.Item>
-    </SortableListItemContext.Provider>
+    </FlexBox>
   );
 };
-
 
 export default SortableDayItem;
