@@ -12,6 +12,7 @@ import PlanHeader from "../../components/plan/PlanHeader";
 import PlanMap from "../../components/plan/map/PlanMap";
 import { useModal } from "../../hooks/ModalProvider";
 import { oneBtnPreset } from "../../utils/alertModalPreset";
+import { SCHEDULE_CATEGORYS } from "../../constants/scheduleCategory";
 const { Header, Sider, Content } = Layout;
 
 const layoutStyle = {
@@ -52,7 +53,7 @@ const mapStyle = {
 }
 
 const PlanPage = () => {
-  const { isExpanded } = useTripPlan();
+  const { isExpanded, setScheduleCategorys } = useTripPlan();
   const { regionData, updateRegionData } = useRegion();
   const { cascaderOptions } = regionData;
   const { openOneBtnModal } = useModal();
@@ -74,6 +75,10 @@ const PlanPage = () => {
       }
     }
     fetchRegionData();
+
+    // TODO: 여행 계획 데이터 전체 요청
+    setScheduleCategorys(SCHEDULE_CATEGORYS);
+    // 기본 값에 없는 구분이 데이터에 있을 경우 scheduleCategorys에 추가
   }, []);
 
   return (
@@ -96,7 +101,7 @@ const PlanPage = () => {
           {/* 계획표(확장 영역 포함) */}
           <Content>
             <FlexBox bg="none" settings={{ justify: "flex-end" }}>
-              <FlexBox w={isExpanded ? "100%" : 752} style={{ overflowX: "hidden", pointerEvents: "auto" }}>
+              <FlexBox w={isExpanded ? "1392px" : "752px"} style={{ overflowX: "hidden", pointerEvents: "auto" }}>
                 <PlanTableContainer />
               </FlexBox>
             </FlexBox>
