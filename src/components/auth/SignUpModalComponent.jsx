@@ -185,7 +185,7 @@ const SignUpModalComponent = ({ open, onClose }) => {
   // 회원가입 API 연결 예정 (rule이 다 통과되면 여기로 호출됨)
   const handleMemberRegisterSubmit = async () => {
     if (!isVerified) {
-      message.error("이메일 인증을 해주세요");
+      setEmailStatus({ status: 'error', help: '이메일 인증을 완료해주세요.' });
       return;
     }
 
@@ -245,13 +245,6 @@ const SignUpModalComponent = ({ open, onClose }) => {
                     if (!value) return Promise.reject(new Error('이메일을 입력하세요.'));
                     if (!EMAIL_REGEX.test(value)) return Promise.reject(new Error('올바른 이메일 형식이 아닙니다.'));
                     if (value.length > 255) return Promise.reject(new Error('최대 255자까지 입력 가능합니다.'));
-                    return Promise.resolve();
-                  }
-                },
-                {
-                  validateTrigger: 'onSubmit', // 제출 시에만 검사
-                  validator: (_, value) => {
-                    if (value && !isVerified) return Promise.reject(new Error('이메일 인증을 완료해주세요.'));
                     return Promise.resolve();
                   }
                 }
