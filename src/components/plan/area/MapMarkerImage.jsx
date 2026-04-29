@@ -10,11 +10,14 @@ const MapMarkerImage = ({ number = 1, active }) => {
     backgroundImage: imgUrl,
     height: "48px",
     width: "48px",
-    backgroundPosition: `-${48 * offsetX}px -${48 * offsetY}px`
+    backgroundPosition: `-${48 * offsetX}px -${48 * offsetY}px`,
+    backgroundSize: "auto",
+    backgroundRepeat: "no-repeat",
+    border: "none"
   }
 
   return (
-    <image style={imageStyle}/>
+    <div style={imageStyle}/>
   )
 }
 

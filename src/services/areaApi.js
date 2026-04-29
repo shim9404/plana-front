@@ -13,6 +13,6 @@ export const getPlaceApi = async (keyword, mapX, mapY) => {
   const optionalKeyword = keyword === null || keyword === undefined ? "" : `&keyword=${keyword}`;
   const optionalMapX = mapX === null || mapX === undefined ? "" : `&mapX=${mapX}`;
   const optionalMapY = mapY === null || mapY === undefined ? "" : `&mapY=${mapY}`;
-  const response = await axiosInstance.get(`/api/areas?${optionalKeyword}${optionalMapX}${optionalMapY}`);
+  const response = await axiosInstance.get(`/api/areas/place?${optionalKeyword}${optionalMapX}${optionalMapY}`);
   return response.data;
 };

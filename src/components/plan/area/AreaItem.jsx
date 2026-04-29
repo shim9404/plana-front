@@ -6,6 +6,7 @@ import MapMarkerImage from './MapMarkerImage';
 import { useRef, useState } from 'react';
 import { getBookmarkColor } from '../../../utils/plan/bookmarkUtils';
 import { BOOKMARK_COLOR } from '../../../Constants/bookmarkColor';
+import { CATEGORY_NAME } from '../../../constants/categoryName'; 
 
 const AreaItem = ({ area, number, margin, popupBookmark }) => {
   const [bookmarkType, setBookmarkType] = useState("");
@@ -38,8 +39,8 @@ const AreaItem = ({ area, number, margin, popupBookmark }) => {
         {/* 정보 */}
         <FlexBox w="210px" bg="none" settings={{ isVertical: true, justify: "space-around" }} style={{ padding: "8px" }}>
           <TextBox h="25%" size="16px" color="#565656" weight={500} bg="none" alignW="left" style={nameStyle}>{area.name}</TextBox>
-          <TextBox h="20%" bg="none" alignW="left">{area.category}</TextBox>
-          <TextBox h="25%" bg="none" alignW="left">{area.roadAddress ?? area.address ?? ""}</TextBox>
+          <TextBox h="20%" bg="none" alignW="left">{CATEGORY_NAME[area.category]}</TextBox>
+          <TextBox h="25%" bg="none" alignW="left">{area.roadAddress || area.address || ""}</TextBox>
           <TextBox h="20%" bg="none" alignW="left">{area.telephone}</TextBox>
         </FlexBox>
         {/* 우측 버튼 */}
