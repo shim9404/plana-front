@@ -7,6 +7,8 @@ export const RegionProvider = ({ children }) => {
     regionMap: {},
     cascaderOptions: []
   });
+  // 지정 지역 정보(이름 + 좌표)
+  const [ objRegions, setObjRegions ] = useState({});
 
   // 데이터를 업데이트하는 함수를 메모이제이션하여 제공
   const updateRegionData = useCallback((newData) => {
@@ -15,7 +17,8 @@ export const RegionProvider = ({ children }) => {
 
   return (
     <RegionContext.Provider value={{
-      regionData, updateRegionData
+      regionData, updateRegionData,
+      objRegions, setObjRegions
     }}>
       {children}
     </RegionContext.Provider>

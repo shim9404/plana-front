@@ -17,6 +17,6 @@ export const CATEGORY_NAME = {
   "CE7": "카페",
   "HP8": "병원",
   "PM9": "약국",
-  "etc": "기타",
+  "ETC": "기타",
   default: "-",
 }
