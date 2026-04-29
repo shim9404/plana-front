@@ -1,7 +1,7 @@
 import { useSortable } from "@dnd-kit/react/sortable";
 import { useDroppable } from "@dnd-kit/react";
 import { useEffect, useRef, useState } from "react";
-import { useTripPlan } from "../../../hooks/plan/PlanTripContext";
+import { usePlanEditing, useTripPlan } from "../../../hooks/plan/PlanTripContext";
 import { Button, Input, InputNumber, Select, TimePicker } from "antd";
 import { FlexBox, TextBox } from "../../common/PLA_FlexBox";
 import { IconButton } from "../../common/PLA_Buttons";
@@ -34,6 +34,12 @@ const ScheduleDroppableItem = ({ scheduleId, bookmarkId, value, isEditing, onCha
     return bookmarks.find(b => b.bookmarkId === bookmarkId).bookmarkType;
   }
 
+  useEffect(() => {
+    if (isEditing) {
+      setInputValue(value);
+    }
+  }, [isEditing]);
+
   return (
     <FlexBox ref={ref} bg="none">
       <FlexBox w="98%" h="80%" bg={bookmarkId ? `${getBookmarkColor(getBookmarkType())}` : "#d9d9d9"} settings={{justify: "center"}} 
@@ -46,7 +52,7 @@ const ScheduleDroppableItem = ({ scheduleId, bookmarkId, value, isEditing, onCha
           { 
             (bookmarkId == null || bookmarkId <= 0) ? 
             isEditing ?
-            <Input maxLength={20} value={inputValue} placeholder={value || "직접입력"} onChange={handleOnChange} 
+            <Input maxLength={20} value={inputValue} placeholder={value || "직접 입력"} onChange={handleOnChange} 
             onKeyUp={processChange}
             style={{width:"100%", height:"auto", border: "none", padding:"0px", textAlign:"center", backgroundColor:"rgba(0,0,0,0)"}}
             /> : <TextBox size="12px" color="#565656">{value}</TextBox>
@@ -136,7 +142,7 @@ const ScheduleCategorySelector = ({ prevValue, onChange, containerRef }) => {
           {menu}
           <FlexBox settings={{isVertical: true}} style={{borderTop: "solid 1px #D9D9D9", padding: "4px 0px"}}>
             <Input
-              placeholder="직접입력"
+              placeholder="직접 입력"
               value={inputValue}
               maxLength={6}
               style={{fontSize: "12px", textAlign: "center", padding:"4px 2px", borderRadius: "8px 8px 0px 0px"}}
@@ -206,7 +212,7 @@ const SchedulePriceInput = ({ id, prevValue, onChange }) => {
   )
 };
 
-const ScheduleEditableItem = ({ columnId, value, isEditing, editingSchedule, onClick, onChange, ...rest }) => {
+const ScheduleEditableItem = ({ columnId, value, isEditing, onClick, onChange, ...rest }) => {
   
   const editInput = () => {
     switch (columnId) {
@@ -214,11 +220,11 @@ const ScheduleEditableItem = ({ columnId, value, isEditing, editingSchedule, onC
       case "endTime" :
         return <ScheduleTimePicker id={columnId} prevValue={value} containerRef={rest.containerRef} onChange={v => onChange(columnId, v)}/>
       case "category" :
-        return <ScheduleCategorySelector id={columnId} prevValue={value} editingValue={editingSchedule?.category} containerRef={rest.containerRef} onChange={v => {console.log(columnId, v); onChange(columnId, v)}}/>;
+        return <ScheduleCategorySelector id={columnId} prevValue={value} containerRef={rest.containerRef} onChange={v => {console.log(columnId, v); onChange(columnId, v)}}/>;
       case "memo": 
-        return <ScheduleMemoInput id={columnId} prevValue={value} editingValue={editingSchedule?.memo} onChange={v => onChange(columnId, v)}/>
+        return <ScheduleMemoInput id={columnId} prevValue={value} onChange={v => onChange(columnId, v)}/>
       case "price":
-        return <SchedulePriceInput id={columnId} prevValue={value} editingValue={editingSchedule?.price} onChange={v => onChange(columnId, v)}/>
+        return <SchedulePriceInput id={columnId} prevValue={value} onChange={v => onChange(columnId, v)}/>
     }
   }
   return (
@@ -236,13 +242,15 @@ const ScheduleEditableItem = ({ columnId, value, isEditing, editingSchedule, onC
   );
 };
 
-const SortableScheduleItem = ({ id, index, schedule, isOnly, editingSchedule, setEditingSchedule, saveScheduleEvent, deleteScheduleEvent }) => {
-  const { ref: sortableRef, handleRef, isDragging } = useSortable({ id, index, type: "item" });
+const SortableScheduleItem = ({ id, scheduleId, index, schedule, isOnly, }) => {
+  const { ref: sortableRef, handleRef, isDragging } = useSortable({ id: scheduleId, index, type: "item" });
   const itemRef = useRef(null);
-  const { isExpanded, isDeleteRef, isDeleteBookmarkRef, setBookmarkInSchedule } = useTripPlan();
+  const { isExpanded, setBookmarkInSchedule } = useTripPlan();
+  const { isDeleteRef, isDeleteBookmarkRef, editingSchedule, setEditingSchedule, focusRef, saveSchedule, deleteSchedule } = usePlanEditing();
   const [isHover, setIsHover] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
+  // 다중 ref 사용 시 merge util (*추후 utils 폴더로 이동 필요)
   const mergeRefs = (...refs) => (node) => {
     refs.forEach((ref) => {
       if (typeof ref === "function") ref(node);  // 함수형 ref면 호출
@@ -250,44 +258,44 @@ const SortableScheduleItem = ({ id, index, schedule, isOnly, editingSchedule, se
     });
   };
 
-  // 편집할 스케줄 선택
+  /**
+   * 편집할 스케줄 선택 시 실행
+   */
   const handleSelectEditing = () => {
     console.log("SELECT");
     setTimeout(() => {
-      // 삭제 버튼 클릭 시 편집모드 진입 건너뜀
+      // 북마크 삭제 버튼으로 편집 스케줄 선택 판단된 경우 예외 처리
       if (isDeleteRef.current) {
         isDeleteRef.current = false;
         return;
       }
-      // 이미 편집 중인데 북마크를 제거한 경우 예외 처리
+
+      // 북마크 삭제 버튼으로 편집 스케줄 선택 판단된 경우 예외 처리 (포커스 재설정은 Blur에서 처리)
       if (isDeleteBookmarkRef.current) {
-        if (editingSchedule.scheduleId === id) {
-          console.log("editingSchedule ",editingSchedule.scheduleId);
-          console.log("id ",id);
-          console.log("동일 스케줄의 북마크를 제거한 뒤 edit event 발생")
-          return;
-        }
-        console.log("다른 스케줄의 북마크를 삭제한 뒤 edit event 발생 ")
+        console.log("SelectEdit 에서 isDeleteBookmark");
         isDeleteBookmarkRef.current = false;
         return;
       }
 
-      console.log(editingSchedule);
       // 이전에 선택했던 스케줄이 있고 동일함
-      if (editingSchedule && editingSchedule.tripScheduleId === id) return;
+      if (editingSchedule && editingSchedule.tripScheduleId === scheduleId) return;
       // 이전에 선택했던 스케줄이 있고 동일하지 않음
       if (editingSchedule && editingSchedule.tripScheduleId !== schedule.tripScheduleId) {
         // 이전 스케줄 저장
-        saveScheduleEvent?.();
+        saveSchedule?.();
       }
+
       // TODO: 저장 후 성공 시 편집 시작
       setEditingSchedule({...schedule});
-      // console.log(schedule);
     }, 150);
   };
 
+  /**
+   * 편집 중인 스케줄의 값 변경 연결 이벤트
+   * @param {String} key 
+   * @param {String} value 
+   */
   const handleChangeEditing = (key, value) => {
-    console.log("EDITING");
     setEditingSchedule(prev => {
       const schedule = {...prev}
       schedule[key] = value;
@@ -296,12 +304,26 @@ const SortableScheduleItem = ({ id, index, schedule, isOnly, editingSchedule, se
     });
   };
 
+  /**
+   * 북마크 삭제
+   */
   const handleDeleteBookmarkEvent = () => {
-    console.log("DELETE BOOKMARK");
     isDeleteBookmarkRef.current = true;
+    setBookmarkInSchedule(scheduleId);
 
-    setBookmarkInSchedule(id, null);
-    handleChangeEditing("bookmarkId", null);
+    // 편집 중인 스케줄의 북마크를 삭제한 경우 editingSchedule 갱신
+    if (editingSchedule && editingSchedule.tripScheduleId == scheduleId) {
+      handleChangeEditing("bookmarkId", null);
+    }
+  }
+  
+  /**
+   * 스케줄 삭제
+   */
+  const handleDeleteSchedule = () => {
+    isDeleteRef.current = true;  // 삭제 전 플래그 설정
+    // 행 삭제 이벤트 연결
+    deleteSchedule?.(scheduleId);
   }
 
   /**
@@ -312,10 +334,15 @@ const SortableScheduleItem = ({ id, index, schedule, isOnly, editingSchedule, se
     console.log("BLUR");
     const currentTarget = e.currentTarget;
     setTimeout(() => {
-      if (isDeleteBookmarkRef.current) return;
-      // 삭제 버튼 클릭 시 저장 건너뜀
+      // 북마크 삭제 버튼으로 Blur 판단된 경우 경우 포커스 유지
+      if (isDeleteBookmarkRef.current) {
+        console.log("BLUR에서 isDeleteBookmark");
+        focusRef?.current?.focus();
+        return;
+      }
+      // 스케줄 삭제 버튼으로 Blur 판단된 경우 경우 포커스 유지
       if (isDeleteRef.current) {
-        console.log("TRUE");
+        focusRef?.current?.focus();
         isDeleteRef.current = false;
         return;
       }
@@ -343,7 +370,7 @@ const SortableScheduleItem = ({ id, index, schedule, isOnly, editingSchedule, se
       const isOtherScheduleItem = active?.closest("#schedule-item");
       if (isOtherScheduleItem) return;  // 별도로 저장 처리를 하고 있음
 
-      saveScheduleEvent?.();
+      saveSchedule?.();
     }, 150);
   };
 
@@ -351,14 +378,22 @@ const SortableScheduleItem = ({ id, index, schedule, isOnly, editingSchedule, se
   useEffect(() => {
     setIsEditing(schedule.tripScheduleId === editingSchedule?.tripScheduleId);
     // console.log(editingSchedule);
-  }, [editingSchedule?.tripScheduleId])
+  }, [editingSchedule?.tripScheduleId]);
+
+  useEffect(() => {
+    if (isEditing) {
+      console.log("changeEditing");
+      focusRef.current = itemRef.current;
+      focusRef?.current?.focus();
+    }
+  }, [isEditing]);
 
   return (
     <FlexBox
       ref={mergeRefs(sortableRef, itemRef)}
       onBlur={handleBlur}
       tabIndex={-1}
-      id="schedule-item"
+      id={id}
       h="32px"
       style={{ borderBottom: "solid 1px #F4F4F4", opacity: isDragging ? 0.75 : 1 }}
       settings={{justify: "flex-start"}}
@@ -384,7 +419,7 @@ const SortableScheduleItem = ({ id, index, schedule, isOnly, editingSchedule, se
           <ScheduleEditableItem isEditing={isEditing} columnId="endTime"   onChange={handleChangeEditing} onClick={handleSelectEditing} w="092px" containerRef={itemRef} value={schedule.endTime || "00:00"}/>
           <ScheduleEditableItem isEditing={isEditing} columnId="category"  onChange={handleChangeEditing} onClick={handleSelectEditing} w="108px" containerRef={itemRef} value={schedule.category}/>
           <FlexBox w="280px" >
-            <ScheduleDroppableItem scheduleId={id} isEditing={isEditing} value={schedule.context || "-"} bookmarkId={schedule.bookmarkId}
+            <ScheduleDroppableItem scheduleId={scheduleId} isEditing={isEditing} value={schedule.context || ""} bookmarkId={schedule.bookmarkId}
             deleteBookmarkEvent={handleDeleteBookmarkEvent}
             onChange={handleChangeEditing}
             onClick={handleSelectEditing}/>
@@ -424,10 +459,7 @@ const SortableScheduleItem = ({ id, index, schedule, isOnly, editingSchedule, se
             ghost={isHover ? false : true}
             danger
             onClickEvent={() => {
-              isDeleteRef.current = true;  // 삭제 전 플래그 설정
-              console.log(isDeleteRef);
-              // 행 삭제 이벤트 연결
-              deleteScheduleEvent?.(id);
+              handleDeleteSchedule();
             }}
           >
             <CloseSquareOutlined />

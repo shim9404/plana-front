@@ -2,12 +2,12 @@ import { useSortable } from "@dnd-kit/react/sortable";
 import { HolderOutlined } from "@ant-design/icons";
 import { FlexBox, TextBox } from "../../common/PLA_FlexBox";
 import { FlexContainer } from "../../common/PLA_Containers";
-import { Button } from "antd";
 import SortableScheduleItem from "./SortableScheduleItem";
+import AddScheduleButton from "./AddScheduleButton";
 
-const SortableDayItem = ({ id, index, schedules, editingSchedule, setEditingSchedule, saveScheduleEvent, addScheduleEvent, deleteScheduleEvent }) => {
+const SortableDayItem = ({ id, dayId, index, schedules, }) => {
   const { ref, handleRef, isDragging } = useSortable({
-    id,
+    id: dayId,
     index,
     type: "list",
     accept: ["list"],
@@ -24,7 +24,7 @@ const SortableDayItem = ({ id, index, schedules, editingSchedule, setEditingSche
   };
 
   return (
-    <FlexBox h="auto" id="day-item" ref={ref}>
+    <FlexBox h="auto" id={id} ref={ref}>
       <FlexContainer>
         <FlexBox h="auto" settings={{ justify: "flex-start" }} style={{opacity: isDragging ? 0.75 : 1}}>
           {/* 드래그 가능한 핸들 영역 */}
@@ -55,31 +55,18 @@ const SortableDayItem = ({ id, index, schedules, editingSchedule, setEditingSche
           >
             {schedules.map((schedule, index) => (
               <SortableScheduleItem
+                id={`schedule-item-${schedule.tripScheduleId}`}
                 key={schedule.tripScheduleId}
-                id={schedule.tripScheduleId}
-                dayId={id}
+                scheduleId={schedule.tripScheduleId}
+                dayId={dayId}
                 index={index}
                 schedule={schedule}
                 isOnly={schedules.length <= 1}
-                editingSchedule={editingSchedule}
-                setEditingSchedule={setEditingSchedule}
-                saveScheduleEvent={() => saveScheduleEvent()}
-                deleteScheduleEvent={(scheduleId) => deleteScheduleEvent(id, scheduleId)}
               />
             ))}
           {/* ADD BUTTON */}
           <FlexBox h="28px" settings={{justify: "center"}}>
-            <Button style={{width:"100%", height: "24px", margin: "1px 2px 2px 1px", padding: "0px", overflow: "hidden"}}
-            onClick={() => addScheduleEvent?.(id)} disabled={editingSchedule ? true : false}>
-              <FlexBox settings={{isVertical: false}}>
-              <FlexBox w="20px" h="100%" bg="#A8a8a8" settings={{justify: "center"}}>
-                +
-              </FlexBox>
-              <FlexBox settings={{justify: "center"}}>
-                계획 추가
-              </FlexBox>
-              </FlexBox>
-            </Button>
+            <AddScheduleButton dayId={dayId}/>
           </FlexBox>
           </FlexBox>
         </FlexBox>

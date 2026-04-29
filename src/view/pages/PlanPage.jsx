@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { FlexBox } from "../../components/common/PLA_FlexBox";
 import { getRegionDataForCascader } from "../../services/regionDataParser";
 import { useRegion } from "../../hooks/home/RegionContext";
-import { useTripPlan } from "../../hooks/plan/PlanTripContext";
+import { usePlanEditing, useTripPlan } from "../../hooks/plan/PlanTripContext";
 import PageLayout from "../../components/common/PageLayout";
 import PlanTableContainer from "../../components/plan/PlanTableContainer";
 import PlanAreaContainer from "../../components/plan/PlanAreaContainer";
@@ -57,7 +57,7 @@ const mapStyle = {
 }
 
 const PlanPage = () => {
-  const { isExpanded, planDays, setPlanDays, setScheduleCategorys, setBookmarks, getBookmark, setBookmarkInSchedule } = useTripPlan();
+  const { isExpanded, setPlanDays, setScheduleCategorys, setBookmarks, getBookmark, setBookmarkInSchedule } = useTripPlan();
   const { regionData, updateRegionData } = useRegion();
   const { cascaderOptions } = regionData;
   const { openOneBtnModal } = useModal();
@@ -129,16 +129,6 @@ const PlanPage = () => {
     
     // 해당 스케줄에 북마크 연결
     setBookmarkInSchedule(scheduleId, bookmarkId);
-
-    // handleChangeScheduleBookmark(scheduleId, bookmarkId);
-    // setPlanDays((prev) =>
-    //   prev.map((day) => ({
-    //     ...day,
-    //     schedules: day.schedules.map((s) =>
-    //       s.tripScheduleId === scheduleId ? { ...s, bookmarkId: bookmarkId, context: bookmark?.areaInfo?.name } : s
-    //     ),
-    //   }))
-    // );
   };
 
   /**
@@ -212,23 +202,6 @@ const PlanPage = () => {
     });
   };
 
-  /**
-   * 스케줄 내 북마크 변경(등록 및 삭제 포함)
-   * @param {*} scheduleId 스케줄 ID
-   * @param {*} bookmarkId 북마크 ID (삭제 시 null)
-   */
-  const handleChangeScheduleBookmark = (scheduleId, bookmarkId) => {
-    // const bookmark = bookmarkId ? getBookmark(bookmarkId) : null;
-    // setPlanDays((prev) =>
-    //   prev.map((day) => ({
-    //     ...day,
-    //     schedules: day.schedules.map((s) =>
-    //       s.tripScheduleId === scheduleId ? { ...s, bookmarkId: bookmark?.bookmarkId, context: bookmark?.areaInfo?.name } : s
-    //     ),
-    //   }))
-    // );
-  }
-
   return (
     <PageLayout>
       {/* 헤더 영역의 추가 콘텐츠 - absolute */}
@@ -254,7 +227,7 @@ const PlanPage = () => {
             <Content>
               <FlexBox bg="none" settings={{ justify: "flex-end" }}>
                 <FlexBox w={isExpanded ? "1392px" : "752px"} style={{ overflowX: "hidden", pointerEvents: "auto" }}>
-                  <PlanTableContainer handleChangeScheduleBookmark={handleChangeScheduleBookmark}/>
+                  <PlanTableContainer/>
                 </FlexBox>
               </FlexBox>
             </Content>
