@@ -199,14 +199,26 @@ const SchedulePriceInput = ({ id, prevValue, onChange }) => {
 
   const handleOnChange = (v) => {
     setInputValue(v);
-    onChange(v);
+    // onChange(v);
   }
+
+  const debounce = (func, timeout = 150) => {
+    let timer;
+    return (...args) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        func.apply(this, args);
+      }, timeout);
+    };
+  }
+  const processChange = debounce(() => onChange(inputValue));
 
   return (
     
     <InputNumber id={id} placeholder={prevValue}
     value={inputValue}
     min={0} max={999999999} step={100}
+    onKeyUp={processChange}
     onChange={handleOnChange} 
     style={{height: "75%", width: "90%", textAlign:"center"}}/>
   )
