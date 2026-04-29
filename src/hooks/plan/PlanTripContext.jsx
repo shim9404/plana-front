@@ -11,6 +11,7 @@ export const TripPlanProvider = ({ children }) => {
   // 필터링 결과 데이터
   const [searchResults, setSearchResults] = useState([]);
   // === 데이터 ====================================
+  const [planData, setPlanData] = useState([]);
   // 북마크 데이터
   const [bookmarks, setBookmarks] = useState([]);
   // 장소 데이터(DB)
