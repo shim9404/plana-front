@@ -8,12 +8,16 @@ export const TripInfoProvider = ({ children }) => {
   const [selectedZdo, setSelectedZdo] = useState(null);       // 현재 선택된 시도 (예: "32")
   const [selectedSigu, setSelectedSigu] = useState(null);     // 현재 선택된 시군구 (예: "32000")
   const [confirmedDates, setConfirmedDates] = useState(null); // 현재 선택된 여행일자
+  const [tripName, setTripName] = useState("");               // 여행명
+  const [entryCount, setEntryCount] = useState(1);            // 여행 참여 인원
 
   return (
     <TripInfoContext.Provider value={{
       selectedZdo, setSelectedZdo,
       selectedSigu, setSelectedSigu,
-      confirmedDates, setConfirmedDates
+      confirmedDates, setConfirmedDates,
+      tripName, setTripName,
+      entryCount, setEntryCount,
     }}>
       {children}
     </TripInfoContext.Provider>

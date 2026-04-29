@@ -1,140 +1,178 @@
+import { FlexBox } from "../../common/PLA_FlexBox";
+import { DragDropProvider } from "@dnd-kit/react";
 import { useEffect, useState } from "react";
-import { DndContext } from "@dnd-kit/core";
-import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
-import {
-  arrayMove,
-  SortableContext,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import { List } from "antd";
+import { arrayMove } from "@dnd-kit/helpers";
+import { DUMMY_BOOKMARKS, DUMMY_DAYS } from "./PLAN_DUMMY";
+import { useTripPlan } from "../../../hooks/plan/PlanTripContext";
 import SortableDayItem from "./SortableDayItem";
 
-// 더미 데이터 (indexSort 기준 정렬)
-const DUMMY_DAYS = [
-  {
-    tripDayId: "TD11",
-    indexSort: 1,
-    schedules: [
-      {
-        tripScheduleId: "TS123",
-        indexSort: 1,
-        context: "있던 1일차 데이터 수정",
-        startTime: "AM 10:00",
-        endTime: "PM 01:00",
-        category: "이동",
-        memo: "메모 내용 존재",
-        price: 50000,
-        link: "https://www.naver.com"
-      },
-      { tripScheduleId: "TS124",indexSort: 2, startTime: "10:00", endTime: "13:00", category: "이동" },
-      {
-        tripScheduleId: "TS126",
-        indexSort: 3,
-        context: "데이터에 없는 장소 직접 입력",
-        startTime: "14:00",
-        endTime: "15:00",
-        category: "식사",
-        price: 3040,
-        link: "https://www.daum.net"
-      },
-    ],
-  },
-  {
-    tripDayId: "TD12",
-    indexSort: 2,
-    schedules: [
-      { tripScheduleId: "TS129", indexSort: 2, context: "데이터" },
-      { tripScheduleId: "TS135",indexSort: 1, context: "신규생성 2일차 데이터" },
-    ],
-  },
-  {
-    tripDayId: "TD13",
-    indexSort: 4,
-    schedules: [
-      {
-        tripScheduleId: "TS153",
-        indexSort: 1,
-        context: "있던 3일차 데이터 수정",
-        startTime: "10:00",
-        endTime: "13:00",
-        category: "이동",
-      },
-    ],
-  },
-  {
-    tripDayId: "TD18",
-    indexSort: 5,
-    schedules: [
-      {
-        tripScheduleId: "TS183",
-        indexSort: 1,
-        context: "5일차 데이터 수정",
-        startTime: "10:00",
-        endTime: "13:00",
-        category: "이동",
-      },
-    ],
-  },
-  {
-    tripDayId: "TD14",
-    indexSort: 3,
-    schedules: [{ tripScheduleId: "TS184", indexSort: 1, context: "ddd" }, { tripScheduleId: "TS186", indexSort: 2 }],
-  },
-].sort((a, b) => a.indexSort - b.indexSort);
-
 const PlanTableContent = () => {
-  const [arrDay, setArrDay] = useState(DUMMY_DAYS);
+  const {planDays, setPlanDays, setBookmarks} = useTripPlan();
+  const [editingSchedule, setEditingSchedule] = useState(null);
 
-  // 일자 순서 변경
-  const onDayDragEnd = ({ active, over }) => {
-    if (!over || active.id === over.id) return;
-    setArrDay((prev) => {
-      const oldIdx = prev.findIndex((d) => d.tripDayId === active.id);
-      const newIdx = prev.findIndex((d) => d.tripDayId === over.id);
+  useEffect(() => {
+    // 초기 데이터 설정
+    setPlanDays(DUMMY_DAYS);
+    // 테스트용
+    setBookmarks(DUMMY_BOOKMARKS);
+  }, [])
 
-      const updateData = arrayMove(prev, oldIdx, newIdx);
-      updateData.map((day, idx) => {
-        day.indexSort = idx + 1;
-      });
-      console.log(updateData);
-      return updateData;
+  /**
+   * 일자 및 스케줄 순서 변경
+   * @param {*} event 
+   * @returns 
+   */
+  const handleMove = (event) => {
+    const { source, target } = event.operation;
+    if (!source || !target) return;
+    // console.log("source id:", source.id);
+    // console.log("source type:", source.type);
+    // console.log("target id:", target.id);
+    // console.log("target type:", target.type);
+
+    const sourceId = source.id;
+    const targetId = target.id;
+    const sourceType = source.type;
+
+    setPlanDays((prev) => {
+      // 리스트 재정렬
+      if (sourceType === "list") {
+        const oldIndex = prev.findIndex((d) => d.tripDayId === sourceId);
+        const newIndex = prev.findIndex((d) => d.tripDayId === targetId);
+        if (oldIndex === -1 || newIndex === -1 || oldIndex === newIndex)
+          return prev;
+        return arrayMove(prev, oldIndex, newIndex);
+      }
+
+      // 아이템 재정렬
+      if (sourceType === "item") {
+        const sourceDayIndex = prev.findIndex((d) =>
+          d.schedules.some((s) => s.tripScheduleId === sourceId),
+        );
+        const targetDayIndex = prev.findIndex((d) =>
+          d.schedules.some((s) => s.tripScheduleId === targetId),
+        );
+        if (sourceDayIndex === -1 || targetDayIndex === -1) return prev;
+
+        const newDays = prev.map((d) => ({
+          ...d,
+          schedules: [...d.schedules],
+        }));
+        const sourceSchedules = newDays[sourceDayIndex].schedules;
+        const targetSchedules = newDays[targetDayIndex].schedules;
+
+        const oldIndex = sourceSchedules.findIndex(
+          (s) => s.tripScheduleId === sourceId,
+        );
+        const newIndex = targetSchedules.findIndex(
+          (s) => s.tripScheduleId === targetId,
+        );
+        if (oldIndex === -1 || newIndex === -1) return prev;
+
+        // 같은 리스트 내 이동
+        if (sourceDayIndex === targetDayIndex) {
+          newDays[sourceDayIndex].schedules = arrayMove(
+            sourceSchedules,
+            oldIndex,
+            newIndex,
+          );
+        } else {
+          // 다른 리스트로 이동
+          const [removed] = sourceSchedules.splice(oldIndex, 1);
+          targetSchedules.splice(newIndex, 0, removed);
+        }
+
+        return newDays;
+      }
+
+      return prev;
     });
   };
 
-  // 특정 일자의 스케줄 순서 변경
-  const handleSchedulesChange = (tripDayId, newSchedules) => {
-    setArrDay((prev) =>
-      prev.map((d) =>
-        d.tripDayId === tripDayId ? { ...d, schedules: newSchedules } : d,
-      ),
-    );
+  /**
+   * 스케줄 추가
+   * @param {String} dayId 스케줄을 추가할 일자 ID
+   */
+  const handleAddSchedule = (dayId) => {
+    const schedules = planDays.find(d => d.tripDayId === dayId).schedules;
+    const addIndex = schedules.length + 1;
+    // TODO: 스케줄 생성 API 연결
+    // 성공 시 response를 addData에 담아 아래 코드 실행
+    const addData = {
+      tripScheduleId: `TS${new Date()}`,    // 테스트용 중복방지 KEY
+      indexSort: addIndex,
+      context: "새 스케줄",
+      startTime: "00:00",
+      endTime: "00:00",
+      category: "숙박",
+      memo: "메모",
+      price: 0,
+      link: ""
+    }
+    const newSchedules = [...schedules, addData];
+    setPlanDays((prev) => prev.map((d) => d.tripDayId === dayId ? {...d, schedules: newSchedules} : d))
+
+    // 신규 스케줄 편집 모드
+    setEditingSchedule(addData);
+    // 실패 시 실패 안내 메세지 혹은 오류 팝업 출력
+  }
+
+  /**
+   * 스케줄 삭제
+   * @param {String} dayId 삭제할 스케줄이 포함된 일자 ID
+   * @param {String} scheduleId 삭제할 스케줄 ID
+   */
+  const handleDeleteSchedule = (dayId, scheduleId) => {
+    // TODO: 스케줄 삭제 API 연결
+    // 성공 시 아래 코드 실행
+    const schedules = planDays.find(d => d.tripDayId === dayId).schedules;
+    const newSchedules = schedules.filter(item => item.tripScheduleId !== scheduleId);
+    setPlanDays((prev) => prev.map((d) => d.tripDayId === dayId ? {...d, schedules: newSchedules} : d))
+    
+    // 편집 중이던 스케줄 삭제 시 처리
+    if (editingSchedule.tripScheduleId === scheduleId) {
+      setEditingSchedule(null);
+    }
+    // 실패 시 실패 안내 메세지 혹은 오류 팝업 출력
   };
 
+  /**
+   * 스케줄 편집 사항 반영
+   */
+  const handleSaveSchedule = () => {
+    const dayId = planDays.find((item) => item.schedules.find(sItem => sItem.tripScheduleId === editingSchedule.tripScheduleId)).tripDayId;
+    const schedules = planDays.find(d => d.tripDayId === dayId).schedules;
+    const newSchedules = schedules.map((item) => item.tripScheduleId === editingSchedule.tripScheduleId ? editingSchedule : item )
+    setPlanDays((prev) => prev.map((d) => d.tripDayId === dayId ? {...d, schedules : newSchedules} : d));
+
+    // 편집 저장 완료 후 선택된 편집 스케줄 비우기
+    setEditingSchedule(null);
+  }
+
   return (
-    <DndContext
-      id="plan-day-dnd"
-      modifiers={[restrictToVerticalAxis]}
-      onDragEnd={onDayDragEnd}
+    <DragDropProvider
+      onDragOver={handleMove} // 드래그 중 실시간 미리보기
+      onDragEnd={handleMove} // 드롭 시 최종 반영
     >
-      <SortableContext
-        items={arrDay.map((d) => d.tripDayId)}
-        strategy={verticalListSortingStrategy}
-      >
-        <List
-          style={{ width: "100%", height: "100%", backgroundColor: "none" }}
-          dataSource={arrDay}
-          renderItem={(day) => (
+      <FlexBox settings={{ isVertical: true }} style={{ gap: "8px" }}>
+        {planDays?.map((day, index) => {
+          return (
             <SortableDayItem
               key={day.tripDayId}
-              itemKey={day.tripDayId}
-              day={day}
-              onSchedulesChange={handleSchedulesChange}
+              id={day.tripDayId}
+              index={index}
+              schedules={day.schedules}
+              editingSchedule={editingSchedule}
+              setEditingSchedule={setEditingSchedule}
+              saveScheduleEvent={handleSaveSchedule}
+              addScheduleEvent={handleAddSchedule}
+              deleteScheduleEvent={handleDeleteSchedule}
             />
-          )}
-        />
-      </SortableContext>
-    </DndContext>
+          );
+        })}
+      </FlexBox>
+    </DragDropProvider>
   );
-};
+}
 
 export default PlanTableContent;

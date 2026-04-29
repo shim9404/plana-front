@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 const TripPlanContext = createContext(null);
 
@@ -18,17 +18,21 @@ export const TripPlanProvider = ({ children }) => {
   // 장소 데이터(API)
   const [places, setPlaces] = useState([]);
   // 여행 계획 데이터
-  const [planData, setPlanData] = useState([]);
+  const [planDays, setPlanDays] = useState([]);
+  // 여행 스케줄 카테고리(구분)
+  const [scheduleCategorys, setScheduleCategorys] = useState([]);
 
-  return(
-    <TripPlanContext.Provider value={{ 
+  return (
+    <TripPlanContext.Provider value={{
       isExpanded, setIsExpanded,
       bookmarks, setBookmarks,
       areas, setAreas,
       places, setPlaces,
       planData, setPlanData,
       isSearched, setIsSearched,
-      searchResults, setSearchResults
+      searchResults, setSearchResults,
+      planDays, setPlanDays,
+      scheduleCategorys, setScheduleCategorys,
     }}>
       {children}
     </TripPlanContext.Provider>
