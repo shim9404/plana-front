@@ -19,6 +19,6 @@ export const CATEGORY_ICON = {
   "CE7": Coffee, // 카페
   "HP8": Hospital, // 병원
   "PM9": Hospital, // 약국
-  "etc": LayoutDashboard, // 기타
+  "ETC": LayoutDashboard, // 기타
   default: LayoutDashboard,
 }

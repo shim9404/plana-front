@@ -10,12 +10,18 @@ export const TripPlanProvider = ({ children }) => {
   const isDeleteRef = useRef(false);
   // 북마크 삭제
   const isDeleteBookmarkRef = useRef(false);
+  // 검색 버튼 상태
+  const [isSearched, setIsSearched] = useState(false);
 
-  // === 데이터 =========================================
+  // === 데이터 ====================================
+  // 필터링 결과 데이터
+  const [searchResults, setSearchResults] = useState([]);
   // 북마크 데이터
   const [bookmarks, setBookmarks] = useState([]);
-  // 장소 데이터
+  // 장소 데이터(DB)
   const [areas, setAreas] = useState([]);
+  // 장소 데이터(API)
+  const [places, setPlaces] = useState([]);
   // 여행 계획 데이터
   const [planDays, setPlanDays] = useState([]);
   // 여행 스케줄 카테고리(구분)
@@ -42,6 +48,9 @@ export const TripPlanProvider = ({ children }) => {
       isExpanded, setIsExpanded,
       bookmarks, setBookmarks,
       areas, setAreas,
+      places, setPlaces,
+      isSearched, setIsSearched,
+      searchResults, setSearchResults,
       planDays, setPlanDays,
       scheduleCategorys, setScheduleCategorys,
       isDeleteRef, isDeleteBookmarkRef,

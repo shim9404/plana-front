@@ -12,6 +12,7 @@ import PlanHeader from "../../components/plan/PlanHeader";
 import PlanMap from "../../components/plan/map/PlanMap";
 import { useModal } from "../../hooks/ModalProvider";
 import { oneBtnPreset } from "../../utils/alertModalPreset";
+import { getRegionApi } from "../../services/regionApi";
 import { SCHEDULE_CATEGORYS } from "../../constants/scheduleCategory";
 import { DragDropProvider } from "@dnd-kit/react";
 import { arrayMove } from "@dnd-kit/helpers";

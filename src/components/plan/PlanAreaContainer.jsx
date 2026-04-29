@@ -7,9 +7,11 @@ import { useEffect, useRef, useState } from "react";
 import SearchInput from "./area/SearchInput";
 import { BookmarkPopup } from "./area/BookmarkPopup";
 import { ScrollStyle } from "../../styles/planStyles";
-import { getAreaApi } from "../../services/areaApi";
+import { getAreaApi, getPlaceApi } from "../../services/areaApi";
 import { useTripInfo } from "../../hooks/TripInfoContext";
 import { useTripPlan } from "../../hooks/plan/PlanTripContext";
+import { useRegion } from "../../hooks/home/RegionContext";
+import { getRegionByIdApi } from "../../services/regionApi";
 
 // API 적용 전 테스트용 더미 데이터
 const DUMMY_DATAS = {
@@ -351,15 +353,16 @@ const FILTER_TOGGLES = [
 ]
 
 const PlanAreaContainer = () => {
-  const [searchType, setSearchType] = useState("");
-  const [arrPlace, setArrPlace] = useState([]);
-  const [arrSpot, setArrSpot] = useState([]);
-  const [arrFood, setArrFood] = useState([]);
-  const [arrDisplay, setArrDisplay] = useState([]);
-
   const { selectedSigu } = useTripInfo();
-  const { areas, setAreas } = useTripPlan();
-
+  const { areas, setAreas, places, setPlaces,
+          isSearched, setIsSearched,
+          searchResults, setSearchResults} = useTripPlan();
+  const { objRegions, setObjRegions } = useRegion();
+  
+  // 장소 검색 타입
+  const [searchType, setSearchType] = useState("PLACE"); // 초기 '근처 장소' 버튼 선택
+  // 장소 검색할 키워드
+  const [searchKeyword, setSearchKeyword] = useState("");
   //#region 북마크 팝업
   const listRef = useRef();
   const [popupPosY, setPopupPosY] = useState(0);
@@ -369,40 +372,6 @@ const PlanAreaContainer = () => {
   const onToggleChange = (selected) => {
     console.log(selected);
     setSearchType(selected);
-    switch (selected) {
-      case "PLACE" :
-        setArrDisplay(arrPlace);
-        break;
-      case "SPOT" :
-        setArrDisplay(arrSpot);
-        break;
-      case "FOOD" :
-        setArrDisplay(arrFood);
-        break;
-    }
-  }
-
-  // 검색 필터
-  const onKeywordSearch = (keyword) => {
-    console.log(keyword);
-    let searchData = null;
-    switch (searchType) {
-      case "PLACE" :
-        arrPlace;
-        break;
-      case "SPOT" :
-        searchData = arrSpot;
-        break;
-      case "FOOD" :
-        searchData = arrFood;
-        break;
-    }
-    if (keyword === null || keyword === undefined || keyword.length <= 0)
-    {
-      setArrDisplay(searchData);
-      return;
-    }
-    setArrDisplay(searchData?.filter(data => data.name.includes(keyword)));
   }
 
   const scrollEvent = () => {
@@ -430,7 +399,21 @@ const PlanAreaContainer = () => {
     // TODO: selectedAreaId의 장소 북마크를 param의 type으로 지정
   }
   
-  // 장소 목록 API 호출
+  // 지역 데이터(이름 + 좌표) 호출
+  useEffect(() => {
+    const getRegionData = async() => {
+      try {
+        const response = await getRegionByIdApi(selectedSigu);
+        setObjRegions(response.data.regions)
+      } catch (error) {
+          console.log(error);
+      }
+    }
+    getRegionData();
+
+  }, [selectedSigu])
+
+  // 장소 목록 API 호출 - DB
   const loadAreaData = async() => {
     // 선택한 지역에 따른 AREA 검색 API 호출
     try {
@@ -444,22 +427,102 @@ const PlanAreaContainer = () => {
     }
   }
 
-  // 선택 지역 데이터 변동 시
-  useEffect(() => {
-    loadAreaData();
-  }, [selectedSigu])
+  // 장소 목록 API 호출 - API
+  const loadPlaceData = async(keyword) => {
+    // 키워드 및 좌표에 따른 검색 API 호출
+    try {
+      const placeKeyword = keyword || (objRegions.siguName === "전체"? objRegions.zdoName+"청": objRegions.siguName+"청");
+      const response = await getPlaceApi(placeKeyword, objRegions.mapX, objRegions.mapY);
+      setPlaces(response.data);
+    } catch (error) {
+      const status = error?.response?.status;
+      const body = error?.response?.data;
+      const msg = body?.message || body?.detail || null;
+      console.warn(`장소 데이터 호출 오류 >> status: ${status}, msg: ${msg}`);
+    }
+  }
 
-  // 장소 데이터 변동 시
+  // 검색 필터링 데이터
+  const [filteredLists, setFilteredLists] = useState([]);
+
+  // 초기화 (검색 종류 또는 지역 변경 시)
   useEffect(() => {
-    // 유효 데이터 확인
-    if (areas === null || areas === undefined || areas.length <= 0) return;
-    // 각 배열에 담기
-    if (areas?.place.areaCount > 0) setArrPlace(areas?.place.areas);
-    if (areas?.spot.areaCount > 0) setArrSpot(areas?.spot.areas);
-    if (areas?.food.areaCount > 0) setArrFood(areas?.food.areas);
-    // 초기값 설정
-    setArrDisplay(areas.place.areas);
-  }, [areas])
+    // 관관지, 맛집 데이터 호출
+    if (searchType !== "PLACE") {
+      loadAreaData();
+    }
+
+    // 근처 정보 데이터 호출
+    if (searchType === "PLACE") {
+      const keyword = objRegions.siguName === "전체"? objRegions.zdoName+"청": objRegions.siguName+"청";
+      loadPlaceData(keyword);
+    }
+
+    // 값 or 목록 전체 초기화
+    setSearchKeyword("");
+    setFilteredLists([]);
+    setIsSearched(false);
+  }, [searchType, selectedSigu, objRegions]);
+
+  // 장소 상세 데이터
+  const arrSpot = areas?.spot?.areas || [];
+  const arrFood = areas?.food?.areas || [];
+  const arrDisplay =
+    searchType === "SPOT"
+      ? arrSpot
+      : searchType === "FOOD"
+      ? arrFood
+      : places?.places || [];
+
+  // 검색 키워드 (입력만)
+  const onKeywordChange = (keyword) => {
+    setSearchKeyword(keyword);
+  };
+
+  // 검색 버튼 클릭
+  const onKeywordSearch = (keyword) => {
+    const finalKeyword = keyword?.trim();
+
+    setSearchKeyword(finalKeyword);
+
+    // 검색어 없음 → 전체 목록
+    if (!finalKeyword) {
+      setFilteredLists([]);
+      setIsSearched(false);
+      return;
+    }
+
+    // PLACE 필터
+    if (searchType === "PLACE") {
+      setFilteredLists([]);
+      setIsSearched(true);
+      loadPlaceData(finalKeyword);
+      return;
+    }
+
+  // SPOT or FOOD 필터
+    const result = arrDisplay.filter(item =>
+      item.name?.includes(finalKeyword)
+    );
+
+    setFilteredLists(result); // 최종 검색 결과 목록들
+    setIsSearched(true);
+  };
+
+  // 최종 화면에 보여지는 데이터
+  useEffect(() => {
+    if (!areas && !places) return;
+
+    const result =
+      searchType === "PLACE"
+        ? (places?.places || [])
+        : (isSearched
+          ? filteredLists 
+          : arrDisplay);
+
+    setSearchResults(result); 
+
+  }, [searchType, places, filteredLists, isSearched, areas, selectedSigu]);
 
   // 초기화
   useEffect(() => {
@@ -467,10 +530,6 @@ const PlanAreaContainer = () => {
       listRef.current.addEventListener("scroll", scrollEvent);
     }
   }, [])
-
-  useEffect(() => {
-    console.log(arrDisplay)
-  }, [arrDisplay])
 
   return (
     <FlexContainer>
@@ -492,7 +551,7 @@ const PlanAreaContainer = () => {
           </FlexBox>
           {/* 검색 필터 영역 */}
           <FlexBox h="48px" bg="none">
-            <SearchInput placeholder={"여행 장소를 검색해 보세요!"} onSearchEvent={onKeywordSearch}/>
+            <SearchInput placeholder={"여행 장소를 검색해 보세요!"} value={searchKeyword} onSearchEvent={onKeywordSearch} onChange={onKeywordChange}/>
           </FlexBox>
         </FlexBox>
         {/* 리스트 콘텐츠 */}
@@ -502,8 +561,8 @@ const PlanAreaContainer = () => {
           >
           {/* 아이템 map */}
           {
-            arrDisplay?.length > 0 ?
-            arrDisplay?.map((area, idx) => {
+            searchResults?.length > 0 ?
+            searchResults?.map((area, idx) => {
               return (
                 <AreaItem area={area} number={idx + 1} margin="4px"
                 popupBookmark={openBookmarkPopup}/>
