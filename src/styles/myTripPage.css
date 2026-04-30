@@ -32,7 +32,14 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  overflow: hidden;
+  /* overflow: hidden; */
+  /* === step 1 */
+  height: 60vh;
+  overflow-y: auto;
+  flex: 1;
+  -ms-overflow-style: none;
+  scrollbar-width: none; 
+  /* === */
   padding-bottom: 200px;
 }
 
@@ -40,10 +47,12 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  height: 60px; 
+  height: 60px;   
+  /* === step 1 */
+  flex-shrink: 0;
+  /* === */
   padding-left: 30px;
   padding-right: 50px;
-  margin-bottom: 10px;
   color: #aaa;
   cursor: pointer;
 }

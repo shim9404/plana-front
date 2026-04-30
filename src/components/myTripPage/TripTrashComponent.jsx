@@ -11,10 +11,10 @@ const TripTrashComponent = ({getTripbyMemberId, tripList, getTrashPlan, trashLis
   const [selectedRestoreTripId, setSelectedRestoreTripId] = useState(""); // 복구할 여행 목록 id
 
   const restoreshowModal = (tripId) => { // 모달 open
-    if (tripList.length >= 5) {
+    /* if (tripList.length >= 5) {
       message.warning("여행 목록이 가득 찼습니다. (5 / 5)")
       return;
-    }
+    } */
     setSelectedRestoreTripId(tripId);
     setIsRestoreModalOpen(true);
   }; 

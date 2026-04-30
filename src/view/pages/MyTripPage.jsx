@@ -196,19 +196,21 @@ const MyTripPage = () => {
                 <CompassOutlined style={{ fontSize: "60px" }} />
                 <div className="trip-info">
                   <div className="trip-name">내 여행 계획</div>
-                  <TextButton type="primary" width="160px" height="35px" fontSize="15px" 
+                  {/* <TextButton type="primary" width="160px" height="35px" fontSize="15px" 
                     onClickEvent={() => { navigate("/plan"); }}>
                     <FormOutlined /> 새 여행 계획하기
-                  </TextButton>
+                  </TextButton> */}
+                  <div>내 여행 포인트 : 1000</div>
                 </div>
               </div>
             {/* 메뉴 */}
+            {/* <div className="trip-list"> */}
             <div className="trip-list">
               {tripList.map((trip) => (
                 <div
                   key={trip.tripId}
                   className={`trip-item ${selectedMenu === trip.tripId && !selectedTrash ? "active" : ""}`}
-                  onClick={() => setSelectedMenu(trip.tripId)}
+                  onClick={() => {setSelectedMenu(trip.tripId), setSelectedTrash(false)}}
                 >
                   <MapPinned size={25}/>
                   <span className="menu-text">{trip.name}</span>
@@ -218,7 +220,7 @@ const MyTripPage = () => {
           </div>
           {/* 하단 영역 - 추가 박스(저장량 표시 및 휴지통) */}
           <div className="menu-extra">
-            <div className="menu-extra-text">
+            {/* <div className="menu-extra-text">
               저장 여행 {tripList.length} / 5개
             </div>
             <TextButton type="default" width="270px" height="35px" fontSize="15px" 
@@ -234,10 +236,10 @@ const MyTripPage = () => {
                   {tripList.length}개 사용 중
                 </span>
               </div>
-            </TextButton>
+            </TextButton> */}
             <div style={{marginTop: '30px'}}></div>
             <TextButton type="default" danger width="270px" height="35px" fontSize="15px"
-              onClickEvent={() => setSelectedTrash(true)}
+              onClickEvent={() => {setSelectedTrash(true)}}
             >
               <div
                 className="menu-extra-button-fill-trash"
