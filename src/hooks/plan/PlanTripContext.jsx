@@ -27,19 +27,22 @@ export const TripPlanProvider = ({ children }) => {
 //#region functions
   const getBookmark = (id) => {
     return bookmarks.find(bookmark => bookmark.bookmarkId === id);
-    };
+  };
     
-    const setBookmarkInSchedule = (scheduleId, bookmarkId) => {
-      const bookmark = bookmarks.find(bookmark => bookmark.bookmarkId === bookmarkId);
-      setPlanDays((prev) =>
-        prev.map((day) => ({
-          ...day,
-          schedules: day.schedules.map((s) =>
-            s.tripScheduleId === scheduleId ? { ...s, bookmarkId: bookmark?.bookmarkId, context: bookmark?.areaInfo?.name || s.context } : s
-        ),
-      }))
+  const setBookmarkInSchedule = (scheduleId, bookmarkId, context) => {
+    setPlanDays((prev) =>
+      prev.map((day) => ({
+        ...day,
+        schedules: day.schedules.map((s) =>
+          s.tripScheduleId === scheduleId ? { ...s, bookmarkId: bookmarkId, context: context || s.context } : s
+      )}))
     );
   }
+
+  const getScheduleDayId = (scheduleId) => {
+    return planDays.find((day) => ( day.schedules.filter((s) => s.tripScheduleId === scheduleId))).tripDayId;
+  }
+
 //#endregion
 
   // === Editing Context ====================================
@@ -79,8 +82,6 @@ export const TripPlanProvider = ({ children }) => {
    * @param {String} scheduleId 삭제할 스케줄 ID
    */
   const deleteSchedule = (scheduleId) => {
-    // TODO: 스케줄 삭제 API 연결
-    // 성공 시 아래 코드 실행
     setPlanDays((prev) =>
       prev.map((day) => ({
           ...day,
@@ -93,7 +94,6 @@ export const TripPlanProvider = ({ children }) => {
       setEditingSchedule(null);
       focusRef.current = null;
     }
-    // 실패 시 실패 안내 메세지 혹은 오류 팝업 출력
   };
 
   /**
@@ -134,6 +134,7 @@ export const TripPlanProvider = ({ children }) => {
       planDays, setPlanDays,
       scheduleCategorys, setScheduleCategorys,
       getBookmark, setBookmarkInSchedule,
+      getScheduleDayId,
     }}>
       <PlanEditingContext.Provider value={{
         isDeleteRef, isDeleteBookmarkRef, focusRef, 
