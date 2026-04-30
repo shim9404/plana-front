@@ -32,6 +32,14 @@ export const AuthProvider = ({ children }) => {
     () => readFromStorage('memberId')
   );
 
+  const [username, setUsername] = useState(
+    () => readFromStorage('name')
+  );
+
+  const [profileImage, setProfileImage] = useState(
+    () => readFromStorage('profileImage')
+  );
+
   // 로그인 성공 시 호출
   const login = useCallback((data, inputEmail) => {
 
@@ -51,7 +59,9 @@ export const AuthProvider = ({ children }) => {
     setRefreshToken(data.refreshToken);
     setAccessToken(data.accessToken);
     setEmail(inputEmail);
-    setMemberId(data.memberId)
+    setMemberId(data.memberId);
+    setUsername(data.name);
+    setProfileImage(data.profileImage);
 
     // AppRouter 이벤트 리스너와 호환
     window.dispatchEvent(new Event('trip-auth-profile-updated'));
@@ -66,14 +76,23 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('name');
     localStorage.removeItem('role');
     localStorage.removeItem('memberId');
+    localStorage.removeItem('profileImage')
     localStorage.removeItem('trip_auto_login');
 
     // 상태 초기화
     setIsLoggedIn(false);
     setUserRole('');
-    setAccessToken('')
-    setRefreshToken('')
+    setAccessToken('');
+    setRefreshToken('');
+    setEmail('');
+    setMemberId('');
+    setUsername('');
+    setProfileImage('');
 
+    if (isExpired || sessionStorage.getItem(SESSION_EXPIRED_NOTICE_KEY)) {
+      sessionStorage.removeItem(SESSION_EXPIRED_NOTICE_KEY); // 플래그 제거
+      console.log("토큰이 만료되어 로그아웃되었습니다.")
+    }
     window.dispatchEvent(new Event('trip-auth-profile-updated'));
   }, []);
 
@@ -92,7 +111,9 @@ export const AuthProvider = ({ children }) => {
       accessToken,
       refreshToken,
       email,
-      memberId
+      memberId,
+      username,
+      profileImage
     }}>
       {children}
     </AuthContext.Provider>
