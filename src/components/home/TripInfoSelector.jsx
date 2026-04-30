@@ -16,7 +16,7 @@ import { useTripPlan } from '../../hooks/plan/PlanTripContext'
 const TripInfoSelector = ({ setHoveredId }) => {
   const { selectedZdo, setSelectedZdo, selectedSigu, setSelectedSigu } = useTripInfo();
   const { confirmedDates, setConfirmedDates, setTripName, setTripId } = useTripInfo();
-  const { setBookmarks, setPlanDays } = useTripPlan();
+  const { setBookmarks, setPlanDays, setActiveDayCount } = useTripPlan();
   const { memberId } = useAuth();
   const protectedNavigate = useProtectedNavigate();
 
@@ -52,6 +52,7 @@ const TripInfoSelector = ({ setHoveredId }) => {
         setTripName(response.name);
         setPlanDays(response.days);
         setTripId(response.tripId);
+        setActiveDayCount(response.days.length);
         successCallback?.();
       }
     } catch (e) {

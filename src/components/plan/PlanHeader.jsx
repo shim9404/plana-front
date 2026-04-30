@@ -19,7 +19,7 @@ const PlanHeader = () => {
     setTripName,
     tripId,
   } = useTripInfo();
-  const {addPlanDays} = useTripPlan();
+  const {addPlanDays, setActiveDayCount} = useTripPlan();
   const [isSaving, setIsSaving] = useState(false);
 
   const cascaderValue = selectedSigu
@@ -57,8 +57,12 @@ const PlanHeader = () => {
 
   const handleSaveTripDate = (dates) => {
     // TODO: 팝업 확인 및 로딩 추가 필요
-    requestUpdateTripDate(dates, (addDays) => { 
-      addPlanDays(addDays); 
+    requestUpdateTripDate(dates, (addDays, activeDayCount) => { 
+      if (addDays && addDays.length > 0) {
+        addPlanDays(addDays); 
+      }
+      
+      setActiveDayCount(activeDayCount);
     });
   }
 
@@ -89,7 +93,8 @@ const PlanHeader = () => {
       const result = await editTripDateApi(tripId, request);
       if (result) {
         const addDays = result.data.addDays;
-        successCallback?.(addDays);
+        const activeDayCount = result.data.activeDayCount;
+        successCallback?.(addDays, activeDayCount);
       }
     } catch (e) {
       console.log(e);

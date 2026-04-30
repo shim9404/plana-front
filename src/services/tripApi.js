@@ -65,7 +65,8 @@ export const editTripDateApi = async (tripId, payload) => {
  */
 export const deleteDayApi = async (tripId, dayId) => {
   const response = await axiosInstance.delete(`/api/trips/${tripId}/days/${dayId}`);
-  return response.data;
+  const reulst = response.data ?? {};
+  return reulst.success;
 }
 //#endregion
 
