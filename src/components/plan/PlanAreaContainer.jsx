@@ -12,6 +12,7 @@ import { useTripInfo } from "../../hooks/TripInfoContext";
 import { useTripPlan } from "../../hooks/plan/PlanTripContext";
 import { useRegion } from "../../hooks/home/RegionContext";
 import { getRegionByIdApi } from "../../services/regionApi";
+import { addBookmarkApi } from "../../services/tripApi";
 
 // API 적용 전 테스트용 더미 데이터
 const DUMMY_DATAS = {
@@ -353,12 +354,12 @@ const FILTER_TOGGLES = [
 ]
 
 const PlanAreaContainer = () => {
-  const { selectedSigu } = useTripInfo();
+  const { selectedSigu, tripId } = useTripInfo();
   const { areas, setAreas, places, setPlaces,
-          isSearched, setIsSearched,
-          searchResults, setSearchResults} = useTripPlan();
+    isSearched, setIsSearched, setBookmarks,
+    searchResults, setSearchResults } = useTripPlan();
   const { objRegions, setObjRegions } = useRegion();
-  
+
   // 장소 검색 타입
   const [searchType, setSearchType] = useState("PLACE"); // 초기 '근처 장소' 버튼 선택
   // 장소 검색할 키워드
@@ -382,8 +383,7 @@ const PlanAreaContainer = () => {
 
   const openBookmarkPopup = (posY, areaId, placeId) => {
     console.log(areaId, placeId);
-    if (areaId == selectedAreaId) 
-    {
+    if (areaId == selectedAreaId) {
       setSelectedAreaId("");
       setSelectedPlaceId("");
       return;
@@ -391,7 +391,7 @@ const PlanAreaContainer = () => {
     // console.log("button pos ", posY);
     const parentRect = listRef.current.getBoundingClientRect().top;
     const popupPosY = posY - parentRect + 116;
-    
+
     // console.log(`BUTTON: ${posY}, popupPosY: ${popupPosY}`);
     setPopupPosY(popupPosY);
     setSelectedPlaceId(placeId);
@@ -411,19 +411,31 @@ const PlanAreaContainer = () => {
       data = searchResults.find((a) => a.placeId === selectedPlaceId);
     }
     console.log(data);
+
+    addBookmark(type, data);
+
     setSelectedAreaId("");
     setSelectedPlaceId("");
-
   }
-  
+
+  const addBookmark = async (type, areaData) => {
+    const result = await addBookmarkApi(tripId, {
+      bookmarkType: type,
+      area: { ...areaData, regionId: selectedSigu }
+    });
+
+    setBookmarks(prev => [...prev, result.data]);
+  }
+
+
   // 지역 데이터(이름 + 좌표) 호출
   useEffect(() => {
-    const getRegionData = async() => {
+    const getRegionData = async () => {
       try {
         const response = await getRegionByIdApi(selectedSigu);
         setObjRegions(response.data.regions)
       } catch (error) {
-          console.log(error);
+        console.log(error);
       }
     }
     getRegionData();
@@ -431,12 +443,12 @@ const PlanAreaContainer = () => {
   }, [selectedSigu])
 
   // 장소 목록 API 호출 - DB
-  const loadAreaData = async() => {
+  const loadAreaData = async () => {
     // 선택한 지역에 따른 AREA 검색 API 호출
     try {
       const response = await getAreaApi(selectedSigu)
       setAreas(response.data);
-    } catch(error) {
+    } catch (error) {
       const status = error?.response?.status;
       const body = error?.response?.data;
       const msg = body?.message || body?.detail || null;
@@ -445,11 +457,10 @@ const PlanAreaContainer = () => {
   }
 
   // 장소 목록 API 호출 - API
-  const loadPlaceData = async(keyword) => {
+  const loadPlaceData = async (keyword) => {
     // 키워드 및 좌표에 따른 검색 API 호출
     try {
-      const placeKeyword = keyword || (objRegions.siguName === "전체"? objRegions.zdoName+"청": objRegions.siguName+"청");
-      const response = await getPlaceApi(placeKeyword, objRegions.mapX, objRegions.mapY);
+      const response = await getPlaceApi(keyword, objRegions.mapX, objRegions.mapY);
       setPlaces(response.data);
     } catch (error) {
       const status = error?.response?.status;
@@ -471,8 +482,7 @@ const PlanAreaContainer = () => {
 
     // 근처 정보 데이터 호출
     if (searchType === "PLACE") {
-      const keyword = objRegions.siguName === "전체"? objRegions.zdoName+"청": objRegions.siguName+"청";
-      loadPlaceData(keyword);
+      loadPlaceData("");
     }
 
     // 값 or 목록 전체 초기화
@@ -488,8 +498,8 @@ const PlanAreaContainer = () => {
     searchType === "SPOT"
       ? arrSpot
       : searchType === "FOOD"
-      ? arrFood
-      : places?.places || [];
+        ? arrFood
+        : places?.places || [];
 
   // 검색 키워드 (입력만)
   const onKeywordChange = (keyword) => {
@@ -517,7 +527,7 @@ const PlanAreaContainer = () => {
       return;
     }
 
-  // SPOT or FOOD 필터
+    // SPOT or FOOD 필터
     const result = arrDisplay.filter(item =>
       item.name?.includes(finalKeyword)
     );
@@ -534,19 +544,19 @@ const PlanAreaContainer = () => {
       searchType === "PLACE"
         ? (places?.places || [])
         : (isSearched
-          ? filteredLists 
+          ? filteredLists
           : arrDisplay);
 
-    setSearchResults(result); 
+    setSearchResults(result);
 
   }, [searchType, places, filteredLists, isSearched, areas, selectedSigu]);
 
   // 초기화
   useEffect(() => {
-    if (listRef && listRef.current) {
-      listRef.current.addEventListener("scroll", scrollEvent);
+    if (listRef.current) {
+      listRef.current.scrollTop = 0;
     }
-  }, [])
+  }, [searchResults]);
 
   return (
     <FlexContainer>
@@ -564,41 +574,41 @@ const PlanAreaContainer = () => {
         >
           {/* 카테고리 필터 버튼 */}
           <FlexBox h="40px" bg="none">
-            <ToggleButtonGroup toggles={FILTER_TOGGLES} onChangedEvent={onToggleChange}/>
+            <ToggleButtonGroup toggles={FILTER_TOGGLES} onChangedEvent={onToggleChange} />
           </FlexBox>
           {/* 검색 필터 영역 */}
           <FlexBox h="48px" bg="none">
-            <SearchInput placeholder={"여행 장소를 검색해 보세요!"} value={searchKeyword} onSearchEvent={onKeywordSearch} onChange={onKeywordChange}/>
+            <SearchInput placeholder={"여행 장소를 검색해 보세요!"} value={searchKeyword} onSearchEvent={onKeywordSearch} onChange={onKeywordChange} />
           </FlexBox>
         </FlexBox>
         {/* 리스트 콘텐츠 */}
-        <FlexBox h="75%" settings={{ isVertical: true, justify: "flex-start" }} 
+        <FlexBox h="75%" settings={{ isVertical: true, justify: "flex-start" }}
           style={{ padding: "12px 0px", ...ScrollStyle.scrollY }}
           ref={listRef}
-          >
+        >
           {/* 아이템 map */}
           {
             searchResults?.length > 0 ?
-            searchResults?.map((area, idx) => {
-              return (
-                <AreaItem area={area} number={idx + 1} margin="4px"
-                popupBookmark={openBookmarkPopup}/>
-              )
-            }) : 
-            (<FlexBox settings={{isVertical: true, justify: "center"}}>
-              <Empty description={"검색 결과가 없습니다😥"}/>
-            </FlexBox>)
-          
+              searchResults?.map((area, idx) => {
+                return (
+                  <AreaItem area={area} number={idx + 1} margin="4px"
+                    popupBookmark={openBookmarkPopup} />
+                )
+              }) :
+              (<FlexBox settings={{ isVertical: true, justify: "center" }}>
+                <Empty description={"검색 결과가 없습니다😥"} />
+              </FlexBox>)
+
           }
         </FlexBox>
-                    
+
         {/* absolut */}
         {
           (selectedAreaId != null && selectedAreaId.length > 0) || (selectedPlaceId != null && selectedPlaceId.length > 0) ?
-          (<FlexBox w="312px" h="60px" bg="none" 
-          style={{ position: "absolute", top: "0%", right: "0%", transform: `translate(85%, ${popupPosY}px)`,  zIndex: 20 }}>
-            <BookmarkPopup bookmarkEvent={handleBookmarkChanged}/>
-          </FlexBox>) : null
+            (<FlexBox w="312px" h="60px" bg="none"
+              style={{ position: "absolute", top: "0%", right: "0%", transform: `translate(85%, ${popupPosY}px)`, zIndex: 20 }}>
+              <BookmarkPopup bookmarkEvent={handleBookmarkChanged} />
+            </FlexBox>) : null
         }
       </FlexBox>
     </FlexContainer>

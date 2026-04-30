@@ -15,7 +15,7 @@ import { useTripPlan } from '../../hooks/plan/PlanTripContext'
 
 const TripInfoSelector = ({ setHoveredId }) => {
   const { selectedZdo, setSelectedZdo, selectedSigu, setSelectedSigu } = useTripInfo();
-  const { confirmedDates, setConfirmedDates, setTripName } = useTripInfo();
+  const { confirmedDates, setConfirmedDates, setTripName, setTripId } = useTripInfo();
   const { setBookmarks, setPlanDays } = useTripPlan();
   const { memberId } = useAuth();
   const protectedNavigate = useProtectedNavigate();
@@ -35,7 +35,7 @@ const TripInfoSelector = ({ setHoveredId }) => {
     });
   }
 
-  const handleCreateTrip = async(successCallback) => {
+  const handleCreateTrip = async (successCallback) => {
     let data = {
       memberId: memberId,
       name: "새 여행 이름",
@@ -48,8 +48,10 @@ const TripInfoSelector = ({ setHoveredId }) => {
       if (result) {
         const response = result.data;
         setBookmarks([]);
+        setTripId(response.tripId);
         setTripName(response.name);
         setPlanDays(response.days);
+        setTripId(response.tripId);
         successCallback?.();
       }
     } catch (e) {

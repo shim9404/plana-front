@@ -35,11 +35,23 @@ export const getTripApi = async (tripId) => {
 /**
  * 여행 정보 수정
  * @param {String} tripId
- * @param {{ startDate: String, endDate: String, name: String }} payload
+ * @param {{ name: String, entryCount: Integer }} payload
  * @returns 
  */
 export const editTripInfoApi = async (tripId, payload) => {
   const response = await axiosInstance.patch(`/api/trips/${tripId}/info`, payload);
+  const reulst = response.data ?? {};
+  return reulst.success;
+};
+
+/**
+ * 여행 일정 수정
+ * @param {String} tripId
+ * @param {{ startDate: String, endDate: String }} payload
+ * @returns 
+ */
+export const editTripDateApi = async (tripId, payload) => {
+  const response = await axiosInstance.patch(`/api/trips/${tripId}/date`, payload);
   const reulst = response.data ?? {};
   return reulst.success;
 };
@@ -74,11 +86,10 @@ export const deleteDayApi = async (tripId, dayId) => {
  * 신규 여행 스케줄 추가
  * @param {String} tripId 
  * @param {String} dayId 
- * @param {{ indexSort: Number }} payload
  * @returns 
  */
-export const addScheduleApi = async (tripId, dayId, payload) => {
-  const response = await axiosInstance.post(`/api/trips/${tripId}/days/${dayId}/schedules`, payload);
+export const addScheduleApi = async (tripId, dayId) => {
+  const response = await axiosInstance.post(`/api/trips/${tripId}/days/${dayId}/schedules`);
   return response.data;
 };
 
@@ -95,20 +106,6 @@ export const editScheduleApi = async (tripId, dayId, scheduleId, payload) => {
   const result = response.data ?? {};
   return result.success;
 };
-
-/**
- * 여행 스케줄 북마크 링크(등록 수정 해제)
- * @param {String} tripId 
- * @param {String} dayId 
- * @param {String} scheduleId 
- * @param {*} payload 
- * @returns 
- */
-export const linkBookmarkInSchedule = async (tripId, dayId, scheduleId, payload) => {
-  const response = await axiosInstance.patch(`/api/trips/${tripId}/days/${dayId}/schedules/${scheduleId}/bookmark`, payload)
-  const result = response.data ?? {};
-  return result.success;
-}
 
 /**
  * 여행 스케줄 순서 변경
@@ -131,7 +128,7 @@ export const reorderScheduleApi = async (tripId, dayId, payload) => {
  * @returns 
  */
 export const deleteScheduleApi = async (tripId, dayId, scheduleId) => {
-  const response = await axiosInstance.delete(`/api/trips/${tripId}/days/${dayId}/schedules/${scheduleId}`, payload);
+  const response = await axiosInstance.delete(`/api/trips/${tripId}/days/${dayId}/schedules/${scheduleId}`);
   const result = response.data ?? {};
   return result.success;
 }
@@ -145,6 +142,7 @@ export const deleteScheduleApi = async (tripId, dayId, scheduleId) => {
  * @returns 
  */
 export const addBookmarkApi = async (tripId, payload) => {
+  console.log(payload)
   const response = await axiosInstance.post(`/api/trips/${tripId}/bookmarks`, payload);
   return response.data;
 };

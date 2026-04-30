@@ -17,6 +17,8 @@ import { SCHEDULE_CATEGORYS } from "../../constants/scheduleCategory";
 import { DragDropProvider } from "@dnd-kit/react";
 import { arrayMove } from "@dnd-kit/helpers";
 import { DUMMY_BOOKMARKS } from "../../components/plan/table/PLAN_DUMMY";
+import { useTripInfo } from "../../hooks/TripInfoContext";
+import { editScheduleApi } from "../../services/tripApi";
 const { Header, Sider, Content } = Layout;
 
 const layoutStyle = {
@@ -57,7 +59,8 @@ const mapStyle = {
 }
 
 const PlanPage = () => {
-  const { isExpanded, setPlanDays, setScheduleCategorys, getBookmark, setBookmarkInSchedule } = useTripPlan();
+  const { isExpanded, setPlanDays, setScheduleCategorys, getBookmark, getScheduleDayId, setBookmarkInSchedule } = useTripPlan();
+  const { tripId } = useTripInfo();
   const { regionData, updateRegionData } = useRegion();
   const { cascaderOptions } = regionData;
   const { openOneBtnModal } = useModal();
@@ -117,16 +120,10 @@ const PlanPage = () => {
    */
   const handleBookmarkDrop = (event) => {
     const { source, target } = event.operation;
-    console.log(source.id);
-    console.log(target.id)
     const bookmarkId = source.id;
     const scheduleId = target.id;
-    const bookmark = getBookmark(bookmarkId);
-    console.log(bookmark);
-    // TODO: 스케줄 저장 API
-    
-    // 해당 스케줄에 북마크 연결
-    setBookmarkInSchedule(scheduleId, bookmarkId);
+    // 북마크 저장 API
+    requestLinkBookmark(scheduleId, bookmarkId, setBookmarkInSchedule);
   };
 
   /**
@@ -199,6 +196,27 @@ const PlanPage = () => {
       return prev;
     });
   };
+
+
+  /**
+   * 북마크 등록 API 요청
+   * @param {*} scheduleId 
+   * @param {*} bookmarkId 
+   * @param {*} successCallback 
+   */
+  const requestLinkBookmark = async(scheduleId, bookmarkId, successCallback) => {
+    try {
+      const context = getBookmark(bookmarkId)?.areaInfo?.name;
+      const request = { bookmarkId: bookmarkId, context: context };
+      const dayId = getScheduleDayId(scheduleId); // 스케줄이 속한 day id 반환
+      const isSuccess = await editScheduleApi(tripId, dayId, scheduleId, request);
+      if (isSuccess) {
+        successCallback?.(scheduleId, bookmarkId, context);
+      }
+    } catch (e) {
+      console.log(e);
+    } 
+  }
 
   return (
     <PageLayout>

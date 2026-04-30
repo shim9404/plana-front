@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CATEGORY_ICON } from "../../Constants/categoryIcon";
 import {
   getBookmarkActiveColor,
@@ -60,8 +60,8 @@ const BookmarkItem = ({ bookmark, ...rest }) => {
     setIsMouseOver(false);
   };
 
-  const CategoryIcon = CATEGORY_ICON[bookmark?.areaInfo?.category || "etc"];
-  const categoryName = CATEGORY_NAME[bookmark?.areaInfo?.category || "etc"];
+  const CategoryIcon = CATEGORY_ICON[bookmark?.areaInfo?.category || "ETC"];
+  const categoryName = CATEGORY_NAME[bookmark?.areaInfo?.category || "ETC"];
 
   return (
     <FlexBox

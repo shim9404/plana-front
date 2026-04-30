@@ -27,19 +27,22 @@ export const TripPlanProvider = ({ children }) => {
 //#region functions
   const getBookmark = (id) => {
     return bookmarks.find(bookmark => bookmark.bookmarkId === id);
-    };
+  };
     
-    const setBookmarkInSchedule = (scheduleId, bookmarkId) => {
-      const bookmark = bookmarks.find(bookmark => bookmark.bookmarkId === bookmarkId);
-      setPlanDays((prev) =>
-        prev.map((day) => ({
-          ...day,
-          schedules: day.schedules.map((s) =>
-            s.tripScheduleId === scheduleId ? { ...s, bookmarkId: bookmark?.bookmarkId, context: bookmark?.areaInfo?.name || s.context } : s
-        ),
-      }))
+  const setBookmarkInSchedule = (scheduleId, bookmarkId, context) => {
+    setPlanDays((prev) =>
+      prev.map((day) => ({
+        ...day,
+        schedules: day.schedules.map((s) =>
+          s.tripScheduleId === scheduleId ? { ...s, bookmarkId: bookmarkId, context: context || s.context } : s
+      )}))
     );
   }
+
+  const getScheduleDayId = (scheduleId) => {
+    return planDays.find((day) => ( day.schedules.filter((s) => s.tripScheduleId === scheduleId))).tripDayId;
+  }
+
 //#endregion
 
   // === Editing Context ====================================
@@ -59,25 +62,10 @@ export const TripPlanProvider = ({ children }) => {
   /**
    * 스케줄 추가
    * @param {String} dayId 스케줄을 추가할 일자 ID
+   * @param {{  }} addData 스케줄 추가 API 호출 후 반환된 데이터
    */
-  const addSchedule = (dayId) => {
-    console.log(dayId);
+  const addSchedule = (dayId, addData) => {
     const schedules = planDays.find((d) => d.tripDayId === dayId).schedules;
-    const addIndex = schedules.length + 1;
-    // TODO: 스케줄 생성 API 연결
-    // 성공 시 response를 addData에 담아 아래 코드 실행
-    const addData = {
-      tripScheduleId: `TS${new Date()}`, // 테스트용 중복방지 KEY
-      indexSort: addIndex,
-      context: "새 스케줄",
-      startTime: "00:00",
-      endTime: "00:00",
-      category: "숙박",
-      memo: "메모",
-      price: 0,
-      link: "",
-    };
-
     const newSchedules = [...schedules, addData];
     setPlanDays((prev) =>
       prev.map((d) =>
@@ -87,18 +75,13 @@ export const TripPlanProvider = ({ children }) => {
 
     // 신규 스케줄 편집 모드
     setEditingSchedule(addData);
-  
-    // 실패 시 실패 안내 메세지 혹은 오류 팝업 출력
   };
 
   /**
    * 스케줄 삭제
-   * @param {String} dayId 삭제할 스케줄이 포함된 일자 ID
    * @param {String} scheduleId 삭제할 스케줄 ID
    */
   const deleteSchedule = (scheduleId) => {
-    // TODO: 스케줄 삭제 API 연결
-    // 성공 시 아래 코드 실행
     setPlanDays((prev) =>
       prev.map((day) => ({
           ...day,
@@ -111,7 +94,6 @@ export const TripPlanProvider = ({ children }) => {
       setEditingSchedule(null);
       focusRef.current = null;
     }
-    // 실패 시 실패 안내 메세지 혹은 오류 팝업 출력
   };
 
   /**
@@ -152,6 +134,7 @@ export const TripPlanProvider = ({ children }) => {
       planDays, setPlanDays,
       scheduleCategorys, setScheduleCategorys,
       getBookmark, setBookmarkInSchedule,
+      getScheduleDayId,
     }}>
       <PlanEditingContext.Provider value={{
         isDeleteRef, isDeleteBookmarkRef, focusRef, 

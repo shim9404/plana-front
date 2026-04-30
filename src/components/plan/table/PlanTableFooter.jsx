@@ -3,6 +3,7 @@ import { FlexBox } from "../../common/PLA_FlexBox";
 import { useEffect, useState } from "react";
 import { useTripInfo } from "../../../hooks/TripInfoContext";
 import { useTripPlan } from "../../../hooks/plan/PlanTripContext";
+import { editTripInfoApi } from "../../../services/tripApi";
 
 const PlanTableFooter = ({ styles }) => {
   const {confirmedDates, entryCount, setEntryCount} = useTripInfo();
@@ -25,6 +26,26 @@ const PlanTableFooter = ({ styles }) => {
   const getDay = () => {
     return confirmedDates[1].date() - confirmedDates[0].date();
   }
+  
+  const handleSaveEntryCount = () => {
+    requestUpdateEntryCount();
+  }
+
+  /**
+   * 여행 인원 수정 API 요청
+   * @param {*} successCallback 
+   */
+  const requestUpdateEntryCount = async(successCallback) => {
+    try {
+      const request = { entryCount: entryCount };
+      const isSuccess = await editTripInfoApi(tripId, request);
+      if (isSuccess) {
+        successCallback?.();
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   useEffect(() => {
     // 예산 계산
@@ -44,7 +65,9 @@ const PlanTableFooter = ({ styles }) => {
           <FlexBox w="56px">참여 인원</FlexBox>
           <FlexBox w="48px">
             <InputNumber min={1} max={99} value={entryCount} style={styles.footerInputStyle} 
-            onChange={onChangeEntryCount}/>
+            onChange={onChangeEntryCount}
+            onBlur={() => handleSaveEntryCount()}
+            />
           </FlexBox>
         </FlexBox>
         <FlexBox w="150px">

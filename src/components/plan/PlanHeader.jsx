@@ -5,6 +5,7 @@ import TripDatePicker from "../home/TripDatePicker";
 import TripRegionPicker from "../home/TripRegionPicker";
 import { CheckCircleTwoTone, SyncOutlined } from "@ant-design/icons";
 import { useState } from "react";
+import { editTripInfoApi } from "../../services/tripApi";
 
 const PlanHeader = () => {
   const {
@@ -14,6 +15,7 @@ const PlanHeader = () => {
     setSelectedSigu,
     tripName,
     setTripName,
+    tripId,
   } = useTripInfo();
   const [isSaving, setIsSaving] = useState(false);
 
@@ -40,6 +42,31 @@ const PlanHeader = () => {
   const handleChangeTripName = (value) => {
     setTripName(value);
   }
+
+  const handleSaveTripName = () => {
+    setIsSaving(true);
+    requestUpdateTripName(() => {
+      setTimeout(() => {
+        setIsSaving(false);
+      }, 500);
+    })
+  }
+  
+  /**
+   * 여행명 수정 API 요청
+   * @param {*} successCallback 
+   */
+  const requestUpdateTripName = async(successCallback) => {
+    try {
+      const request = { name: tripName };
+      const isSuccess = await editTripInfoApi(tripId, request);
+      if (isSuccess) {
+        successCallback?.();
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
   
   return (
     <FlexBox h="64px" style={{ position: "absolute", zIndex: 100, top: "0px", margin: "18px 0px", minWidth: "708px", pointerEvents: "none" }} settings={{ justify: "center" }}>
@@ -71,7 +98,7 @@ const PlanHeader = () => {
           </TextBox>
           <FlexBox h="48px" style={{ position: "relative" }}>
             <Input showCount maxLength={30} style={{ height: "48px", fontSize:"16px", color:"#565656", padding: "8px 56px 8px 18px"}}
-            value={tripName} onChange={(e) => handleChangeTripName(e.target.value)}/>
+            value={tripName} onChange={(e) => handleChangeTripName(e.target.value)} onBlur={() => {handleSaveTripName()}}/>
             <FlexBox w="52px" h="52px" settings={{ justify:"center" }} style={{ fontSize:"20px", right: "0%", position: "absolute", zIndex: 10 }}>
               {
                 isSaving?

@@ -45,10 +45,12 @@ const PlanBookmarkContainer = () => {
   };
 
   useEffect(() => {
-    if (!arrDisplay || arrDisplay.length == 0) {
-      setArrDisplay(bookmarks);
-    }
+    setArrDisplay(bookmarks);
   }, [bookmarks]);
+
+  useEffect(() => {
+    console.log("arrDisplay:: ", arrDisplay);
+  }, [arrDisplay]);
 
   return (
     <FlexContainer>
@@ -57,7 +59,7 @@ const PlanBookmarkContainer = () => {
           <FlexBox>
             {/* 헤더 좌측 타이틀 */}
             <TextBox size="16px" alignW="left" color="#565656">
-              <StarOutlined size="24px" style={{ marginRight: "8px" }}/>
+              <StarOutlined size="24px" style={{ marginRight: "8px" }} />
               북마크
             </TextBox>
           </FlexBox>
