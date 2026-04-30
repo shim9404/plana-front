@@ -7,7 +7,7 @@ import dayjs from 'dayjs';
 
 const { RangePicker } = DatePicker;
 
-const TripDatePicker = ({ width="400px", height="52px", placement }) => {
+const TripDatePicker = ({ width="400px", height="52px", placement, handleSave }) => {
   // 최종 확정 날짜 ["YYYY-MM-DD","YYYY-MM-DD"] (확인 버튼 클릭 시에만 업데이트)
   const { confirmedDates, setConfirmedDates } = useTripInfo();
 
@@ -30,6 +30,7 @@ const TripDatePicker = ({ width="400px", height="52px", placement }) => {
     if (tempDates?.[0] && tempDates?.[1]) {
       setConfirmedDates(tempDates);
       setOpen(false);
+      handleSave?.(tempDates);
     }
   };
 
@@ -51,6 +52,10 @@ const TripDatePicker = ({ width="400px", height="52px", placement }) => {
     setDisabled(true);
     setOpen(false);
   }
+
+  useEffect(() => {
+    console.log(tempDates);
+  }, [tempDates])
   
   useEffect(() => {
     if (confirmedDates) {

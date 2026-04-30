@@ -4,8 +4,10 @@ import { FlexBox, TextBox } from "../common/PLA_FlexBox";
 import TripDatePicker from "../home/TripDatePicker";
 import TripRegionPicker from "../home/TripRegionPicker";
 import { CheckCircleTwoTone, SyncOutlined } from "@ant-design/icons";
-import { useState } from "react";
-import { editTripInfoApi } from "../../services/tripApi";
+import { useEffect, useState } from "react";
+import { editTripDateApi, editTripInfoApi } from "../../services/tripApi";
+import dayjs from "dayjs";
+import { useTripPlan } from "../../hooks/plan/PlanTripContext";
 
 const PlanHeader = () => {
   const {
@@ -17,6 +19,7 @@ const PlanHeader = () => {
     setTripName,
     tripId,
   } = useTripInfo();
+  const {addPlanDays} = useTripPlan();
   const [isSaving, setIsSaving] = useState(false);
 
   const cascaderValue = selectedSigu
@@ -51,7 +54,14 @@ const PlanHeader = () => {
       }, 500);
     })
   }
-  
+
+  const handleSaveTripDate = (dates) => {
+    // TODO: 팝업 확인 및 로딩 추가 필요
+    requestUpdateTripDate(dates, (addDays) => { 
+      addPlanDays(addDays); 
+    });
+  }
+
   /**
    * 여행명 수정 API 요청
    * @param {*} successCallback 
@@ -67,6 +77,24 @@ const PlanHeader = () => {
       console.log(e);
     }
   };
+
+  /**
+   * 여행 일정 수정 API 요청
+   * @param {*} successCallback 
+   */
+  const requestUpdateTripDate = async(dates, successCallback) => {
+    console.log(dates);
+    try {
+      const request = { startDate: dates[0].format("YYYY-MM-DD"), endDate: dates[1].format("YYYY-MM-DD")};
+      const result = await editTripDateApi(tripId, request);
+      if (result) {
+        const addDays = result.data.addDays;
+        successCallback?.(addDays);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
   
   return (
     <FlexBox h="64px" style={{ position: "absolute", zIndex: 100, top: "0px", margin: "18px 0px", minWidth: "708px", pointerEvents: "none" }} settings={{ justify: "center" }}>
@@ -76,7 +104,7 @@ const PlanHeader = () => {
           <TextBox alignW="left" bg="none" style={textboxStyle}>
             여행 일정
           </TextBox>
-          <TripDatePicker width="400px" height="48px"/>
+          <TripDatePicker width="400px" height="48px" handleSave={(dates) => handleSaveTripDate(dates)}/>
 
         </FlexBox>
         {/* 검색 지역 영역 */}

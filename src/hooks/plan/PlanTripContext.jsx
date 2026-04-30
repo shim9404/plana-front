@@ -43,6 +43,12 @@ export const TripPlanProvider = ({ children }) => {
     return planDays.find((day) => ( day.schedules.filter((s) => s.tripScheduleId === scheduleId))).tripDayId;
   }
 
+  const addPlanDays = (days) => {
+    setPlanDays(prev => {
+      const newDays = [...prev, ...days];
+      return newDays;
+    });
+  }
 //#endregion
 
   // === Editing Context ====================================
@@ -134,7 +140,7 @@ export const TripPlanProvider = ({ children }) => {
       planDays, setPlanDays,
       scheduleCategorys, setScheduleCategorys,
       getBookmark, setBookmarkInSchedule,
-      getScheduleDayId,
+      getScheduleDayId, addPlanDays,
     }}>
       <PlanEditingContext.Provider value={{
         isDeleteRef, isDeleteBookmarkRef, focusRef, 
