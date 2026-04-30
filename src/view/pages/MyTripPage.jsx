@@ -78,7 +78,9 @@ const MyTripPage = () => {
   const [tripDates, setTripDate] = useState({ startDate: "", endDate: "" });
   // 스케줄 목록 초기값
   const [schedules, setSchedules] = useState([]);
-  
+  // 북마크 색상 (색 버튼 클릭) 
+  const [selectedColor, setSelectedColor] = useState("");
+
   const getTripByTripId = useCallback(async () => {
     if (!selectedMenu) return;
 
@@ -88,6 +90,7 @@ const MyTripPage = () => {
       // 북마크 목록
       const bookmark = result.data.data.bookmarks;
       setbookmarks(bookmark);
+      setSelectedColor("")
       // 여행 일자
       const startDate = result.data.data.startDate;
       const endDate = result.data.data.endDate;
@@ -285,7 +288,11 @@ const MyTripPage = () => {
                 </div>
               </div>
               {/* 북마크 카드 */}
-              <BookmarkComponent bookmarks = {bookmarks}/>
+              <BookmarkComponent 
+                bookmarks = {bookmarks}
+                selectedColor = {selectedColor}
+                setSelectedColor = {setSelectedColor}
+                />
               <div id="pdf-area">
                 {/* 여행 계획표 카드 */}
                 <TripPlanComponent

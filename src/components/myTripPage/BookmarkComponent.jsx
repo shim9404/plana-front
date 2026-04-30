@@ -1,4 +1,3 @@
-import React, { useState } from 'react'
 import { Button, Card, Empty } from 'antd';
 import { StarOutlined } from '@ant-design/icons';
 import '../../styles/myTripPage.css';
@@ -7,9 +6,7 @@ import BookmarkItem from '../bookmark/BookmarkItem';
 
 
 {/* 북마크 카드*/}
-const BookmarkComponent = ({bookmarks}) => {
-  // 색상 (색 버튼 클릭) 
-  const [selectedColor, setSelectedColor] = useState("");
+const BookmarkComponent = ({bookmarks, selectedColor, setSelectedColor}) => {
 
   // 색상 별 리스트
   const filteredList = selectedColor? 
@@ -30,17 +27,17 @@ const BookmarkComponent = ({bookmarks}) => {
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: "6px", paddingLeft: "10px", paddingRight: "10px"}}>
               <Button className="bookmark-extra-text" onClick={()=>setSelectedColor("")}>전체</Button>
-              <Button className="bookmark-card-colors" style={{ background: BOOKMARK_COLOR.RED.bg }}
+              <Button className={`bookmark-card-colors ${selectedColor === "RED" ? "selected" : ""}`} style={{ background: BOOKMARK_COLOR.RED.bg }}
                 onClick={()=>setSelectedColor("RED")}/>
-              <Button className="bookmark-card-colors" style={{ background: BOOKMARK_COLOR.ORANGE.bg }}
+              <Button className={`bookmark-card-colors ${selectedColor === "ORANGE" ? "selected" : ""}`} style={{ background: BOOKMARK_COLOR.ORANGE.bg }}
                 onClick={()=>setSelectedColor("ORANGE")}/>
-              <Button className="bookmark-card-colors" style={{ background: BOOKMARK_COLOR.YELLOW.bg }}
+              <Button className={`bookmark-card-colors ${selectedColor === "YELLOW" ? "selected" : ""}`} style={{ background: BOOKMARK_COLOR.YELLOW.bg }}
                 onClick={()=>setSelectedColor("YELLOW")}/>
-              <Button className="bookmark-card-colors" style={{ background: BOOKMARK_COLOR.GREEN.bg }}
+              <Button className={`bookmark-card-colors ${selectedColor === "GREEN" ? "selected" : ""}`} style={{ background: BOOKMARK_COLOR.GREEN.bg }}
                 onClick={()=>setSelectedColor("GREEN")}/>
-              <Button className="bookmark-card-colors" style={{ background: BOOKMARK_COLOR.BLUE.bg }}
+              <Button className={`bookmark-card-colors ${selectedColor === "BLUE" ? "selected" : ""}`} style={{ background: BOOKMARK_COLOR.BLUE.bg }}
                 onClick={()=>setSelectedColor("BLUE")}/>
-              <Button className="bookmark-card-colors" style={{ background: BOOKMARK_COLOR.PURPLE.bg }}
+              <Button className={`bookmark-card-colors ${selectedColor === "PURPLE" ? "selected" : ""}`} style={{ background: BOOKMARK_COLOR.PURPLE.bg }}
                 onClick={()=>setSelectedColor("PURPLE")}/>
             </div>
           </div>} >
