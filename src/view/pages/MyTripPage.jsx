@@ -1,7 +1,7 @@
 import PageLayout from "../../components/common/PageLayout";
 import { IconButton, TextButton } from "../../components/common/PLA_Buttons";
-import { Empty, Layout, message, Modal } from "antd";
-import { CompassOutlined, FormOutlined } from "@ant-design/icons";
+import { Empty, Layout, message, Spin } from "antd";
+import { CompassOutlined } from "@ant-design/icons";
 import { Download, FilePenLine, MapPinned, Trash2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -12,7 +12,12 @@ import BookmarkComponent from "../../components/myTripPage/BookmarkComponent";
 import TripPlanComponent from "../../components/myTripPage/TripPlanComponent";
 import TripTrashComponent from "../../components/myTripPage/TripTrashComponent";
 import { useAuth } from "../../hooks/AuthContext";
+import { useTripPlan } from "../../hooks/plan/PlanTripContext";
+import { useTripInfo } from "../../hooks/TripInfoContext";
 import axiosInstance from "../../services/axiosInstance";
+import { useModal } from "../../hooks/ModalProvider";
+import { oneBtnPreset } from "../../utils/alertModalPreset";
+import dayjs from "dayjs";
 
 const { Sider, Content } = Layout;
 
@@ -36,11 +41,18 @@ const contentStyle = {
 const MyTripPage = () => {
   // 경로 설정
   const navigate = useNavigate();
+  // 모달 창
+  const { openTwoBtnModal } = useModal();
   // 회원 전역 변수
   const { memberId } = useAuth();
+  // 북마크, 여행 계획표 전역 변수
+  const { setBookmarks, setPlanDays } = useTripPlan();
+  // 여행명, 여행일자 전역 변수
+  const { setTripName, setConfirmedDates } = useTripInfo();
 
   // 여행 목록(간단)초기값
   const [trips, setTrips] = useState([]);
+  const [myTripName, setMyTripName] = useState("");
   const getTripbyMemberId = useCallback( async () => {
     if (!memberId) return;
 
@@ -69,15 +81,17 @@ const MyTripPage = () => {
   useEffect(() => { 
     // 메뉴 선택의 초기 선택값 설정
     if (tripList.length > 0 && !tripList.some(trip => trip.tripId === selectedMenu)) {
-      setSelectedMenu(tripList[0].tripId);}
+      setSelectedMenu(tripList[0].tripId);
+      setMyTripName(tripList[0].name);
+    }
   }, [tripList]);
 
   // 북마크 목록 초기값
-  const [bookmarks, setbookmarks] = useState([]);
+  const [myBookmarks, setMybookmarks] = useState([]);
   // 여행 일자 초기값
-  const [tripDates, setTripDate] = useState({ startDate: "", endDate: "" });
+  const [myPlanDates, setMyPlanDates] = useState({ startDate: "", endDate: "" });
   // 스케줄 목록 초기값
-  const [schedules, setSchedules] = useState([]);
+  const [mySchedules, setMySchedules] = useState([]);
   // 북마크 색상 (색 버튼 클릭) 
   const [selectedColor, setSelectedColor] = useState("");
 
@@ -89,15 +103,15 @@ const MyTripPage = () => {
       const result = await axiosInstance.get(uri, null);
       // 북마크 목록
       const bookmark = result.data.data.bookmarks;
-      setbookmarks(bookmark);
+      setMybookmarks(bookmark);
       setSelectedColor("")
       // 여행 일자
       const startDate = result.data.data.startDate;
       const endDate = result.data.data.endDate;
-      setTripDate({startDate: startDate, endDate: endDate});
+      setMyPlanDates({startDate: startDate, endDate: endDate});
       // 스케줄 목록
       const schedule = result.data.data.days;
-      setSchedules(schedule);
+      setMySchedules(schedule);
     } catch (error) {
       console.log(error);
     }
@@ -132,63 +146,88 @@ const MyTripPage = () => {
   // 휴지통 목록(간단) - INACTIVE(비활성) 초기값
   const trashList = trashPlans.filter((item) => item.status === "INACTIVE");
 
-  // ==========
+  // =================
 
   // 메뉴 하단 - 휴지통 버튼 선택
   const [selectedTrash, setSelectedTrash] = useState(false);
+
   // 콘텐츠 상단 - 휴지통 버튼 선택
-  const [isTrashModalOpen, setIsTrashModalOpen] = useState(false); // 경고창 모달
-  
-  const trashshowModal = () => { // 모달 open
+  const handleTripTrash = () => { // 모달 open
     if (trashPlanList.length >= 10) {
       message.warning("휴지통이 가득 찼습니다. (10 / 10)")
       return;
     }
-    setIsTrashModalOpen(true);
+    openTwoBtnModal({
+      ...oneBtnPreset.trashCheck,
+      onOk: async () => { 
+        // 여행 계획 + 북마크 status: 비활성화(INACTIVE)
+        try {
+          const uri = `/api/trips/${selectedMenu}/status`;
+          await axiosInstance.patch(uri, { status: "INACTIVE" });
+        } catch (error) {
+          console.log(error);
+        }
+        getTripbyMemberId();
+        getTrashPlan();
+      }
+    })
   }; 
 
-  const trashhandleOk = async() => { // 확인
-    // 여행 계획 + 북마크 status: 비활성화(INACTIVE)
-    try {
-      const uri = `/api/trips/${selectedMenu}/status`;
-      await axiosInstance.patch(uri, { status: "INACTIVE" });
-      } catch (error) {
-        console.log(error);
-    }
-    getTripbyMemberId();
-    getTrashPlan();
-    setIsTrashModalOpen(false);
-  }; 
+  // 콘텐츠 상단 - 수정 버튼 선택
+  const [loading, setLoading] = useState(false); // spin 처리(데이터 담는 동안 보여주기)
+  const handleTripEdit = () => { // 모달 open
+    openTwoBtnModal({
+      ...oneBtnPreset.editCheck,
+      onOk: async () => {
+        setLoading(true);
+        // React 한번에 처리하기 못하게 한박자 쉬게 만드는 코드
+        await new Promise(resolve => setTimeout(resolve, 0));
 
-  const trashhandleCancel = () => { // 취소
-    setIsTrashModalOpen(false);
+
+        // 북마크, 여행 계획표 Context 담기 
+        setBookmarks(myBookmarks);
+        setPlanDays(mySchedules);
+        // 여행명, 여행일자 Context 담기
+        setTripName(myTripName);
+        setConfirmedDates([dayjs(myPlanDates.startDate),dayjs(myPlanDates.endDate)]);
+
+        setLoading(false);
+        navigate("/plan")
+      }
+    })
   }; 
 
   // 콘텐츠 상단 - 다운로드 버튼 선택
-  const handleDownloadPdf = async () => { // PDF 저장
-  // 캡처 전 스타일 변경
-  document.body.classList.add("pdf-mode");
-  const element = document.getElementById("pdf-area");
-  const canvas = await html2canvas(element);
-  const imgData = canvas.toDataURL("image/png");
+  const handleTripDownload = () => { // PDF 저장
+    openTwoBtnModal({
+      ...oneBtnPreset.downloadCheck,
+      onOk: async () => {
+          // 캡처 전 스타일 변경
+        document.body.classList.add("pdf-mode");
+        const element = document.getElementById("pdf-area");
+        const canvas = await html2canvas(element);
+        const imgData = canvas.toDataURL("image/png");
 
-  // 캡처 후 바로 복구
-  document.body.classList.remove("pdf-mode");
+        // 캡처 후 바로 복구
+        document.body.classList.remove("pdf-mode");
 
-  const pdf = new jsPDF("p", "mm", "a4");
-  const imgWidth = 210;
-  // const pageHeight = 297;
-  const imgHeight = (canvas.height * imgWidth) / canvas.width;
-  let position = 0;
+        const pdf = new jsPDF("p", "mm", "a4");
+        const imgWidth = 210;
+        // const pageHeight = 297;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        let position = 0;
 
-  pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-  
-  window.open(pdf.output("bloburl")) // 미리보기
-};
+        pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+
+        window.open(pdf.output("bloburl")) // 미리보기
+      }
+    });
+  };
 
 
   return (
     <PageLayout>
+      <Spin spinning={loading} size="large">
       <Layout style={layoutStyle}>
         {/* == 사이드 영역 == */}
         <Sider width={'300px'} theme="light">
@@ -213,8 +252,11 @@ const MyTripPage = () => {
                 <div
                   key={trip.tripId}
                   className={`trip-item ${selectedMenu === trip.tripId && !selectedTrash ? "active" : ""}`}
-                  onClick={() => {setSelectedMenu(trip.tripId), setSelectedTrash(false)}}
-                >
+                  onClick={() => {
+                    setSelectedMenu(trip.tripId); 
+                    setSelectedTrash(false);
+                    setMyTripName(trip.name);
+                  }}>
                   <MapPinned size={25}/>
                   <span className="menu-text">{trip.name}</span>
                 </div>
@@ -275,21 +317,20 @@ const MyTripPage = () => {
                   </span>
                 </div>
                 <div className="trip-content-header_button">
-                  <IconButton type="default" width="50px" height="40px" onClickEvent={trashshowModal}>
+                  <IconButton type="default" width="50px" height="40px" onClickEvent={handleTripTrash}>
                     <Trash2 size={20} />
                   </IconButton>
-                  <IconButton type="default" width="50px" height="40px"
-                    onClickEvent={() => navigate("/plan")}>
+                  <IconButton type="default" width="50px" height="40px" onClickEvent={handleTripEdit}>
                     <FilePenLine size={20} />
                   </IconButton>
-                  <IconButton type="default" width="50px" height="40px" onClickEvent={handleDownloadPdf}>
+                  <IconButton type="default" width="50px" height="40px" onClickEvent={handleTripDownload}>
                     <Download size={20} />
                   </IconButton>
                 </div>
               </div>
               {/* 북마크 카드 */}
               <BookmarkComponent 
-                bookmarks = {bookmarks}
+                myBookmarks = {myBookmarks}
                 selectedColor = {selectedColor}
                 setSelectedColor = {setSelectedColor}
                 />
@@ -297,9 +338,9 @@ const MyTripPage = () => {
                 {/* 여행 계획표 카드 */}
                 <TripPlanComponent
                   tripList={tripList}
-                  tripDates={tripDates}
-                  bookmarks={bookmarks}
-                  schedules={schedules}
+                  myPlanDates={myPlanDates}
+                  myBookmarks={myBookmarks}
+                  mySchedules={mySchedules}
                 />
               </div>
               </>
@@ -330,20 +371,7 @@ const MyTripPage = () => {
           )
         }
       </Layout>
-
-      <Modal
-        title="알림창"
-        closable={{ 'aria-label': 'Custom Close Button' }}
-        open={isTrashModalOpen}
-        onOk={trashhandleOk}
-        onCancel={trashhandleCancel}
-        okText="확인"
-        cancelText="취소"
-        okButtonProps={{ danger: true }}
-      >
-        <p>이 여행 목록을 휴지통에 버리겠습니까?</p>
-      </Modal>
-
+      </Spin>
     </PageLayout>
   );
 };
