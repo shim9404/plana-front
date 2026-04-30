@@ -96,20 +96,6 @@ export const editScheduleApi = async (tripId, dayId, scheduleId, payload) => {
 };
 
 /**
- * 여행 스케줄 북마크 링크(등록 수정 해제)
- * @param {String} tripId 
- * @param {String} dayId 
- * @param {String} scheduleId 
- * @param {*} payload 
- * @returns 
- */
-export const linkBookmarkInSchedule = async (tripId, dayId, scheduleId, payload) => {
-  const response = await axiosInstance.patch(`/api/trips/${tripId}/days/${dayId}/schedules/${scheduleId}/bookmark`, payload)
-  const result = response.data ?? {};
-  return result.success;
-}
-
-/**
  * 여행 스케줄 순서 변경
  * @param {String} tripId 
  * @param {String} dayId 
@@ -130,7 +116,7 @@ export const reorderScheduleApi = async (tripId, dayId, payload) => {
  * @returns 
  */
 export const deleteScheduleApi = async (tripId, dayId, scheduleId) => {
-  const response = await axiosInstance.delete(`/api/trips/${tripId}/days/${dayId}/schedules/${scheduleId}`, payload);
+  const response = await axiosInstance.delete(`/api/trips/${tripId}/days/${dayId}/schedules/${scheduleId}`);
   const result = response.data ?? {};
   return result.success;
 }

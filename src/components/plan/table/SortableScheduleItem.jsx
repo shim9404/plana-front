@@ -8,6 +8,8 @@ import { IconButton } from "../../common/PLA_Buttons";
 import { CloseCircleFilled, CloseSquareOutlined, HolderOutlined, LinkOutlined, PlusOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { getBookmarkActiveColor, getBookmarkColor } from "../../../utils/plan/bookmarkUtils";
+import { deleteScheduleApi, editScheduleApi } from "../../../services/tripApi";
+import { useTripInfo } from "../../../hooks/TripInfoContext";
 
 const ScheduleDroppableItem = ({ scheduleId, bookmarkId, value, isEditing, onChange, onClick, deleteBookmarkEvent }) => {
   const {isDropTarget, ref } = useDroppable({id: scheduleId, accept: ["bookmark"]});
@@ -254,9 +256,10 @@ const ScheduleEditableItem = ({ columnId, value, isEditing, onClick, onChange, .
   );
 };
 
-const SortableScheduleItem = ({ id, scheduleId, index, schedule, isOnly, }) => {
+const SortableScheduleItem = ({ id, dayId, scheduleId, index, schedule, isOnly, }) => {
   const { ref: sortableRef, handleRef, isDragging } = useSortable({ id: scheduleId, index, type: "item" });
   const itemRef = useRef(null);
+  const { tripId } = useTripInfo();
   const { isExpanded, setBookmarkInSchedule } = useTripPlan();
   const { isDeleteRef, isDeleteBookmarkRef, editingSchedule, setEditingSchedule, focusRef, saveSchedule, deleteSchedule } = usePlanEditing();
   const [isHover, setIsHover] = useState(false);
@@ -294,7 +297,8 @@ const SortableScheduleItem = ({ id, scheduleId, index, schedule, isOnly, }) => {
       // 이전에 선택했던 스케줄이 있고 동일하지 않음
       if (editingSchedule && editingSchedule.tripScheduleId !== schedule.tripScheduleId) {
         // 이전 스케줄 저장
-        saveSchedule?.();
+        handleSaveSchedule();
+        // saveSchedule?.();
       }
 
       // TODO: 저장 후 성공 시 편집 시작
@@ -317,6 +321,15 @@ const SortableScheduleItem = ({ id, scheduleId, index, schedule, isOnly, }) => {
   };
 
   /**
+   * 스케줄 저장
+   */
+  const handleSaveSchedule = () => {
+    requestUpdateSchedule(() => {
+      saveSchedule?.();
+    })
+  }
+
+  /**
    * 북마크 삭제
    */
   const handleDeleteBookmarkEvent = () => {
@@ -334,12 +347,13 @@ const SortableScheduleItem = ({ id, scheduleId, index, schedule, isOnly, }) => {
    */
   const handleDeleteSchedule = () => {
     isDeleteRef.current = true;  // 삭제 전 플래그 설정
-    // 행 삭제 이벤트 연결
-    deleteSchedule?.(scheduleId);
+    requestDeleteSchedule(() => {
+      deleteSchedule?.(scheduleId);
+    })
   }
 
   /**
-   * Focus out
+   * Focus out : 스케줄 편집 완료
    * @param {*} e 
    */
   const handleBlur = (e) => {
@@ -381,11 +395,46 @@ const SortableScheduleItem = ({ id, scheduleId, index, schedule, isOnly, }) => {
       
       const isOtherScheduleItem = active?.closest("#schedule-item");
       if (isOtherScheduleItem) return;  // 별도로 저장 처리를 하고 있음
-
-      saveSchedule?.();
+        handleSaveSchedule();
+        // saveSchedule?.();
     }, 150);
   };
 
+  /**
+   * 스케줄 삭제 API 요청
+   * @param {*} successCallback 
+   */
+  const requestDeleteSchedule = async(successCallback) => {
+    try {
+      const isSuccess = await deleteScheduleApi(tripId, dayId, scheduleId);
+      console.log("requestDeleteSchedule", isSuccess);
+      if (isSuccess) {
+        successCallback?.();
+      }
+    } catch (e) {
+      console.log(e);
+    } finally {
+      console.log("finally");
+    }
+  }
+
+  /**
+   * 스케줄 수정 API 요청
+   * @param {*} successCallback 
+   */
+  const requestUpdateSchedule = async(successCallback) => {
+    try {
+      const { bookmarkId, ...request } = editingSchedule;
+      const isSuccess = await editScheduleApi(tripId, dayId, scheduleId, request);
+      if (isSuccess) {
+        successCallback?.();
+      }
+    } catch (e) {
+      console.log(e);
+    } finally {
+      console.log("finally");
+    }
+  }
 
   useEffect(() => {
     setIsEditing(schedule.tripScheduleId === editingSchedule?.tripScheduleId);
