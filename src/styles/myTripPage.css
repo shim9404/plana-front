@@ -287,7 +287,7 @@
 .schedule-table-header, 
 .schedule-table-row {
   display: grid;
-  grid-template-columns: 20fr 70fr 70fr 60fr 250fr 350fr 70fr 30fr;
+  grid-template-columns: 20fr 60fr 60fr 100fr 230fr 300fr 70fr 30fr;
   gap: 10px;
   padding: 5px 15px 5px 15px;
   min-width: 1000px;

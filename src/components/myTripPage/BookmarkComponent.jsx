@@ -6,12 +6,12 @@ import BookmarkItem from '../bookmark/BookmarkItem';
 
 
 {/* 북마크 카드*/}
-const BookmarkComponent = ({bookmarks, selectedColor, setSelectedColor}) => {
+const BookmarkComponent = ({myBookmarks, selectedColor, setSelectedColor}) => {
 
   // 색상 별 리스트
   const filteredList = selectedColor? 
-    bookmarks.filter(item => item.bookmarkType === selectedColor)
-    : bookmarks; // 전체
+    myBookmarks.filter(item => item.bookmarkType === selectedColor)
+    : myBookmarks; // 전체
 
   return (
     <>
