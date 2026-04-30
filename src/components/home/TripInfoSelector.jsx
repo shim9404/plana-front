@@ -35,7 +35,7 @@ const TripInfoSelector = ({ setHoveredId }) => {
     });
   }
 
-  const handleCreateTrip = async(successCallback) => {
+  const handleCreateTrip = async (successCallback) => {
     let data = {
       memberId: memberId,
       name: "새 여행 이름",
@@ -51,6 +51,7 @@ const TripInfoSelector = ({ setHoveredId }) => {
         setTripId(response.tripId);
         setTripName(response.name);
         setPlanDays(response.days);
+        setTripId(response.tripId);
         successCallback?.();
       }
     } catch (e) {

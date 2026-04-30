@@ -130,6 +130,7 @@ export const deleteScheduleApi = async (tripId, dayId, scheduleId) => {
  * @returns 
  */
 export const addBookmarkApi = async (tripId, payload) => {
+  console.log(payload)
   const response = await axiosInstance.post(`/api/trips/${tripId}/bookmarks`, payload);
   return response.data;
 };
