@@ -1,6 +1,5 @@
 import { createContext, useContext, useState } from "react";
 
-
 const TripInfoContext = createContext(null);
 // TripInfoContext.jsx - 사용자 선택값만
 export const TripInfoProvider = ({ children }) => {
