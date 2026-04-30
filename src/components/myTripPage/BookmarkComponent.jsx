@@ -7,14 +7,14 @@ import BookmarkItem from '../bookmark/BookmarkItem';
 
 
 {/* 북마크 카드*/}
-const BookmarkComponent = ({arrBookmarkList}) => {
+const BookmarkComponent = ({bookmarks}) => {
   // 색상 (색 버튼 클릭) 
   const [selectedColor, setSelectedColor] = useState("");
 
   // 색상 별 리스트
   const filteredList = selectedColor? 
-    arrBookmarkList.filter(item => item.bookmarkType === selectedColor)
-    : arrBookmarkList; // 전체
+    bookmarks.filter(item => item.bookmarkType === selectedColor)
+    : bookmarks; // 전체
 
   return (
     <>

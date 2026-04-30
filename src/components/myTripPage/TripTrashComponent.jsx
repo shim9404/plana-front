@@ -3,50 +3,62 @@ import { Archive, RefreshCw, X } from 'lucide-react';
 import '../../styles/myTripPage.css';
 import { IconButton } from '../common/PLA_Buttons';
 import { message, Modal } from 'antd';
+import axiosInstance from '../../services/axiosInstance';
 
-const TripTrashComponent = ({setArrTripItem, arrTripList, setTrashPlanItem, trashList}) => {
-
+const TripTrashComponent = ({getTripbyMemberId, tripList, getTrashPlan, trashList}) => {
   // 복구 버튼 선택
   const [isRestoreModalOpen, setIsRestoreModalOpen] = useState(false); // 경고창 모달
   const [selectedRestoreTripId, setSelectedRestoreTripId] = useState(""); // 복구할 여행 목록 id
+
   const restoreshowModal = (tripId) => { // 모달 open
-    if (arrTripList.length >= 5) {
+    if (tripList.length >= 5) {
       message.warning("여행 목록이 가득 찼습니다. (5 / 5)")
       return;
     }
     setSelectedRestoreTripId(tripId);
     setIsRestoreModalOpen(true);
   }; 
-  const restorehandleOk = () => { // 확인
-    setArrTripItem(prev =>
-      prev.map(item =>
-        item.tripId === selectedRestoreTripId? { ...item, status: "ACTIVE" }: item));
-    setTrashPlanItem(prev =>
-      prev.map(item =>
-        item.tripId === selectedRestoreTripId? { ...item, status: "ACTIVE" }: item));
+
+  const restorehandleOk = async() => { // 확인
+    // 여행 계획 + 북마크 status: 활성화(ACTIVE)
+    try {
+      const uri = `/api/trips/${selectedRestoreTripId}/status`;
+      await axiosInstance.patch(uri, { status: "ACTIVE" });
+      } catch (error) {
+        console.log(error);
+      }
+    getTrashPlan();
+    getTripbyMemberId();
     setIsRestoreModalOpen(false);
   }; 
+
   const restorehandleCancel = () => { // 취소
     setIsRestoreModalOpen(false);
   }; 
+
  // 삭제 버튼 선택
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // 경고창 모달
   const [selectedDeleteTripId, setSelectedDeleteTripId] = useState(""); // 완전 삭제할 여행 목록 id
+
   const deleteshowModal = (tripId) => { // 모달 open
     setSelectedDeleteTripId(tripId);
     setIsDeleteModalOpen(true);
   }; 
-  const deletehandleOk = () => { // 확인
-  setArrTripItem(prev =>
-    prev.map(item =>
-      item.tripId === selectedDeleteTripId? { ...item, status: "DELECTED" }: item)
-  );
-  setTrashPlanItem(prev =>
-    prev.map(item =>
-      item.tripId === selectedDeleteTripId? { ...item, status: "DELECTED" }: item)
-  );
+
+  const deletehandleOk = async() => { // 확인
+    // 여행 계획 + 북마크 영구삭제
+    try {
+      const uri = `/api/trips/${selectedDeleteTripId}`;
+      await axiosInstance.delete(uri, null);
+      } catch (error) {
+        console.log(error);
+      }
+    getTrashPlan();
+    getTripbyMemberId();
+
     setIsDeleteModalOpen(false);
   }; 
+
   const deletehandleCancel = () => { // 취소
     setIsDeleteModalOpen(false);
   };   
@@ -86,7 +98,13 @@ const TripTrashComponent = ({setArrTripItem, arrTripList, setTrashPlanItem, tras
                 <div>{trash.scheduleCount} 행</div>
                 <div>{trash.bookmarkCount} 개</div>
                 <div>
-                  {trash.latestDate}
+                  {new Date(trash.latestDate).toLocaleDateString("ko-KR", {
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit"})
+                    .replace(/\s/g, "")
+                    .replace(/\.$/, "")
+                  }
                 </div>
                 <div style={{color: trash.remainDate <= 7 ? "red" : "inherit"}}>
                   {trash.remainDate} 일
@@ -131,7 +149,7 @@ const TripTrashComponent = ({setArrTripItem, arrTripList, setTrashPlanItem, tras
         cancelText="취소"
         okButtonProps={{ danger: true }}
       >
-        <p>이 여행 목록을 영구 삭제하시겠습니까?</p>
+        <p>삭제 후 복구가 불가능합니다. 이 여행 목록을 영구 삭제하시겠습니까? </p>
       </Modal>
       
     </>

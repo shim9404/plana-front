@@ -3,7 +3,7 @@ import { IconButton, TextButton } from "../../components/common/PLA_Buttons";
 import { Empty, Layout, message, Modal } from "antd";
 import { CompassOutlined, FormOutlined } from "@ant-design/icons";
 import { Download, FilePenLine, MapPinned, Trash2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
@@ -40,133 +40,123 @@ const MyTripPage = () => {
   const { memberId } = useAuth();
 
   // 여행 목록(간단)초기값
-  const [arrTripItem, setArrTripItem] = useState([]);
-  useEffect(() => {
-    const getTrip = async () => {
-      try {
-        const uri = `/api/members/${memberId}/trips`;
-        const result = await axiosInstance.get(uri, null);
-        const trip = result.data.data.member.trips;
+  const [trips, setTrips] = useState([]);
+  const getTripbyMemberId = useCallback( async () => {
+    if (!memberId) return;
 
-        setArrTripItem(trip);
-      } catch (error) {
-        console.log(error);
-      }
+    try {
+      const uri = `/api/members/${memberId}/trips`;
+      const result = await axiosInstance.get(uri, null);
+      const trip = result?.data?.data?.member?.trips || [];
+
+      setTrips(trip);
+    } catch (error) {
+      console.log(error);
     }
+  }, [memberId]);
 
-    getTrip();
-  }, [memberId])
+  useEffect(() => {
+
+    getTripbyMemberId();
+  }, [getTripbyMemberId]);
   // 여행 목록(간단) - ACTIVE(활성) 초기값
-  const arrTripList = arrTripItem.filter((item) => item.status === "ACTIVE");
+  const tripList = trips.filter((item) => item.status === "ACTIVE");
   // 여행 목록(간단) - INACTIVE(비활성-휴지통) 초기값
-  const arrtrashPlanList = arrTripItem.filter((item) => item.status === "INACTIVE");
+  const trashPlanList = trips.filter((item) => item.status === "INACTIVE");
 
   // 메뉴 - 여행 목록 선택
   const [selectedMenu, setSelectedMenu] = useState("");
-  useEffect(() => { // 메뉴 선택의 초기 선택값 설정
-    if (arrTripList.length > 0 && !arrTripList.some(trip => trip.tripId === selectedMenu)) {
-      setSelectedMenu(arrTripList[0].tripId);}
-  }, [arrTripList, selectedMenu]);
+  useEffect(() => { 
+    // 메뉴 선택의 초기 선택값 설정
+    if (tripList.length > 0 && !tripList.some(trip => trip.tripId === selectedMenu)) {
+      setSelectedMenu(tripList[0].tripId);}
+  }, [tripList]);
 
-  // 북마크 목록(전부) 초기값
-  const [arrBookmarkList, setArrBookmarkList] = useState([]);
-  useEffect(() => {
-    const getTripDetail = async () => {
-      try {
-        const uri = `/api/trips/${selectedMenu}`;
-        const result = await axiosInstance.get(uri, null);
-        const bookmark = result.data.data.bookmarks;
-        console.log(bookmark)
-
-        setArrBookmarkList(bookmark);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-
-    getTripDetail();
-  }, [selectedMenu])
-  
+  // 북마크 목록 초기값
+  const [bookmarks, setbookmarks] = useState([]);
   // 여행 일자 초기값
-  const [tripDate, setTripDate] = useState({
-    startDate: "2026-04-01",
-    endDate: "2026-04-02"
-  });
+  const [tripDates, setTripDate] = useState({ startDate: "", endDate: "" });
+  // 스케줄 목록 초기값
+  const [schedules, setSchedules] = useState([]);
+  
+  const getTripByTripId = useCallback(async () => {
+    if (!selectedMenu) return;
 
-  // 스케줄 목록(전부) 초기값
-  const [schedulelist, setScheduleList] = useState([
-    {
-      tripDayId: "TD14",
-      indexSort: 1,
-      schedules: [
-        {tripScheduleId: "TS123", indexSort: 1, context: "부산으로 ㄱㄱ", startTime: "10:00", endTime: "13:00", category: "이동", price: 10000, memo: "택시 타기"},
-        {tripScheduleId: "TS365", indexSort: 2, bookmarkId: "BM43", startTime: "14:00", endTime: "15:00", category: "식사", price: 50000, memo: "방문 전 예약 필수! 예약 실패 시, 1시간 대기",}
-      ]
-    },
-    {
-      tripDayId: "TD27",
-      indexSort: 2,
-      schedules: [
-        {tripScheduleId: "TS257", indexSort: 1, bookmarkId: "BM11", startTime: "10:00", endTime: "11:00", category: "이동", memo: ""},
-        {tripScheduleId: "TS258", indexSort: 2, bookmarkId: "BM12", startTime: "13:00", endTime: "14:00", category: "카페", price: 30000, memo: "딸기라떼 + 티라미수 필수"},
-        {tripScheduleId: "TS260", indexSort: 3, bookmarkId: "BM4", startTime: "14:00", endTime: "15:00", category: "관광명소", memo: "사진 찍기"},
-        {tripScheduleId: "TS261", indexSort: 4, context: "", startTime: "15:00", endTime: "16:00", category: "기타", memo: "소화 시킬겸 주변 공원 산책"},
-        {tripScheduleId: "TS262", indexSort: 5, bookmarkId: "BM5", startTime: "16:00", endTime: "17:00", category: "주차장", price: 3000, memo: ""},
-        {tripScheduleId: "TS263", indexSort: 6, context: "미정", startTime: "18:00", endTime: "19:00", category: "", price: "", memo: ""},
-        {tripScheduleId: "TS264", indexSort: 7, bookmarkId: "BM9", startTime: "20:00", endTime: "21:00", category: "숙박", price: 190000, memo: "꿈나라"},
-        {tripScheduleId: "TS265", indexSort: 8, bookmarkId: "BM9", startTime: "20:00", endTime: "21:00", category: "숙박", price: 190000, memo: "꿈나라"},        
-        {tripScheduleId: "TS266", indexSort: 9, bookmarkId: "BM9", startTime: "20:00", endTime: "21:00", category: "숙박", price: 190000, memo: "꿈나라"}
-      ]
-    },
-    {
-      tripDayId: "TD28",
-      indexSort: 3,
-      schedules: [
-        {tripScheduleId: "TS300", indexSort: 1, bookmarkId: "BM2", startTime: "10:00", endTime: "11:00", category: "이동", memo: ""},
-        {tripScheduleId: "TS301", indexSort: 2, bookmarkId: "BM3", startTime: "13:00", endTime: "14:00", category: "카페", price: 30000, memo: "딸기라떼 + 티라미수 필수"},
-        {tripScheduleId: "TS302", indexSort: 3, bookmarkId: "BM4", startTime: "14:00", endTime: "15:00", category: "관광명소", memo: "사진 찍기"},
-        {tripScheduleId: "TS303", indexSort: 4, context: "", startTime: "15:00", endTime: "16:00", category: "기타", memo: "소화 시킬겸 주변 공원 산책"}
-      ]
+    try {
+      const uri = `/api/trips/${selectedMenu}`;
+      const result = await axiosInstance.get(uri, null);
+      // 북마크 목록
+      const bookmark = result.data.data.bookmarks;
+      setbookmarks(bookmark);
+      // 여행 일자
+      const startDate = result.data.data.startDate;
+      const endDate = result.data.data.endDate;
+      setTripDate({startDate: startDate, endDate: endDate});
+      // 스케줄 목록
+      const schedule = result.data.data.days;
+      setSchedules(schedule);
+    } catch (error) {
+      console.log(error);
     }
-  ]);
+  }, [selectedMenu])
+
+  useEffect(() => {
+
+    getTripByTripId();
+  }, [getTripByTripId])
+  
 
   // 휴지통 목록 내 여행 정보 초기값
-  const[trashPlanItem, setTrashPlanItem] = useState([
-    {tripId: "T9", name: "집에 보내줘요", status: "INACTIVE", startDate: "2026-04-01", endDate: "2026-04-02", latestDate: "2026-03-10", remainDate: 22, scheduleCount: 9999, bookmarkCount: 9999},
-    {tripId: "T11", name: "나 말리지마", status: "INACTIVE", startDate: "2026-04-03", endDate: "2026-04-05", latestDate: "2026-03-15", remainDate: 3, scheduleCount: 6, bookmarkCount: 0},
-    {tripId: "T50", name: "노는게 제일 좋아~ 뽀로로 언제나! 노는게!!!!!", status: "INACTIVE", startDate: "2026-04-01", endDate: "2026-04-02", latestDate: "2026-03-10", remainDate: 15, scheduleCount: 0, bookmarkCount: 0},
-    {tripId: "T51", name: "집에 보내줘요", status: "INACTIVE", startDate: "2026-04-01", endDate: "2026-04-02", latestDate: "2026-03-10", remainDate: 7, scheduleCount: 3, bookmarkCount: 5},
-    {tripId: "T52", name: "집에 보내줘요", status: "INACTIVE", startDate: "2026-04-01", endDate: "2026-04-02", latestDate: "2026-03-10", remainDate: 5, scheduleCount: 3, bookmarkCount: 5},
-    {tripId: "T53", name: "집에 보내줘요", status: "INACTIVE", startDate: "2026-04-01", endDate: "2026-04-02", latestDate: "2026-03-10", remainDate: 3, scheduleCount: 3, bookmarkCount: 5},
-    {tripId: "T54", name: "집에 보내줘요", status: "INACTIVE", startDate: "2026-04-01", endDate: "2026-04-02", latestDate: "2026-03-10", remainDate: 3, scheduleCount: 3, bookmarkCount: 5}
-  ])
+  const[trashPlans, setTrashPlans] = useState([])
+
+  const getTrashPlan = useCallback(async () => {
+    if (!memberId) return;
+
+    try {
+      const uri = `/api/members/${memberId}/trips/trashs`;
+      const result = await axiosInstance.get(uri, null);
+      const trashPlan = result.data.data.member.trips;
+      setTrashPlans(trashPlan);
+    } catch (error) {
+      console.log(error);
+    }
+  }, [memberId])
+
+  useEffect(() => {
+    getTrashPlan();
+  }, [memberId])
 
   // 휴지통 목록(간단) - INACTIVE(비활성) 초기값
-  const trashList = trashPlanItem.filter((item) => item.status === "INACTIVE");
+  const trashList = trashPlans.filter((item) => item.status === "INACTIVE");
 
   // ==========
 
-
   // 메뉴 하단 - 휴지통 버튼 선택
   const [selectedTrash, setSelectedTrash] = useState(false);
-
   // 콘텐츠 상단 - 휴지통 버튼 선택
   const [isTrashModalOpen, setIsTrashModalOpen] = useState(false); // 경고창 모달
-  const [selectedTrashTripId, setSelectedTrashTripId] = useState(""); // 휴지통에 보낼 여행 목록 id
-  const trashshowModal = (tripId) => { // 모달 open
-    if (arrtrashPlanList.length >= 10) {
+  
+  const trashshowModal = () => { // 모달 open
+    if (trashPlanList.length >= 10) {
       message.warning("휴지통이 가득 찼습니다. (10 / 10)")
       return;
     }
-    setSelectedTrashTripId(tripId);
     setIsTrashModalOpen(true);
   }; 
-  const trashhandleOk = () => { // 확인
-    setArrTripItem(prev =>
-      prev.map(item =>
-        item.tripId === selectedTrashTripId? { ...item, status: "INACTIVE" }: item));
+
+  const trashhandleOk = async() => { // 확인
+    // 여행 계획 + 북마크 status: 비활성화(INACTIVE)
+    try {
+      const uri = `/api/trips/${selectedMenu}/status`;
+      await axiosInstance.patch(uri, { status: "INACTIVE" });
+      } catch (error) {
+        console.log(error);
+    }
+    getTripbyMemberId();
+    getTrashPlan();
     setIsTrashModalOpen(false);
   }; 
+
   const trashhandleCancel = () => { // 취소
     setIsTrashModalOpen(false);
   }; 
@@ -184,7 +174,7 @@ const MyTripPage = () => {
 
   const pdf = new jsPDF("p", "mm", "a4");
   const imgWidth = 210;
-  const pageHeight = 297;
+  // const pageHeight = 297;
   const imgHeight = (canvas.height * imgWidth) / canvas.width;
   let position = 0;
 
@@ -214,7 +204,7 @@ const MyTripPage = () => {
               </div>
             {/* 메뉴 */}
             <div className="trip-list">
-              {arrTripList.map((trip) => (
+              {tripList.map((trip) => (
                 <div
                   key={trip.tripId}
                   className={`trip-item ${selectedMenu === trip.tripId && !selectedTrash ? "active" : ""}`}
@@ -229,19 +219,19 @@ const MyTripPage = () => {
           {/* 하단 영역 - 추가 박스(저장량 표시 및 휴지통) */}
           <div className="menu-extra">
             <div className="menu-extra-text">
-              저장 여행 {arrTripList.length} / 5개
+              저장 여행 {tripList.length} / 5개
             </div>
             <TextButton type="default" width="270px" height="35px" fontSize="15px" 
               onClickEvent={() => setSelectedTrash(false)}
             >
               <div
                 className="menu-extra-button-fill"
-                style={{ width: `${(arrTripList.length / 5) * 100}%` }}
+                style={{ width: `${(tripList.length / 5) * 100}%` }}
               />
               <div className="menu-extra-button-position">
                 <CompassOutlined style={{ zIndex: 1, fontSize: "18px" }} />
                 <span style={{ zIndex: 1 }}>
-                  {arrTripList.length}개 사용 중
+                  {tripList.length}개 사용 중
                 </span>
               </div>
             </TextButton>
@@ -251,12 +241,12 @@ const MyTripPage = () => {
             >
               <div
                 className="menu-extra-button-fill-trash"
-                style={{ width: `${(arrtrashPlanList.length / 10) * 100}%` }}
+                style={{ width: `${(trashPlanList.length / 10) * 100}%` }}
               />
               <div className="menu-extra-button-position">
                 <Trash2 size={18} style={{ zIndex: 1 }} />
                 <span style={{ zIndex: 1 }}>
-                  휴지통 ({arrtrashPlanList.length} / 10)
+                  휴지통 ({trashPlanList.length} / 10)
                 </span>
               </div>
             </TextButton>
@@ -265,7 +255,7 @@ const MyTripPage = () => {
         {/* == 콘텐츠 영역 == */}
         {selectedTrash === false ? ( // 휴지통 버튼 클릭 여부
           <Content style={contentStyle}>
-            {arrTripList.length === 0 ? ( // 여행 목록 없는 경우
+            {tripList.length === 0 ? ( // 여행 목록 없는 경우
               <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: 'calc(100vh - 300px)'}}>
                 <Empty description={"여행 계획이 없습니다."}/>
               </div>
@@ -276,11 +266,11 @@ const MyTripPage = () => {
                 <div className="trip-content-header">
                   <CompassOutlined style={{fontSize: '35px'}} />
                   <span className="trip-content-header__title">
-                    {arrTripList.find((trip) => trip.tripId === selectedMenu)?.name}
+                    {tripList.find((trip) => trip.tripId === selectedMenu)?.name}
                   </span>
                 </div>
                 <div className="trip-content-header_button">
-                  <IconButton type="default" width="50px" height="40px" onClickEvent={()=>trashshowModal(selectedMenu)}>
+                  <IconButton type="default" width="50px" height="40px" onClickEvent={trashshowModal}>
                     <Trash2 size={20} />
                   </IconButton>
                   <IconButton type="default" width="50px" height="40px"
@@ -293,15 +283,14 @@ const MyTripPage = () => {
                 </div>
               </div>
               {/* 북마크 카드 */}
-              <BookmarkComponent arrBookmarkList = {arrBookmarkList}/>
+              <BookmarkComponent bookmarks = {bookmarks}/>
               <div id="pdf-area">
                 {/* 여행 계획표 카드 */}
                 <TripPlanComponent
-                  arrTripList={arrTripList}
-                  tripDate={tripDate}
-                  arrBookmarkList={arrBookmarkList}
-                  schedulelist={schedulelist}
-                  selectedMenu={selectedMenu}
+                  tripList={tripList}
+                  tripDates={tripDates}
+                  bookmarks={bookmarks}
+                  schedules={schedules}
                 />
               </div>
               </>
@@ -323,9 +312,9 @@ const MyTripPage = () => {
               </div>
               {/* 휴지통 리스트 */}
               <TripTrashComponent 
-                setArrTripItem = {setArrTripItem}
-                arrTripList = {arrTripList}
-                setTrashPlanItem = {setTrashPlanItem}
+                getTripbyMemberId = {getTripbyMemberId}
+                tripList = {tripList}
+                getTrashPlan = {getTrashPlan}
                 trashList = {trashList} 
               />
             </Content>

@@ -405,12 +405,13 @@
 .trash-container {      
   overflow-x: auto; 
   overflow-y: auto;
+  border-bottom: 2px solid #c4c4c4;
 }
 
 .trash-table-header, 
 .trash-table-row {
   display: grid;
-  grid-template-columns: 100fr 65fr 20fr 20fr 30fr 30fr 15fr 15fr;
+  grid-template-columns: 100fr 70fr 20fr 20fr 30fr 30fr 20fr 20fr;
   gap: 10px;
   padding: 5px 15px 5px 15px;
   min-width: 1000px;
