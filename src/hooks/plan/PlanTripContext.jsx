@@ -43,6 +43,18 @@ export const TripPlanProvider = ({ children }) => {
     return planDays.find((day) => ( day.schedules.filter((s) => s.tripScheduleId === scheduleId))).tripDayId;
   }
 
+  const addPlanDays = (days) => {
+    setPlanDays(prev => {
+      const newDays = [...prev, ...days];
+      return newDays;
+    });
+  }
+
+  const removePlanDay = (dayId) => {
+    setPlanDays((prev) => {
+      return prev.filter((day) => (day.tripDayId !== dayId));
+    })
+  }
 //#endregion
 
   // === Editing Context ====================================
@@ -56,6 +68,8 @@ export const TripPlanProvider = ({ children }) => {
   // === 데이터
   // 편집 중인 스케줄
   const [editingSchedule, setEditingSchedule] = useState(null);
+  // 활성화 된 일자 수
+  const [activeDayCount, setActiveDayCount] = useState(0);
 
 //#region functions
 
@@ -133,8 +147,9 @@ export const TripPlanProvider = ({ children }) => {
       searchResults, setSearchResults,
       planDays, setPlanDays,
       scheduleCategorys, setScheduleCategorys,
+      activeDayCount, setActiveDayCount,
       getBookmark, setBookmarkInSchedule,
-      getScheduleDayId,
+      getScheduleDayId, addPlanDays, removePlanDay,
     }}>
       <PlanEditingContext.Provider value={{
         isDeleteRef, isDeleteBookmarkRef, focusRef, 

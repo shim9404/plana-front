@@ -1,11 +1,18 @@
 import { useSortable } from "@dnd-kit/react/sortable";
-import { HolderOutlined } from "@ant-design/icons";
+import { CloseSquareOutlined, HolderOutlined } from "@ant-design/icons";
 import { FlexBox, TextBox } from "../../common/PLA_FlexBox";
 import { FlexContainer } from "../../common/PLA_Containers";
 import SortableScheduleItem from "./SortableScheduleItem";
 import AddScheduleButton from "./AddScheduleButton";
+import { TextButton } from "../../common/PLA_Buttons";
+import { deleteDayApi } from "../../../services/tripApi";
+import { useTripPlan } from "../../../hooks/plan/PlanTripContext";
+import { useTripInfo } from "../../../hooks/TripInfoContext";
 
-const SortableDayItem = ({ id, dayId, index, schedules, }) => {
+const SortableDayItem = ({ id, dayId, index, schedules, isDimmed, }) => {
+  const { tripId } = useTripInfo();
+  const { removePlanDay } = useTripPlan();
+
   const { ref, handleRef, isDragging } = useSortable({
     id: dayId,
     index,
@@ -23,10 +30,41 @@ const SortableDayItem = ({ id, dayId, index, schedules, }) => {
     transform: "rotate(-90deg) translate(0, 0%)",
   };
 
+  const handleDeleteDay = () => {
+    requestDeleteDay(removePlanDay);
+  }
+
+  /**
+   * 일자 삭제 API 요청
+   * @param {*} successCallback 
+   */
+  const requestDeleteDay = async(successCallback) => {
+    try {
+      const isSuccess = await deleteDayApi(tripId, dayId);
+      console.log("deleteDayApi", isSuccess);
+      if (isSuccess) {
+        successCallback?.(dayId);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }
   return (
     <FlexBox h="auto" id={id} ref={ref}>
       <FlexContainer>
-        <FlexBox h="auto" settings={{ justify: "flex-start" }} style={{opacity: isDragging ? 0.75 : 1}}>
+        <FlexBox h="auto" settings={{ justify: "flex-start" }} style={{opacity: isDragging ? 0.75 : 1, position: "relative"}}>
+          {/* 비활성화된 일자 표기 - absolute */}
+          <FlexBox bg="rgba(0,0,0,0.5)" settings={{ isVertical: true, justify: "center", align: "center" }} 
+            style={{ position: "absolute", zIndex: 1, borderRadius: "6px", visibility: isDimmed ? "visible" : "hidden"}}>
+            <TextButton width="152px" height="40px" fontSize="14px" danger style={{ backgroundColor: "rgba(255,255,255,0.88)" }}
+            onClickEvent={() => handleDeleteDay() }>
+              <FlexBox settings={{justify: "flex-end"}}>
+                {`${index + 1}일차 삭제하기`}
+                <CloseSquareOutlined style={{marginLeft: "8px"}}/>
+              </FlexBox>
+            </TextButton>
+            
+          </FlexBox>
           {/* 드래그 가능한 핸들 영역 */}
           <FlexBox w="56px" bg="rgba(168, 168, 168, 1)">
             <FlexBox

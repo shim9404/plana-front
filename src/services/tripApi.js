@@ -52,23 +52,11 @@ export const editTripInfoApi = async (tripId, payload) => {
  */
 export const editTripDateApi = async (tripId, payload) => {
   const response = await axiosInstance.patch(`/api/trips/${tripId}/date`, payload);
-  const reulst = response.data ?? {};
-  return reulst.success;
+  return response.data;
 };
 //#endregion
 
 //#region 여행 일자(TRIP_DAY)
-/**
- * 신규 여행 일자 추가
- * @param {String} tripId
- * @param {{ indexSort: Number }} payload
- * @returns 
- */
-export const addDayApi = async (tripId, payload) => {
-  const response = await axiosInstance.post(`/api/trips/${tripId}/days`, payload);
-  return response.data;
-};
-
 /**
  * 여행 일자 삭제
  * @param {*} tripId 
@@ -77,7 +65,8 @@ export const addDayApi = async (tripId, payload) => {
  */
 export const deleteDayApi = async (tripId, dayId) => {
   const response = await axiosInstance.delete(`/api/trips/${tripId}/days/${dayId}`);
-  return response.data;
+  const reulst = response.data ?? {};
+  return reulst.success;
 }
 //#endregion
 
