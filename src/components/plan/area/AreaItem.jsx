@@ -13,7 +13,7 @@ const AreaItem = ({ area, number, margin, popupBookmark }) => {
   const buttonRef = useRef();
 
   const handleBookmark = () => {
-    popupBookmark?.(buttonRef.current.getBoundingClientRect().y, area.areaId);
+    popupBookmark?.(buttonRef.current.getBoundingClientRect().y, area.areaId, area.placeId);
   }
 
   const handleOpenlink = (link) => {

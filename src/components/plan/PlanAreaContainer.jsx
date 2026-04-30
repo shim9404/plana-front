@@ -367,6 +367,7 @@ const PlanAreaContainer = () => {
   const listRef = useRef();
   const [popupPosY, setPopupPosY] = useState(0);
   const [selectedAreaId, setSelectedAreaId] = useState("");
+  const [selectedPlaceId, setSelectedPlaceId] = useState("");
   //#endregion
 
   const onToggleChange = (selected) => {
@@ -376,12 +377,15 @@ const PlanAreaContainer = () => {
 
   const scrollEvent = () => {
     setSelectedAreaId("");
+    setSelectedPlaceId("");
   }
 
-  const openBookmarkPopup = (posY, areaId) => {
+  const openBookmarkPopup = (posY, areaId, placeId) => {
+    console.log(areaId, placeId);
     if (areaId == selectedAreaId) 
     {
       setSelectedAreaId("");
+      setSelectedPlaceId("");
       return;
     }
     // console.log("button pos ", posY);
@@ -390,13 +394,26 @@ const PlanAreaContainer = () => {
     
     // console.log(`BUTTON: ${posY}, popupPosY: ${popupPosY}`);
     setPopupPosY(popupPosY);
+    setSelectedPlaceId(placeId);
     setSelectedAreaId(areaId);
   }
 
   const handleBookmarkChanged = (type) => {
-    console.log(`${selectedAreaId}를 ${type} 으로 북마크`);
-    setSelectedAreaId("");
     // TODO: selectedAreaId의 장소 북마크를 param의 type으로 지정
+    let data;
+    // AREA 테이블에 데이터 존재 여부
+    if (selectedAreaId) {
+      console.log(`${selectedAreaId}를 ${type} 으로 북마크`);
+      data = searchResults.find((a) => a.areaId === selectedAreaId);
+    } else {
+      console.log(`${selectedPlaceId}에 맞는 데이터를 테이블에 신규 등록하고 ${type} 으로 북마크`);
+      console.log(searchResults);
+      data = searchResults.find((a) => a.placeId === selectedPlaceId);
+    }
+    console.log(data);
+    setSelectedAreaId("");
+    setSelectedPlaceId("");
+
   }
   
   // 지역 데이터(이름 + 좌표) 호출
@@ -577,11 +594,11 @@ const PlanAreaContainer = () => {
                     
         {/* absolut */}
         {
-          selectedAreaId != null && selectedAreaId.length > 0 && 
+          (selectedAreaId != null && selectedAreaId.length > 0) || (selectedPlaceId != null && selectedPlaceId.length > 0) ?
           (<FlexBox w="312px" h="60px" bg="none" 
           style={{ position: "absolute", top: "0%", right: "0%", transform: `translate(85%, ${popupPosY}px)`,  zIndex: 20 }}>
             <BookmarkPopup bookmarkEvent={handleBookmarkChanged}/>
-          </FlexBox>)
+          </FlexBox>) : null
         }
       </FlexBox>
     </FlexContainer>
