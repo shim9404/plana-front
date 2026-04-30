@@ -32,7 +32,14 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  overflow: hidden;
+  /* overflow: hidden; */
+  /* === step 1 */
+  height: 60vh;
+  overflow-y: auto;
+  flex: 1;
+  -ms-overflow-style: none;
+  scrollbar-width: none; 
+  /* === */
   padding-bottom: 200px;
 }
 
@@ -40,10 +47,12 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  height: 60px; 
+  height: 60px;   
+  /* === step 1 */
+  flex-shrink: 0;
+  /* === */
   padding-left: 30px;
   padding-right: 50px;
-  margin-bottom: 10px;
   color: #aaa;
   cursor: pointer;
 }
@@ -191,12 +200,11 @@
   border: none !important;
 }
 
-.bookmark-card-colors:hover {
-  box-shadow: 0 0 0 2px white !important;
-}
-
-.bookmark-card-colors:active {
-  box-shadow: 0 0 0 2px white !important;
+.bookmark-card-colors:hover,
+.bookmark-card-colors:active,
+.bookmark-card-colors.selected {
+  box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.25);
+  filter: drop-shadow(1px 1px 1px #A8A8A8);
 }
 
 /* 북마크 내용 */
@@ -405,12 +413,13 @@
 .trash-container {      
   overflow-x: auto; 
   overflow-y: auto;
+  border-bottom: 2px solid #c4c4c4;
 }
 
 .trash-table-header, 
 .trash-table-row {
   display: grid;
-  grid-template-columns: 100fr 65fr 20fr 20fr 30fr 30fr 15fr 15fr;
+  grid-template-columns: 100fr 70fr 20fr 20fr 30fr 30fr 20fr 20fr;
   gap: 10px;
   padding: 5px 15px 5px 15px;
   min-width: 1000px;

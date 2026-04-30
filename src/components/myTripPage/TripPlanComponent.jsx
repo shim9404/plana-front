@@ -1,14 +1,14 @@
 import React from 'react'
-import { Card, Empty, Input } from 'antd';
+import { Card, Empty } from 'antd';
 import { CheckSquareOutlined } from '@ant-design/icons';
 import { Link2 } from 'lucide-react';
 import '../../styles/myTripPage.css';
 import { BOOKMARK_COLOR } from "../../Constants/bookmarkColor";
 
 {/* 여행 계획표 */}
-const TripPlanComponent = ({arrTripList, tripDate, arrBookmarkList, schedulelist, selectedMenu}) => {
+const TripPlanComponent = ({tripList, tripDates, bookmarks, schedules, selectedMenu}) => {
 
-    // ! 데이터 표현 함수 모음 !
+  // ! 데이터 표현 함수 모음 !
   // 날짜 변환 함수(yyyy.mm.dd)
   const getFormattedDate = (Date) => {
     if (!Date) return "";
@@ -65,7 +65,7 @@ const TripPlanComponent = ({arrTripList, tripDate, arrBookmarkList, schedulelist
   };
   
   // 스케줄 내 가격 합 계산
-  const totalPrice = schedulelist.reduce((total, day) => {
+  const totalPrice = schedules.reduce((total, day) => {
     return (
       total +
       day.schedules.reduce((sum, item) => sum + Number(item.price || 0), 0)
@@ -86,18 +86,18 @@ const TripPlanComponent = ({arrTripList, tripDate, arrBookmarkList, schedulelist
             </div>
           </div>} >
         {/* 내용 */}
-        {schedulelist.length === 0 ? (
+        {schedules.length === 0 ? (
           <div> <Empty description= "여행 계획이 없습니다."/> </div>
         ) : (
           <div className="schedule-container">
-            {schedulelist.map((day) => {
-              const dimmedDate = day.indexSort > (getTotalDays(tripDate.startDate, tripDate.endDate))
+            {schedules.map((day) => {
+              const dimmedDate = day.indexSort > (getTotalDays(tripDates.startDate, tripDates.endDate))
               return(
                 <div key={day.tripDayId} className={`schedule-day-card ${dimmedDate ? 'dimmed' : ''}`}>
                   <div className="schedule-day-header">
                     <div className="day-badge">Day {day.indexSort}</div>
                     <div className="day-date">
-                      {getFormattedDateIndex(tripDate.startDate, day.indexSort)}
+                      {getFormattedDateIndex(tripDates.startDate, day.indexSort)}
                     </div>
                   </div>
                   <div className="schedule-table">
@@ -115,7 +115,7 @@ const TripPlanComponent = ({arrTripList, tripDate, arrBookmarkList, schedulelist
                     </div>
                     <div className="schedule-table-body">
                       {day.schedules.map((item) => {
-                        const bookmark = arrBookmarkList.find((b) => b.bookmarkId === item.bookmarkId);
+                        const bookmark = bookmarks.find((b) => b.bookmarkId === item.bookmarkId);
                         const colorKey = bookmark?.bookmarkType || "default";
                         const color = BOOKMARK_COLOR[colorKey];
                         const url = bookmark?.areaInfo?.link || item.link;
@@ -154,15 +154,15 @@ const TripPlanComponent = ({arrTripList, tripDate, arrBookmarkList, schedulelist
             {
               <div className="schedule-summary-sticky">
                 <div className="summary-left">
-                  {getFormattedDate(tripDate.startDate)} ~ {" "}
-                  {getFormattedDate(tripDate.endDate)} (
-                  {getDateCalculation(tripDate.startDate, tripDate.endDate)})
+                  {getFormattedDate(tripDates.startDate)} ~ {" "}
+                  {getFormattedDate(tripDates.endDate)} (
+                  {getDateCalculation(tripDates.startDate, tripDates.endDate)})
                 </div>
                 <div className="summary-right">
                   <div className="summary-item">
                     <span>참여 인원</span>
                     <span className="summary-value" style={{width: '50px'}}>
-                      {arrTripList.find((trip) => trip.tripId === selectedMenu)?.entryCount}
+                      {tripList.find((trip) => trip.tripId === selectedMenu)?.entryCount || 1}
                     </span>
                   </div>
                   <div className="summary-item">
@@ -174,7 +174,7 @@ const TripPlanComponent = ({arrTripList, tripDate, arrBookmarkList, schedulelist
                   <div className="summary-item">
                     <span>인당</span>
                     <span className="summary-value" style={{width: '100px'}}>
-                      {( totalPrice / (arrTripList.find((trip) => trip.tripId === selectedMenu)?.entryCount || 1)).toLocaleString()} 원
+                      {( totalPrice / (tripList.find((trip) => trip.tripId === selectedMenu)?.entryCount || 1)).toLocaleString()} 원
                     </span>
                   </div>
                 </div>
