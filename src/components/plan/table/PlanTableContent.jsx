@@ -5,12 +5,7 @@ import { usePlanEditing, useTripPlan } from "../../../hooks/plan/PlanTripContext
 import SortableDayItem from "./SortableDayItem";
 
 const PlanTableContent = () => {
-  const { planDays, setPlanDays } = useTripPlan();
-
-  useEffect(() => {
-    // 초기 데이터 설정
-    setPlanDays(DUMMY_DAYS);
-  }, []);
+  const { planDays } = useTripPlan();
 
   return (
     <FlexBox settings={{ isVertical: true }} style={{ gap: "8px" }}>
