@@ -3,6 +3,7 @@ import { DatePicker } from 'antd';
 import styles from "../../styles/TripInfoSelector.module.css"
 import { TextButton } from '../common/PLA_Buttons';
 import { useTripInfo } from '../../hooks/TripInfoContext';
+import dayjs from 'dayjs';
 
 const { RangePicker } = DatePicker;
 
@@ -47,14 +48,19 @@ const TripDatePicker = ({ width="400px", height="52px", placement }) => {
   }
 
   const handleCancel = () => {
-    setTempDates([]);
-    setConfirmedDates(null);
     setDisabled(true);
     setOpen(false);
   }
   
   useEffect(() => {
-    setTempDates(confirmedDates);
+    if (confirmedDates) {
+      setTempDates(confirmedDates);
+    }
+    else {
+      const todays = [dayjs(), dayjs()];
+      setTempDates(todays);
+      setConfirmedDates(todays);
+    }
   }, [])
 
   return (
@@ -71,11 +77,11 @@ const TripDatePicker = ({ width="400px", height="52px", placement }) => {
       // '확인' 버튼 커스텀 렌더링
       renderExtraFooter={() => (
         <div style={{ display: 'flex', justifyContent: 'Space-Between', padding: '8px 0' }}>
-          <TextButton type="primary" disabled={disabled} onClickEvent={handleConfirm} width='70%' height='32px'>
-            이 일정으로 선택
-          </TextButton>
-          <TextButton danger type="primary" onClickEvent={handleCancel} width='20%' height='32px'>
+          <TextButton danger type="primary" fontSize="14px" onClickEvent={handleCancel} width='20%' height='40px'>
             취소
+          </TextButton>
+          <TextButton type="primary" fontSize="14px" disabled={disabled} onClickEvent={handleConfirm} width='78%' height='40px'>
+            이 일정으로 선택
           </TextButton>
         </div>
       )}
