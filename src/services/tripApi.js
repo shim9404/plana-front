@@ -35,11 +35,23 @@ export const getTripApi = async (tripId) => {
 /**
  * 여행 정보 수정
  * @param {String} tripId
- * @param {{ startDate: String, endDate: String, name: String }} payload
+ * @param {{ name: String, entryCount: Integer }} payload
  * @returns 
  */
 export const editTripInfoApi = async (tripId, payload) => {
   const response = await axiosInstance.patch(`/api/trips/${tripId}/info`, payload);
+  const reulst = response.data ?? {};
+  return reulst.success;
+};
+
+/**
+ * 여행 일정 수정
+ * @param {String} tripId
+ * @param {{ startDate: String, endDate: String }} payload
+ * @returns 
+ */
+export const editTripDateApi = async (tripId, payload) => {
+  const response = await axiosInstance.patch(`/api/trips/${tripId}/date`, payload);
   const reulst = response.data ?? {};
   return reulst.success;
 };
