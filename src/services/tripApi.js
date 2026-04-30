@@ -74,11 +74,10 @@ export const deleteDayApi = async (tripId, dayId) => {
  * 신규 여행 스케줄 추가
  * @param {String} tripId 
  * @param {String} dayId 
- * @param {{ indexSort: Number }} payload
  * @returns 
  */
-export const addScheduleApi = async (tripId, dayId, payload) => {
-  const response = await axiosInstance.post(`/api/trips/${tripId}/days/${dayId}/schedules`, payload);
+export const addScheduleApi = async (tripId, dayId) => {
+  const response = await axiosInstance.post(`/api/trips/${tripId}/days/${dayId}/schedules`);
   return response.data;
 };
 

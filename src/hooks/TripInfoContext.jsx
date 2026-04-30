@@ -10,6 +10,7 @@ export const TripInfoProvider = ({ children }) => {
   const [confirmedDates, setConfirmedDates] = useState(null); // 현재 선택된 여행일자
   const [tripName, setTripName] = useState("");               // 여행명
   const [entryCount, setEntryCount] = useState(1);            // 여행 참여 인원
+  const [tripId, setTripId] = useState("");                   // 여행 ID
 
   return (
     <TripInfoContext.Provider value={{
@@ -18,6 +19,7 @@ export const TripInfoProvider = ({ children }) => {
       confirmedDates, setConfirmedDates,
       tripName, setTripName,
       entryCount, setEntryCount,
+      tripId, setTripId
     }}>
       {children}
     </TripInfoContext.Provider>
