@@ -9,9 +9,15 @@ import { useTripInfo } from '../../hooks/TripInfoContext'
 import TripRegionPicker from './TripRegionPicker'
 import { NAV_PRESET } from '../../utils/protectedNavPreset'
 import useProtectedNavigate from '../../hooks/useProtectedNavigate'
+import { addTripApi } from '../../services/tripApi'
+import { useAuth } from '../../hooks/AuthContext'
+import { useTripPlan } from '../../hooks/plan/PlanTripContext'
 
 const TripInfoSelector = ({ setHoveredId }) => {
   const { selectedZdo, setSelectedZdo, selectedSigu, setSelectedSigu } = useTripInfo();
+  const { confirmedDates, setConfirmedDates, setTripName } = useTripInfo();
+  const { setBookmarks, setPlanDays } = useTripPlan();
+  const { memberId } = useAuth();
   const protectedNavigate = useProtectedNavigate();
 
   const hoverTimerRef = useRef(null); // 호버 유예 시간
@@ -24,7 +30,33 @@ const TripInfoSelector = ({ setHoveredId }) => {
 
   // plan page로 이동
   const handleStart = () => {
-    protectedNavigate(NAV_PRESET.PLAN);
+    handleCreateTrip(() => {
+      protectedNavigate(NAV_PRESET.PLAN);
+    });
+  }
+
+  const handleCreateTrip = async(successCallback) => {
+    let data = {
+      memberId: memberId,
+      name: "새 여행 이름",
+      startDate: confirmedDates[0].format("YYYY-MM-DD"),
+      endDate: confirmedDates[1].format("YYYY-MM-DD")
+    };
+
+    try {
+      const result = await addTripApi(data);
+      if (result) {
+        const response = result.data;
+        setBookmarks([]);
+        setTripName(response.name);
+        setPlanDays(response.days);
+        successCallback?.();
+      }
+    } catch (e) {
+      console.log(e);
+    } finally {
+      console.log("finally");
+    }
   }
 
   const handleValuesChange = (value) => {

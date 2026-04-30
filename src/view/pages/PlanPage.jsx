@@ -57,15 +57,13 @@ const mapStyle = {
 }
 
 const PlanPage = () => {
-  const { isExpanded, setPlanDays, setScheduleCategorys, setBookmarks, getBookmark, setBookmarkInSchedule } = useTripPlan();
+  const { isExpanded, setPlanDays, setScheduleCategorys, getBookmark, setBookmarkInSchedule } = useTripPlan();
   const { regionData, updateRegionData } = useRegion();
   const { cascaderOptions } = regionData;
   const { openOneBtnModal } = useModal();
 
   // 컴포넌트 마운트 시 Region 데이터 검증
   useEffect(() => {
-    // 테스트용
-    setBookmarks(DUMMY_BOOKMARKS);
     // TODO: 여행 계획 데이터 전체 요청
     setScheduleCategorys(SCHEDULE_CATEGORYS);
     // 기본 값에 없는 구분이 데이터에 있을 경우 scheduleCategorys에 추가
