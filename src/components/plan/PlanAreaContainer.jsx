@@ -448,8 +448,7 @@ const PlanAreaContainer = () => {
   const loadPlaceData = async(keyword) => {
     // 키워드 및 좌표에 따른 검색 API 호출
     try {
-      const placeKeyword = keyword || (objRegions.siguName === "전체"? objRegions.zdoName+"청": objRegions.siguName+"청");
-      const response = await getPlaceApi(placeKeyword, objRegions.mapX, objRegions.mapY);
+      const response = await getPlaceApi(keyword, objRegions.mapX, objRegions.mapY);
       setPlaces(response.data);
     } catch (error) {
       const status = error?.response?.status;
@@ -471,8 +470,7 @@ const PlanAreaContainer = () => {
 
     // 근처 정보 데이터 호출
     if (searchType === "PLACE") {
-      const keyword = objRegions.siguName === "전체"? objRegions.zdoName+"청": objRegions.siguName+"청";
-      loadPlaceData(keyword);
+      loadPlaceData("");
     }
 
     // 값 or 목록 전체 초기화
@@ -542,11 +540,11 @@ const PlanAreaContainer = () => {
   }, [searchType, places, filteredLists, isSearched, areas, selectedSigu]);
 
   // 초기화
-  useEffect(() => {
-    if (listRef && listRef.current) {
-      listRef.current.addEventListener("scroll", scrollEvent);
-    }
-  }, [])
+useEffect(() => {
+  if (listRef.current) {
+    listRef.current.scrollTop = 0;
+  }
+}, [searchResults]);
 
   return (
     <FlexContainer>
