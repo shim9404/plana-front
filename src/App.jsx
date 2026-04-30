@@ -8,6 +8,7 @@ import { TripInfoProvider } from "./hooks/TripInfoContext.jsx";
 import { useModal } from "./hooks/ModalProvider.jsx";
 import { TripPlanProvider } from "./hooks/plan/PlanTripContext.jsx";
 import { OneBtnModal } from "../src/view/modals/OneBtnModal.jsx";
+import { TwoBtnModal } from "./view/modals/TwoBtnModal.jsx";
 import { oneBtnPreset } from "./utils/alertModalPreset.js";
 import { SESSION_EXPIRED_NOTICE_KEY } from "./services/axiosInstance.js";
 
@@ -17,7 +18,9 @@ function App() {
   const {
     isLoginOpen, openLoginModal, closeLoginModal,
     isSignupOpen, closeSignupModal,
-    oneBtnModal, openOneBtnModal, closeOneBtnModal
+    oneBtnModal, openOneBtnModal, closeOneBtnModal,
+    twoBtnModal, openTwoBtnModal, closeTwoBtnModal,
+    confirmTwoBtnModal,
   } = useModal();
 
 useEffect(() => {
@@ -50,6 +53,12 @@ useEffect(() => {
             <OneBtnModal
               {...oneBtnModal.props}
               onClose={closeOneBtnModal}
+            />)}
+          {twoBtnModal.isOpen && (
+            <TwoBtnModal
+              {...twoBtnModal.props}
+              onClose={closeTwoBtnModal}
+              onOk={confirmTwoBtnModal}
             />
           )}
           <HeaderMain />

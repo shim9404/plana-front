@@ -4,9 +4,10 @@ import { CheckSquareOutlined } from '@ant-design/icons';
 import { Link2 } from 'lucide-react';
 import '../../styles/myTripPage.css';
 import { BOOKMARK_COLOR } from "../../Constants/bookmarkColor";
+import { CATEGORY_NAME } from '../../constants/categoryName';
 
 {/* 여행 계획표 */}
-const TripPlanComponent = ({tripList, tripDates, bookmarks, schedules, selectedMenu}) => {
+const TripPlanComponent = ({tripList, myPlanDates, myBookmarks, mySchedules, selectedMenu}) => {
 
   // ! 데이터 표현 함수 모음 !
   // 날짜 변환 함수(yyyy.mm.dd)
@@ -65,7 +66,7 @@ const TripPlanComponent = ({tripList, tripDates, bookmarks, schedules, selectedM
   };
   
   // 스케줄 내 가격 합 계산
-  const totalPrice = schedules.reduce((total, day) => {
+  const totalPrice = mySchedules.reduce((total, day) => {
     return (
       total +
       day.schedules.reduce((sum, item) => sum + Number(item.price || 0), 0)
@@ -86,18 +87,18 @@ const TripPlanComponent = ({tripList, tripDates, bookmarks, schedules, selectedM
             </div>
           </div>} >
         {/* 내용 */}
-        {schedules.length === 0 ? (
+        {mySchedules.length === 0 ? (
           <div> <Empty description= "여행 계획이 없습니다."/> </div>
         ) : (
           <div className="schedule-container">
-            {schedules.map((day) => {
-              const dimmedDate = day.indexSort > (getTotalDays(tripDates.startDate, tripDates.endDate))
+            {mySchedules.map((day) => {
+              const dimmedDate = day.indexSort > (getTotalDays(myPlanDates.startDate, myPlanDates.endDate))
               return(
                 <div key={day.tripDayId} className={`schedule-day-card ${dimmedDate ? 'dimmed' : ''}`}>
                   <div className="schedule-day-header">
                     <div className="day-badge">Day {day.indexSort}</div>
                     <div className="day-date">
-                      {getFormattedDateIndex(tripDates.startDate, day.indexSort)}
+                      {getFormattedDateIndex(myPlanDates.startDate, day.indexSort)}
                     </div>
                   </div>
                   <div className="schedule-table">
@@ -115,7 +116,7 @@ const TripPlanComponent = ({tripList, tripDates, bookmarks, schedules, selectedM
                     </div>
                     <div className="schedule-table-body">
                       {day.schedules.map((item) => {
-                        const bookmark = bookmarks.find((b) => b.bookmarkId === item.bookmarkId);
+                        const bookmark = myBookmarks.find((b) => b.bookmarkId === item.bookmarkId);
                         const colorKey = bookmark?.bookmarkType || "default";
                         const color = BOOKMARK_COLOR[colorKey];
                         const url = bookmark?.areaInfo?.link || item.link;
@@ -125,7 +126,7 @@ const TripPlanComponent = ({tripList, tripDates, bookmarks, schedules, selectedM
                             <div>{item.startTime || "-"}</div>
                             <div>{item.endTime || "-"}</div>
                             <div>
-                              {bookmark?.areaInfo?.category || item.category || "-"}
+                              {CATEGORY_NAME[bookmark?.areaInfo?.category] || item.category || "-"}
                             </div>
                             <div style={{width: "100%", borderRadius: "20px", background: color.bg}}>
                               {bookmark?.areaInfo?.name || item.context || "-"}
@@ -154,9 +155,9 @@ const TripPlanComponent = ({tripList, tripDates, bookmarks, schedules, selectedM
             {
               <div className="schedule-summary-sticky">
                 <div className="summary-left">
-                  {getFormattedDate(tripDates.startDate)} ~ {" "}
-                  {getFormattedDate(tripDates.endDate)} (
-                  {getDateCalculation(tripDates.startDate, tripDates.endDate)})
+                  {getFormattedDate(myPlanDates.startDate)} ~ {" "}
+                  {getFormattedDate(myPlanDates.endDate)} (
+                  {getDateCalculation(myPlanDates.startDate, myPlanDates.endDate)})
                 </div>
                 <div className="summary-right">
                   <div className="summary-item">
