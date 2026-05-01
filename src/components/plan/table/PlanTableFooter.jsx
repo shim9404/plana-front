@@ -4,29 +4,31 @@ import { useEffect, useState } from "react";
 import { useTripInfo } from "../../../hooks/TripInfoContext";
 import { useTripPlan } from "../../../hooks/plan/PlanTripContext";
 import { editTripInfoApi } from "../../../services/tripApi";
+import dayjs from 'dayjs';
 
 const PlanTableFooter = ({ styles }) => {
-  const {confirmedDates, entryCount, setEntryCount} = useTripInfo();
+  const { confirmedDates, entryCount, setEntryCount, tripId } = useTripInfo();
   const {planDays} = useTripPlan();
   const [totalPrice, setTotalPrice] = useState(0);
   const [memberPrice, setMemberPrice] = useState(0);
-
   const onChangeEntryCount = (value) => {
     setEntryCount(value);
     setMemberPrice(Math.floor(totalPrice / value));
   }
-
+  
   const getDates = () => {
+    if (confirmedDates === null || confirmedDates === undefined) return null;
+
+    const startDate = dayjs(confirmedDates[0]);
+    const endDate = dayjs(confirmedDates[1]);
+    const diff = endDate.diff(startDate, 'days');
     return {
-      start: confirmedDates[0].format("YYYY-MM-DD"),
-      end: confirmedDates[1].format("YYYY-MM-DD"),
+      startDate: startDate.format("YYYY.MM.DD"),
+      endDate: endDate.format("YYYY.MM.DD"),
+      diff: diff === 0 ? "당일치기" : `${diff}박 ${diff + 1}일`
     }
   }
 
-  const getDay = () => {
-    return confirmedDates[1].date() - confirmedDates[0].date();
-  }
-  
   const handleSaveEntryCount = () => {
     requestUpdateEntryCount();
   }
@@ -51,14 +53,14 @@ const PlanTableFooter = ({ styles }) => {
     // 예산 계산
     let price = 0;
     planDays.map((day) => day.schedules.map((schedule) => {if (schedule.price && schedule.price > 0) price += parseInt(schedule.price);}))
-    setTotalPrice(price);
-    setMemberPrice( price / entryCount);
+    setTotalPrice(Math.floor(price));
+    setMemberPrice(Math.floor(price / entryCount));
   }, [planDays])
 
   return (
     <FlexBox h="40px" style={styles.footerStyle}>
       <FlexBox w="240px" settings={{ justify: "center" }}>
-        {confirmedDates && confirmedDates.length > 0 ? `${getDates().start}-${getDates().end} (${getDay()}박 ${getDay() + 1}일)` : "여행 날짜를 선택해주세요"}
+        {getDates() ? `${getDates().startDate} - ${getDates().endDate} (${getDates().diff})` : "여행 날짜를 선택해주세요"}
       </FlexBox>
       <FlexBox w="440px" settings={{ justify: "space-around" }}>
         <FlexBox w="110px">
