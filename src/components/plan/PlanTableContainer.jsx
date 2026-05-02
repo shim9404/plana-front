@@ -14,7 +14,7 @@ import PlanTableContent from "./table/PlanTableContent";
 import PlanTableFooter from "./table/PlanTableFooter";
 import { Button } from "antd";
 import { useState } from "react";
-import { useTripPlan } from "../../hooks/plan/PlanTripContext";
+import { usePlanUI } from "../../hooks/trip/PlanUIContext";
 
 const containerSetting = {
   isVertical: true,
@@ -30,7 +30,8 @@ const containerSetting = {
  */
 const PlanTableContainer = () => {
   const [isExpandHover, setIsExpandHover] = useState(false);
-  const { isExpanded, setIsExpanded } = useTripPlan();
+  const { isExpanded, setIsExpanded } = usePlanUI();
+  
   return (
     <FlexContainer settings={containerSetting}>
       <FlexBox

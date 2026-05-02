@@ -4,13 +4,12 @@ import SignUpModalComponent from "./components/auth/SignUpModalComponent";
 import AppRouter from "./router/AppRouter";
 import HeaderMain from "./view/layouts/HeaderMain";
 import { RegionProvider } from "./hooks/home/RegionContext.jsx";
-import { TripInfoProvider } from "./hooks/TripInfoContext.jsx";
 import { useModal } from "./hooks/ModalProvider.jsx";
-import { TripPlanProvider } from "./hooks/plan/PlanTripContext.jsx";
 import { OneBtnModal } from "../src/view/modals/OneBtnModal.jsx";
 import { TwoBtnModal } from "./view/modals/TwoBtnModal.jsx";
 import { oneBtnPreset } from "./utils/alertModalPreset.js";
 import { SESSION_EXPIRED_NOTICE_KEY } from "./services/axiosInstance.js";
+import TripPlanProviders from "./hooks/trip/TripPlanProviders.jsx";
 
 
 function App() {
@@ -39,32 +38,30 @@ useEffect(() => {
 
   return (
     <RegionProvider>
-      <TripInfoProvider>
-        <TripPlanProvider>
-          <LoginModalComponent
-            open={isLoginOpen}
-            onClose={closeLoginModal}
+      <TripPlanProviders>
+        <LoginModalComponent
+          open={isLoginOpen}
+          onClose={closeLoginModal}
+        />
+        <SignUpModalComponent
+          open={isSignupOpen}
+          onClose={closeSignupModal}
+        />
+        {oneBtnModal.isOpen && (
+          <OneBtnModal
+            {...oneBtnModal.props}
+            onClose={closeOneBtnModal}
+          />)}
+        {twoBtnModal.isOpen && (
+          <TwoBtnModal
+            {...twoBtnModal.props}
+            onClose={closeTwoBtnModal}
+            onOk={confirmTwoBtnModal}
           />
-          <SignUpModalComponent
-            open={isSignupOpen}
-            onClose={closeSignupModal}
-          />
-          {oneBtnModal.isOpen && (
-            <OneBtnModal
-              {...oneBtnModal.props}
-              onClose={closeOneBtnModal}
-            />)}
-          {twoBtnModal.isOpen && (
-            <TwoBtnModal
-              {...twoBtnModal.props}
-              onClose={closeTwoBtnModal}
-              onOk={confirmTwoBtnModal}
-            />
-          )}
-          <HeaderMain />
-          <AppRouter />
-        </TripPlanProvider>
-      </TripInfoProvider>
+        )}
+        <HeaderMain />
+        <AppRouter />
+      </TripPlanProviders>
     </RegionProvider>
   );
 }

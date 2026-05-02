@@ -6,12 +6,12 @@ import SortableScheduleItem from "./SortableScheduleItem";
 import AddScheduleButton from "./AddScheduleButton";
 import { TextButton } from "../../common/PLA_Buttons";
 import { deleteDayApi } from "../../../services/tripApi";
-import { useTripPlan } from "../../../hooks/plan/PlanTripContext";
-import { useTripInfo } from "../../../hooks/TripInfoContext";
+import { useTripInfo } from "../../../hooks/trip/TripInfoContext";
+import { usePlanDays } from "../../../hooks/trip/PlanDaysContext";
 
 const SortableDayItem = ({ id, dayId, index, schedules, isDimmed, }) => {
   const { tripId } = useTripInfo();
-  const { removePlanDay } = useTripPlan();
+  const { removePlanDay } = usePlanDays();
 
   const { ref, handleRef, isDragging } = useSortable({
     id: dayId,

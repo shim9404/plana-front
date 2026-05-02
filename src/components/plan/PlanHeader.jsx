@@ -1,5 +1,5 @@
 import { Input } from "antd";
-import { useTripInfo } from "../../hooks/TripInfoContext";
+import { useTripInfo } from "../../hooks/trip/TripInfoContext";
 import { FlexBox, TextBox } from "../common/PLA_FlexBox";
 import TripDatePicker from "../home/TripDatePicker";
 import TripRegionPicker from "../home/TripRegionPicker";
@@ -7,19 +7,15 @@ import { CheckCircleTwoTone, SyncOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import { editTripDateApi, editTripInfoApi } from "../../services/tripApi";
 import dayjs from "dayjs";
-import { useTripPlan } from "../../hooks/plan/PlanTripContext";
+import { usePlanDays } from "../../hooks/trip/PlanDaysContext";
+import { useTripRegion } from "../../hooks/trip/TripRegionContext";
+import { useTripDate } from "../../hooks/trip/TripDateContext";
 
 const PlanHeader = () => {
-  const {
-    selectedZdo,
-    setSelectedZdo,
-    selectedSigu,
-    setSelectedSigu,
-    tripName,
-    setTripName,
-    tripId,
-  } = useTripInfo();
-  const {addPlanDays, setActiveDayCount} = useTripPlan();
+  const { selectedZdo, setSelectedZdo, selectedSigu, setSelectedSigu } = useTripRegion();
+  const { tripName, setTripName, tripId } = useTripInfo();
+  const { setActiveDayCount } = useTripDate();
+  const { addPlanDays } = usePlanDays();
   const [isSaving, setIsSaving] = useState(false);
 
   const cascaderValue = selectedSigu

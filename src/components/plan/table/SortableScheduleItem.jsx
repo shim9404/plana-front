@@ -1,7 +1,6 @@
 import { useSortable } from "@dnd-kit/react/sortable";
 import { useDroppable } from "@dnd-kit/react";
 import { useEffect, useRef, useState } from "react";
-import { usePlanEditing, useTripPlan } from "../../../hooks/plan/PlanTripContext";
 import { Button, Input, InputNumber, Select, TimePicker } from "antd";
 import { FlexBox, TextBox } from "../../common/PLA_FlexBox";
 import { IconButton } from "../../common/PLA_Buttons";
@@ -9,11 +8,14 @@ import { CloseCircleFilled, CloseSquareOutlined, HolderOutlined, LinkOutlined, P
 import dayjs from "dayjs";
 import { getBookmarkActiveColor, getBookmarkColor } from "../../../utils/plan/bookmarkUtils";
 import { deleteScheduleApi, editScheduleApi } from "../../../services/tripApi";
-import { useTripInfo } from "../../../hooks/TripInfoContext";
+import { usePlanBookmark } from "../../../hooks/trip/PlanBookmarkContext";
+import { useEditSchedule } from "../../../hooks/trip/EditScheduleContext";
+import { usePlanUI } from "../../../hooks/trip/PlanUIContext";
+import { useTripInfo } from "../../../hooks/trip/TripInfoContext";
 
 const ScheduleDroppableItem = ({ scheduleId, bookmarkId, value, isEditing, onChange, onClick, deleteBookmarkEvent }) => {
-  const {isDropTarget, ref } = useDroppable({id: scheduleId, accept: ["bookmark"]});
-  const {bookmarks} = useTripPlan();
+  const { isDropTarget, ref } = useDroppable({id: scheduleId, accept: ["bookmark"]});
+  const { bookmarks } = usePlanBookmark();
   const [inputValue, setInputValue] = useState(value);
   const [isHover, setIsHover] = useState(false);
 
@@ -98,7 +100,7 @@ const ScheduleTimePicker = ({ prevValue, onChange, containerRef }) => {
 };
 
 const ScheduleCategorySelector = ({ prevValue, onChange, containerRef }) => {
-  const {scheduleCategorys, setScheduleCategorys} = useTripPlan();
+  const { scheduleCategorys, setScheduleCategorys } = useEditSchedule();
   const [selectValue, setSelectValue] = useState(prevValue);
   const [inputValue, setInputValue] = useState("");
   const [isOpen, setIsOpen] = useState(false); 
@@ -260,8 +262,8 @@ const SortableScheduleItem = ({ id, dayId, scheduleId, index, schedule, isOnly, 
   const { ref: sortableRef, handleRef, isDragging } = useSortable({ id: scheduleId, index, type: "item" });
   const itemRef = useRef(null);
   const { tripId } = useTripInfo();
-  const { isExpanded, setBookmarkInSchedule } = useTripPlan();
-  const { isDeleteRef, isDeleteBookmarkRef, editingSchedule, setEditingSchedule, focusRef, saveSchedule, deleteSchedule } = usePlanEditing();
+  const { isExpanded } = usePlanUI();
+  const { isDeleteRef, isDeleteBookmarkRef, editingSchedule, setEditingSchedule, focusRef, saveSchedule, deleteSchedule, setBookmarkInSchedule } = useEditSchedule();
   const [isHover, setIsHover] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
@@ -325,7 +327,7 @@ const SortableScheduleItem = ({ id, dayId, scheduleId, index, schedule, isOnly, 
    */
   const handleSaveSchedule = () => {
     requestUpdateSchedule(() => {
-      saveSchedule?.();
+      saveSchedule?.(editingSchedule);
     })
   }
 

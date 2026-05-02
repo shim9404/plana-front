@@ -8,11 +8,13 @@ import SearchInput from "./area/SearchInput";
 import { BookmarkPopup } from "./area/BookmarkPopup";
 import { ScrollStyle } from "../../styles/planStyles";
 import { getAreaApi, getPlaceApi } from "../../services/areaApi";
-import { useTripInfo } from "../../hooks/TripInfoContext";
-import { useTripPlan } from "../../hooks/plan/PlanTripContext";
+import { useTripInfo } from "../../hooks/trip/TripInfoContext";
 import { useRegion } from "../../hooks/home/RegionContext";
 import { getRegionByIdApi } from "../../services/regionApi";
 import { addBookmarkApi } from "../../services/tripApi";
+import { usePlaceSearch } from "../../hooks/trip/PlaceSearchContext";
+import { usePlanBookmark } from "../../hooks/trip/PlanBookmarkContext";
+import { useTripRegion } from "../../hooks/trip/TripRegionContext";
 
 // API 적용 전 테스트용 더미 데이터
 const DUMMY_DATAS = {
@@ -354,11 +356,16 @@ const FILTER_TOGGLES = [
 ]
 
 const PlanAreaContainer = () => {
-  const { selectedSigu, tripId } = useTripInfo();
-  const { areas, setAreas, places, setPlaces,
-    isSearched, setIsSearched, setBookmarks,
-    searchResults, setSearchResults } = useTripPlan();
+  const { tripId } = useTripInfo();
+  const { selectedSigu } = useTripRegion();
+  const { setBookmarks } = usePlanBookmark();
+  const { isSearched, setIsSearched, searchResults, setSearchResults } = usePlaceSearch();
   const { objRegions, setObjRegions } = useRegion();
+
+  // 장소 데이터(DB)
+  const [areas, setAreas] = useState([]);
+  // 장소 데이터(API)
+  const [places, setPlaces] = useState([]);
 
   // 장소 검색 타입
   const [searchType, setSearchType] = useState("PLACE"); // 초기 '근처 장소' 버튼 선택

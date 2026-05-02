@@ -6,10 +6,10 @@ import { useEffect, useState } from "react";
 import { Button, Empty } from "antd";
 import { getBookmarkColor } from "../../utils/plan/bookmarkUtils";
 import DragableBookmarkItem from "../bookmark/DragableBookmarkItem";
-import { useTripPlan } from "../../hooks/plan/PlanTripContext";
+import { usePlanBookmark } from "../../hooks/trip/PlanBookmarkContext";
 
 const PlanBookmarkContainer = () => {
-  const { bookmarks } = useTripPlan();
+  const { bookmarks } = usePlanBookmark();
   const [arrDisplay, setArrDisplay] = useState([]);
   const [filterType, setFilterType] = useState("");
 

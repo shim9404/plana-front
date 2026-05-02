@@ -7,11 +7,11 @@ import { useEffect, useRef, useState } from 'react';
 import { getBookmarkColor } from '../../../utils/plan/bookmarkUtils';
 import { BOOKMARK_COLOR } from '../../../Constants/bookmarkColor';
 import { CATEGORY_NAME } from '../../../constants/categoryName';
-import { useTripPlan } from '../../../hooks/plan/PlanTripContext';
+import { usePlanBookmark } from '../../../hooks/trip/PlanBookmarkContext';
 
 const AreaItem = ({ area, number, margin, popupBookmark }) => {
   const [bookmarkType, setBookmarkType] = useState("");
-  const { bookmarks } = useTripPlan();
+  const { bookmarks } = usePlanBookmark();
   const buttonRef = useRef();
 
   const handleBookmark = () => {
