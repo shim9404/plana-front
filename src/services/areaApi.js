@@ -1,18 +1,50 @@
+import { CloudCog } from 'lucide-react';
 import axiosInstance from './axiosInstance';
 
 /** @param {String} regionId */
-export const getAreaApi = async (regionId) => {
+export const getAreaInitApi = async (regionId) => {
   const response = await axiosInstance.get(`/api/areas?regionId=${regionId}`);
   return response.data;
 };
 
-/** @param {String} regionId */
-/** @param {Double} mapX */
-/** @param {Double} mapY */
-export const getPlaceApi = async (keyword, mapX, mapY) => {
-  const optionalKeyword = keyword === null || keyword === undefined ? "" : `&keyword=${keyword}`;
-  const optionalMapX = mapX === null || mapX === undefined ? "" : `&mapX=${mapX}`;
-  const optionalMapY = mapY === null || mapY === undefined ? "" : `&mapY=${mapY}`;
-  const response = await axiosInstance.get(`/api/areas/place?${optionalKeyword}${optionalMapX}${optionalMapY}`);
+
+/**
+ * @param {String} regionId
+ * @param {String} searchType - PLACE | SPOT | FOOD
+ * @param {Number} page
+ * @param {Number} size
+ */
+export const getAreaApi = async (regionId, searchType, page = 1, size = 20) => {
+  const response = await axiosInstance.get(`/api/areas/page`, {
+    params: {
+      regionId,
+      searchType,
+      page,
+      size
+    },
+  });
+  return response.data;
+};
+
+
+
+/**
+ * @param {String} keyword
+ * @param {Number} mapX
+ * @param {Number} mapY
+ * @param {Number} page
+ */
+export const getPlaceApi = async (keyword, mapX, mapY, page = 1) => {
+
+  console.log("page:: ",page);
+  const response = await axiosInstance.get(`/api/areas/place`, {
+    params: {
+      keyword,
+      mapX,
+      mapY,
+      page,
+      size: 15,
+    },
+  });
   return response.data;
 };
