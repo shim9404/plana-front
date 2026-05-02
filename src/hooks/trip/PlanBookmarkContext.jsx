@@ -17,12 +17,12 @@ export const PlanBookmarkProvider = ({ children }) => {
     return bookmarks.find(bookmark => bookmark.bookmarkId === id);
   };
 
-  const plnaBookmarkValue = useMemo(() => ({
+  const planBookmarkValue = useMemo(() => ({
     bookmarks, setBookmarks, getBookmark
   }), [bookmarks]);
 
   return (
-    <PlanBookmarkContext.Provider value={plnaBookmarkValue}>
+    <PlanBookmarkContext.Provider value={planBookmarkValue}>
       {children}
     </PlanBookmarkContext.Provider>
   )

@@ -56,14 +56,11 @@ const TripInfoSelector = ({ setHoveredId }) => {
         setTripId(response.tripId);
         setTripName(response.name);
         setPlanDays(response.days);
-        setTripId(response.tripId);
         setActiveDayCount(response.days.length);
         successCallback?.();
       }
     } catch (e) {
       console.log(e);
-    } finally {
-      console.log("finally");
     }
   }
 
