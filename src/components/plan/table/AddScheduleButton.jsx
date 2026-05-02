@@ -1,11 +1,11 @@
 import { Button } from 'antd';
-import { usePlanEditing } from '../../../hooks/plan/PlanTripContext';
-import { useTripInfo } from '../../../hooks/TripInfoContext';
+import { useTripInfo } from '../../../hooks/trip/TripInfoContext';
 import { FlexBox } from '../../common/PLA_FlexBox';
 import { addScheduleApi } from '../../../services/tripApi'
+import { useEditSchedule } from '../../../hooks/trip/EditScheduleContext';
 
 const AddScheduleButton = ({ dayId }) => {
-  const { editingSchedule, addSchedule } = usePlanEditing();
+  const { editingSchedule, addSchedule } = useEditSchedule();
   const { tripId } = useTripInfo();
 
   const handleAddSchedule = () => {

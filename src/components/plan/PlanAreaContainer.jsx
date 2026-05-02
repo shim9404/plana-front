@@ -8,15 +8,15 @@ import SearchInput from "./area/SearchInput";
 import { BookmarkPopup } from "./area/BookmarkPopup";
 import { ScrollStyle } from "../../styles/planStyles";
 import { getAreaApi, getPlaceApi } from "../../services/areaApi";
-import { useTripInfo } from "../../hooks/TripInfoContext";
-import { useTripPlan } from "../../hooks/plan/PlanTripContext";
+import { useTripInfo } from "../../hooks/trip/TripInfoContext";
 import { useRegion } from "../../hooks/home/RegionContext";
 import { getRegionByIdApi } from "../../services/regionApi";
 import { addBookmarkApi } from "../../services/tripApi";
+import { usePlaceSearch } from "../../hooks/trip/PlaceSearchContext";
+import { usePlanBookmark } from "../../hooks/trip/PlanBookmarkContext";
+import { useTripRegion } from "../../hooks/trip/TripRegionContext";
 import LoadingOverlay from "../common/LoadingOverlay";
 import { withMinDelay } from "../../utils/apiUtil";
-
-
 
 // 장소 타입에 따른 필터용 토글 정보
 const FILTER_TOGGLES = [
@@ -47,23 +47,30 @@ const FILTER_TOGGLES = [
 ]
 
 const PlanAreaContainer = () => {
-  const { selectedSigu, tripId } = useTripInfo();
-  const { areas, setAreas, places, setPlaces,
-    isSearched, setIsSearched, setBookmarks,
-    searchResults, setSearchResults } = useTripPlan();
+  const { tripId } = useTripInfo();
+  const { selectedSigu } = useTripRegion();
+  const { setBookmarks } = usePlanBookmark();
+  const { isSearched, setIsSearched, searchResults, setSearchResults } = usePlaceSearch();
   const { objRegions, setObjRegions } = useRegion();
   
 
+  // 장소 데이터(DB)
+  const [areas, setAreas] = useState([]);
+  // 장소 데이터(API)
+  const [places, setPlaces] = useState([]);
+
+  // 장소 검색 타입
   const [searchType, setSearchType] = useState("PLACE");
+  // 장소 검색할 키워드
   const [searchKeyword, setSearchKeyword] = useState("");
 
   // searchType별 페이징 상태
-// searchType별 페이징 상태 - PLACE 추가
-const [pagination, setPagination] = useState({
-  PLACE: { current: 1, total: 0 },
-  SPOT: { current: 1, total: 0 },
-  FOOD: { current: 1, total: 0 },
-});
+  // searchType별 페이징 상태 - PLACE 추가
+  const [pagination, setPagination] = useState({
+    PLACE: { current: 1, total: 0 },
+    SPOT: { current: 1, total: 0 },
+    FOOD: { current: 1, total: 0 },
+  });
   const PAGE_SIZE = 15;
 
   //#region 북마크 팝업
@@ -112,10 +119,13 @@ const [pagination, setPagination] = useState({
   const handleBookmarkChanged = (type) => {
     let data;
     if (selectedAreaId) {
-      data = searchResults.find((a) => a.areaId === selectedAreaId);
+      // SPOT, FOOD - areaId만 있으면 됨
+      data = { areaId: selectedAreaId };
     } else {
+      // PLACE - area 전체 데이터 필요
       data = searchResults.find((a) => a.placeId === selectedPlaceId);
     }
+
     addBookmark(type, data);
     setSelectedAreaId("");
     setSelectedPlaceId("");
@@ -124,11 +134,15 @@ const [pagination, setPagination] = useState({
   const addBookmark = async (type, areaData) => {
     const result = await addBookmarkApi(tripId, {
       bookmarkType: type,
-      area: { ...areaData, regionId: selectedSigu },
-    });
+      // areaId 있으면 area 객체 안 보냄
+      ...(areaData.areaId
+        ? { areaId: areaData.areaId }
+        : { area: { ...areaData, regionId: selectedSigu } }
+      ),
+    })
     setBookmarks((prev) => [...prev, result.data]);
-  };
 
+  };
   const [loading, setLoading] = useState(false);
   // 지역 데이터 호출
   useEffect(() => {
@@ -283,6 +297,12 @@ const onPageChange = (page) => {
     if (listRef.current) listRef.current.scrollTop = 0;
   }, [searchResults]);
 
+  useEffect(() => {
+    if (listRef && listRef.current) {
+      listRef.current.addEventListener("scroll", scrollEvent);
+    }
+  }, []);
+  
   return (
   <FlexContainer >
     <LoadingOverlay loading={loading}>

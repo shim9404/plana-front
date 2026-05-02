@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { useTripPlan } from "../../../hooks/plan/PlanTripContext";
 import { useRegion } from "../../../hooks/home/RegionContext";
 import MapMarkerImage from "../area/MapMarkerImage";
 import { renderToString } from "react-dom/server";
 import { TextButton } from "../../common/PLA_Buttons";
+import { usePlaceSearch } from "../../../hooks/trip/PlaceSearchContext";
 
 /**
  * Kakao Maps SDK 로드 함수
@@ -72,7 +72,7 @@ const PlanMap = () => {
   const [isActive, setIsActive] = useState(false); // UI on/off
   
   // 검색 타입 데이터
-  const { isSearched, searchResults } = useTripPlan();
+  const { isSearched, searchResults } = usePlaceSearch();
 
   //  지역 데이터(이름 + 좌표)
   const { objRegions } = useRegion();

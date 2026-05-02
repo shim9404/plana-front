@@ -1,9 +1,11 @@
 import { FlexBox } from "../../common/PLA_FlexBox";
-import { useTripPlan } from "../../../hooks/plan/PlanTripContext";
 import SortableDayItem from "./SortableDayItem";
+import { usePlanDays } from "../../../hooks/trip/PlanDaysContext";
+import { useTripDate } from "../../../hooks/trip/TripDateContext";
 
 const PlanTableContent = () => {
-  const { planDays, activeDayCount } = useTripPlan();
+  const { activeDayCount } = useTripDate();
+  const { planDays } = usePlanDays();
 
   return (
     <FlexBox settings={{ isVertical: true, justify: "flex-start" }} style={{ gap: "8px" }}>

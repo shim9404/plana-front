@@ -1,5 +1,5 @@
 import { Input } from "antd";
-import { useTripInfo } from "../../hooks/TripInfoContext";
+import { useTripInfo } from "../../hooks/trip/TripInfoContext";
 import { FlexBox, TextBox } from "../common/PLA_FlexBox";
 import TripDatePicker from "../home/TripDatePicker";
 import TripRegionPicker from "../home/TripRegionPicker";
@@ -7,19 +7,16 @@ import { CheckCircleTwoTone, SyncOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import { editTripDateApi, editTripInfoApi } from "../../services/tripApi";
 import dayjs from "dayjs";
-import { useTripPlan } from "../../hooks/plan/PlanTripContext";
+import { usePlanDays } from "../../hooks/trip/PlanDaysContext";
+import { useTripRegion } from "../../hooks/trip/TripRegionContext";
+import { useTripDate } from "../../hooks/trip/TripDateContext";
+import { DebounceInput } from "../common/PLA_Input";
 
 const PlanHeader = () => {
-  const {
-    selectedZdo,
-    setSelectedZdo,
-    selectedSigu,
-    setSelectedSigu,
-    tripName,
-    setTripName,
-    tripId,
-  } = useTripInfo();
-  const {addPlanDays, setActiveDayCount} = useTripPlan();
+  const { selectedZdo, setSelectedZdo, selectedSigu, setSelectedSigu } = useTripRegion();
+  const { tripName, setTripName, tripId } = useTripInfo();
+  const { setActiveDayCount } = useTripDate();
+  const { addPlanDays } = usePlanDays();
   const [isSaving, setIsSaving] = useState(false);
 
   const cascaderValue = selectedSigu
@@ -130,8 +127,8 @@ const PlanHeader = () => {
             여행 이름
           </TextBox>
           <FlexBox h="48px" style={{ position: "relative" }}>
-            <Input showCount maxLength={30} style={{ height: "48px", fontSize:"16px", color:"#565656", padding: "8px 56px 8px 18px"}}
-            value={tripName} onChange={(e) => handleChangeTripName(e.target.value)} onBlur={() => {handleSaveTripName()}}/>
+            <DebounceInput showCount maxLength={30} style={{ height: "48px", fontSize:"16px", color:"#565656", padding: "8px 56px 8px 18px"}}
+            defaultValue={tripName} onChangeEvent={handleChangeTripName} onBlur={() => {handleSaveTripName()}}/>
             <FlexBox w="52px" h="52px" settings={{ justify:"center" }} style={{ fontSize:"20px", right: "0%", position: "absolute", zIndex: 10 }}>
               {
                 isSaving?

@@ -3,7 +3,6 @@ import { useEffect } from "react";
 import { FlexBox } from "../../components/common/PLA_FlexBox";
 import { getRegionDataForCascader } from "../../services/regionDataParser";
 import { useRegion } from "../../hooks/home/RegionContext";
-import { usePlanEditing, useTripPlan } from "../../hooks/plan/PlanTripContext";
 import PageLayout from "../../components/common/PageLayout";
 import PlanTableContainer from "../../components/plan/PlanTableContainer";
 import PlanAreaContainer from "../../components/plan/PlanAreaContainer";
@@ -17,8 +16,12 @@ import { SCHEDULE_CATEGORYS } from "../../constants/scheduleCategory";
 import { DragDropProvider } from "@dnd-kit/react";
 import { arrayMove } from "@dnd-kit/helpers";
 import { DUMMY_BOOKMARKS } from "../../components/plan/table/PLAN_DUMMY";
-import { useTripInfo } from "../../hooks/TripInfoContext";
+import { useTripInfo } from "../../hooks/trip/TripInfoContext";
 import { editScheduleApi } from "../../services/tripApi";
+import { usePlanBookmark } from "../../hooks/trip/PlanBookmarkContext";
+import { usePlanUI } from "../../hooks/trip/PlanUIContext";
+import { useEditSchedule } from "../../hooks/trip/EditScheduleContext";
+import { usePlanDays } from "../../hooks/trip/PlanDaysContext";
 const { Header, Sider, Content } = Layout;
 
 const layoutStyle = {
@@ -59,7 +62,10 @@ const mapStyle = {
 }
 
 const PlanPage = () => {
-  const { isExpanded, setPlanDays, setScheduleCategorys, getBookmark, getScheduleDayId, setBookmarkInSchedule } = useTripPlan();
+  const { setScheduleCategorys, setBookmarkInSchedule } = useEditSchedule();
+  const { setPlanDays, getScheduleDayId } = usePlanDays();
+  const { isExpanded } = usePlanUI();
+  const { getBookmark } = usePlanBookmark();
   const { tripId } = useTripInfo();
   const { regionData, updateRegionData } = useRegion();
   const { cascaderOptions } = regionData;

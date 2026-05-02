@@ -3,39 +3,46 @@ import { FlexContainer } from '../../common/PLA_Containers';
 import { IconButton } from '../../common/PLA_Buttons';
 import { ExportOutlined, StarTwoTone } from '@ant-design/icons';
 import MapMarkerImage from './MapMarkerImage';
-import { useEffect, useRef, useState } from 'react';
-import { getBookmarkColor } from '../../../utils/plan/bookmarkUtils';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { getBookmarkColor, getBookmarkSubColor } from '../../../utils/plan/bookmarkUtils';
 import { BOOKMARK_COLOR } from '../../../Constants/bookmarkColor';
 import { CATEGORY_NAME } from '../../../constants/categoryName';
-import { useTripPlan } from '../../../hooks/plan/PlanTripContext';
+import { usePlanBookmark } from '../../../hooks/trip/PlanBookmarkContext';
 
-const AreaItem = ({ area, number, margin, popupBookmark }) => {
+const AreaBookmarkButton = ({ findId, onClickEvent }) => {
   const [bookmarkType, setBookmarkType] = useState("");
-  const { bookmarks } = useTripPlan();
+  const { getBookmarkType } = usePlanBookmark();
+
+  useEffect(() => {
+    setBookmarkType(getBookmarkType(findId));
+  }, [getBookmarkType(findId)])
+
+  return (
+    <IconButton width="36px" height="36px" type={bookmarkType === "NONE" ? "default" : "primary"} 
+    style={{backgroundColor: bookmarkType === "NONE" ? "#FFFFFF" : getBookmarkColor(bookmarkType)}}
+    onClickEvent={onClickEvent} >
+      <StarTwoTone twoToneColor={getBookmarkSubColor(bookmarkType)} />
+    </IconButton>
+  )
+}
+
+const AreaItem = ({ id, area, number, margin, popupBookmark }) => {
+  // const [findId, setFindId] = useState("");
   const buttonRef = useRef();
 
   const handleBookmark = () => {
     popupBookmark?.(buttonRef.current.getBoundingClientRect().y, area.areaId, area.placeId);
   }
 
-  useEffect(() => {
-    setBookmarkType(searchMyBookmark());
-  }, [bookmarks])
-
-  const searchMyBookmark = () => {
-    bookmarks.map((item, index) => {
-      console.log(item);
-    }
-    )
-
-    const found = bookmarks.find(b => b.placeId == area.placeId);
-
-    return found?.bookmarkType;
-  }
-
   const handleOpenlink = (link) => {
     window.open(link, "_blank");
   }
+
+  const getFindId = useCallback(() => {
+    const findId = area.placeId === null || area.placeId === undefined ? area.areaId : area.placeId;
+    console.log("find ", findId);
+    return findId;
+  }, [area]);
 
   const nameStyle = {
     whiteSpace: "nowrap",
@@ -63,9 +70,7 @@ const AreaItem = ({ area, number, margin, popupBookmark }) => {
         {/* 우측 버튼 */}
         <FlexBox w="48px" bg="none" settings={{ isVertical: true, justify: "space-around" }} style={{ padding: "8px", position: "relative" }}
           ref={buttonRef}>
-          <IconButton width="36px" height="36px" type={bookmarkType == "" ? "default" : "primary"} onClickEvent={(e) => handleBookmark(e)} >
-            <StarTwoTone twoToneColor={getBookmarkColor(bookmarkType)} />
-          </IconButton>
+          <AreaBookmarkButton popupBookmark={popupBookmark} findId={area.areaId || area.placeId} onClickEvent={handleBookmark}/>
           <IconButton width="36px" height="36px" type="default" onClickEvent={() => handleOpenlink(area.link)}>
             <ExportOutlined />
           </IconButton>

@@ -5,18 +5,23 @@ import { flexStyle } from '../../styles/homeStyles'
 import { useRef } from 'react'
 import styles from "../../styles/TripInfoSelector.module.css"
 import TripDatePicker from './TripDatePicker'
-import { useTripInfo } from '../../hooks/TripInfoContext'
+import { useTripInfo } from '../../hooks/trip/TripInfoContext'
 import TripRegionPicker from './TripRegionPicker'
 import { NAV_PRESET } from '../../utils/protectedNavPreset'
 import useProtectedNavigate from '../../hooks/useProtectedNavigate'
 import { addTripApi } from '../../services/tripApi'
 import { useAuth } from '../../hooks/AuthContext'
-import { useTripPlan } from '../../hooks/plan/PlanTripContext'
+import { usePlanDays } from '../../hooks/trip/PlanDaysContext'
+import { useTripRegion } from '../../hooks/trip/TripRegionContext'
+import { useTripDate } from '../../hooks/trip/TripDateContext'
+import { usePlanBookmark } from '../../hooks/trip/PlanBookmarkContext'
 
 const TripInfoSelector = ({ setHoveredId }) => {
-  const { selectedZdo, setSelectedZdo, selectedSigu, setSelectedSigu } = useTripInfo();
-  const { confirmedDates, setConfirmedDates, setTripName, setTripId } = useTripInfo();
-  const { setBookmarks, setPlanDays, setActiveDayCount } = useTripPlan();
+  const { selectedZdo, setSelectedZdo, selectedSigu, setSelectedSigu } = useTripRegion();
+  const { confirmedDates, setConfirmedDates, setActiveDayCount } = useTripDate();
+  const { setTripName, setTripId } = useTripInfo();
+  const { setPlanDays } = usePlanDays();
+  const { setBookmarks } = usePlanBookmark();
   const { memberId } = useAuth();
   const protectedNavigate = useProtectedNavigate();
 
@@ -51,14 +56,11 @@ const TripInfoSelector = ({ setHoveredId }) => {
         setTripId(response.tripId);
         setTripName(response.name);
         setPlanDays(response.days);
-        setTripId(response.tripId);
         setActiveDayCount(response.days.length);
         successCallback?.();
       }
     } catch (e) {
       console.log(e);
-    } finally {
-      console.log("finally");
     }
   }
 

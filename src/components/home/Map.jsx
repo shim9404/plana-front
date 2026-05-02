@@ -23,7 +23,7 @@ import Gyeongbuk from '../../../public/images/svg/regions/Gyeongbuk.svg?react';
 import Gyeongnam from '../../../public/images/svg/regions/Gyeongnam.svg?react';
 import Jeju from '../../../public/images/svg/regions/Jeju.svg?react';
 import { useRegion } from '../../hooks/home/RegionContext.jsx';
-import { useTripInfo } from '../../hooks/TripInfoContext.jsx';
+import { useTripRegion } from '../../hooks/trip/TripRegionContext.jsx';
 //#endregion
 
 // svg파일과 regionId 매칭
@@ -50,7 +50,7 @@ const SIGU_MAPS = {
 function Map() {
   const [tooltip, setTooltip] = useState({ visible: false, x: 0, y: 0, name: '' }); // 툴팁 정보
 
-  const { selectedZdo, setSelectedZdo, selectedSigu, setSelectedSigu } = useTripInfo();
+  const { selectedZdo, setSelectedZdo, selectedSigu, setSelectedSigu } = useTripRegion();
   const { regionData } = useRegion();
   const { regionMap } = regionData;
 

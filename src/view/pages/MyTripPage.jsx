@@ -12,12 +12,14 @@ import BookmarkComponent from "../../components/myTripPage/BookmarkComponent";
 import TripPlanComponent from "../../components/myTripPage/TripPlanComponent";
 import TripTrashComponent from "../../components/myTripPage/TripTrashComponent";
 import { useAuth } from "../../hooks/AuthContext";
-import { useTripPlan } from "../../hooks/plan/PlanTripContext";
-import { useTripInfo } from "../../hooks/TripInfoContext";
+import { useTripInfo } from "../../hooks/trip/TripInfoContext";
 import axiosInstance from "../../services/axiosInstance";
 import { useModal } from "../../hooks/ModalProvider";
 import { oneBtnPreset } from "../../utils/alertModalPreset";
 import dayjs from "dayjs";
+import { usePlanBookmark } from "../../hooks/trip/PlanBookmarkContext";
+import { useTripDate } from "../../hooks/trip/TripDateContext";
+import { usePlanDays } from "../../hooks/trip/PlanDaysContext";
 
 const { Sider, Content } = Layout;
 
@@ -45,10 +47,14 @@ const MyTripPage = () => {
   const { openTwoBtnModal } = useModal();
   // 회원 전역 변수
   const { memberId } = useAuth();
-  // 북마크, 여행 계획표 전역 변수
-  const { setBookmarks, setPlanDays } = useTripPlan();
-  // 여행명, 여행일자 전역 변수
-  const { setTripName, setConfirmedDates } = useTripInfo();
+  // 북마크 전역 변수
+  const { setBookmarks } = usePlanBookmark();
+  // 여행 계획표 전역 변수
+  const { setPlanDays } = usePlanDays();
+  // 여행명 전역 변수
+  const { setTripName } = useTripInfo();
+  // 여행일자 전역 변수
+  const { setConfirmedDates } = useTripDate();
 
   // 여행 목록(간단)초기값
   const [trips, setTrips] = useState([]);

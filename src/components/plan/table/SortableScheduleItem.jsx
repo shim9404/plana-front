@@ -1,7 +1,6 @@
 import { useSortable } from "@dnd-kit/react/sortable";
 import { useDroppable } from "@dnd-kit/react";
-import { useEffect, useRef, useState } from "react";
-import { usePlanEditing, useTripPlan } from "../../../hooks/plan/PlanTripContext";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Button, Input, InputNumber, Select, TimePicker } from "antd";
 import { FlexBox, TextBox } from "../../common/PLA_FlexBox";
 import { IconButton } from "../../common/PLA_Buttons";
@@ -9,28 +8,17 @@ import { CloseCircleFilled, CloseSquareOutlined, HolderOutlined, LinkOutlined, P
 import dayjs from "dayjs";
 import { getBookmarkActiveColor, getBookmarkColor } from "../../../utils/plan/bookmarkUtils";
 import { deleteScheduleApi, editScheduleApi } from "../../../services/tripApi";
-import { useTripInfo } from "../../../hooks/TripInfoContext";
+import { usePlanBookmark } from "../../../hooks/trip/PlanBookmarkContext";
+import { useEditSchedule } from "../../../hooks/trip/EditScheduleContext";
+import { usePlanUI } from "../../../hooks/trip/PlanUIContext";
+import { useTripInfo } from "../../../hooks/trip/TripInfoContext";
+import { DebounceInput, DebounceInputNumber } from "../../common/PLA_Input";
 
 const ScheduleDroppableItem = ({ scheduleId, bookmarkId, value, isEditing, onChange, onClick, deleteBookmarkEvent }) => {
-  const {isDropTarget, ref } = useDroppable({id: scheduleId, accept: ["bookmark"]});
-  const {bookmarks} = useTripPlan();
-  const [inputValue, setInputValue] = useState(value);
+  const { isDropTarget, ref } = useDroppable({id: scheduleId, accept: ["bookmark"]});
+  const { bookmarks } = usePlanBookmark();
+  const [defaultValue, setDefaultValue] = useState(value);
   const [isHover, setIsHover] = useState(false);
-
-  const handleOnChange = (e) => {
-    setInputValue(e.target.value);
-  }
-
-  const debounce = (func, timeout = 150) => {
-    let timer;
-    return (...args) => {
-      clearTimeout(timer);
-      timer = setTimeout(() => {
-        func.apply(this, args);
-      }, timeout);
-    };
-  }
-  const processChange = debounce(() => onChange('context', inputValue));
 
   const getBookmarkType = () => {
     return bookmarks.find(b => b.bookmarkId === bookmarkId).bookmarkType;
@@ -38,7 +26,7 @@ const ScheduleDroppableItem = ({ scheduleId, bookmarkId, value, isEditing, onCha
 
   useEffect(() => {
     if (isEditing) {
-      setInputValue(value);
+      setDefaultValue(value);
     }
   }, [isEditing]);
 
@@ -54,8 +42,7 @@ const ScheduleDroppableItem = ({ scheduleId, bookmarkId, value, isEditing, onCha
           { 
             (bookmarkId == null || bookmarkId <= 0) ? 
             isEditing ?
-            <Input maxLength={20} value={inputValue} placeholder={value || "직접 입력"} onChange={handleOnChange} 
-            onKeyUp={processChange}
+            <DebounceInput maxLength={20} placeholder={value || "직접 입력"} defaultValue={defaultValue} onChangeEvent={(v) => { onChange('context', v); }}
             style={{width:"100%", height:"auto", border: "none", padding:"0px", textAlign:"center", backgroundColor:"rgba(0,0,0,0)"}}
             /> : <TextBox size="12px" color="#565656">{value}</TextBox>
             : <FlexBox>
@@ -98,7 +85,7 @@ const ScheduleTimePicker = ({ prevValue, onChange, containerRef }) => {
 };
 
 const ScheduleCategorySelector = ({ prevValue, onChange, containerRef }) => {
-  const {scheduleCategorys, setScheduleCategorys} = useTripPlan();
+  const { scheduleCategorys, setScheduleCategorys } = useEditSchedule();
   const [selectValue, setSelectValue] = useState(prevValue);
   const [inputValue, setInputValue] = useState("");
   const [isOpen, setIsOpen] = useState(false); 
@@ -168,60 +155,27 @@ const ScheduleCategorySelector = ({ prevValue, onChange, containerRef }) => {
 }
 
 const ScheduleMemoInput = ({ id, prevValue, onChange }) => {
-  const [inputValue, setInputValue] = useState(prevValue);
-
-  const handleOnChange = (e) => {
-    setInputValue(e.target.value);
-    // onChange(e.target.value);
-  }
-
-  const debounce = (func, timeout = 150) => {
-    let timer;
-    return (...args) => {
-      clearTimeout(timer);
-      timer = setTimeout(() => {
-        func.apply(this, args);
-      }, timeout);
-    };
-  }
-  const processChange = debounce(() => onChange(inputValue));
   
   return (
-    <Input id={id} placeholder={prevValue} 
-    value={inputValue}
+    <DebounceInput 
+    id={id} 
+    placeholder={prevValue} 
+    defaultValue={prevValue}
     maxLength={30}
-    onKeyUp={processChange}
-    onChange={handleOnChange} 
+    onChangeEvent={(v) => { onChange(v); }}
     style={{height: "75%", width: "90%", textAlign:"center"}}/>
   )
 };
 
 const SchedulePriceInput = ({ id, prevValue, onChange }) => {
-  const [inputValue, setInputValue] = useState(prevValue);
-
-  const handleOnChange = (v) => {
-    setInputValue(v);
-    // onChange(v);
-  }
-
-  const debounce = (func, timeout = 150) => {
-    let timer;
-    return (...args) => {
-      clearTimeout(timer);
-      timer = setTimeout(() => {
-        func.apply(this, args);
-      }, timeout);
-    };
-  }
-  const processChange = debounce(() => onChange(inputValue));
 
   return (
-    
-    <InputNumber id={id} placeholder={prevValue}
-    value={inputValue}
+    <DebounceInputNumber 
+    id={id} 
+    placeholder={prevValue}
+    defaultValue={prevValue}
     min={0} max={999999999} step={100}
-    onKeyUp={processChange}
-    onChange={handleOnChange} 
+    onChangeEvent={(v) => { onChange(v); }}
     style={{height: "75%", width: "90%", textAlign:"center"}}/>
   )
 };
@@ -260,8 +214,8 @@ const SortableScheduleItem = ({ id, dayId, scheduleId, index, schedule, isOnly, 
   const { ref: sortableRef, handleRef, isDragging } = useSortable({ id: scheduleId, index, type: "item" });
   const itemRef = useRef(null);
   const { tripId } = useTripInfo();
-  const { isExpanded, setBookmarkInSchedule } = useTripPlan();
-  const { isDeleteRef, isDeleteBookmarkRef, editingSchedule, setEditingSchedule, focusRef, saveSchedule, deleteSchedule } = usePlanEditing();
+  const { isExpanded } = usePlanUI();
+  const { isDeleteRef, isDeleteBookmarkRef, editingSchedule, setEditingSchedule, focusRef, saveSchedule, deleteSchedule, setBookmarkInSchedule } = useEditSchedule();
   const [isHover, setIsHover] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
@@ -325,7 +279,7 @@ const SortableScheduleItem = ({ id, dayId, scheduleId, index, schedule, isOnly, 
    */
   const handleSaveSchedule = () => {
     requestUpdateSchedule(() => {
-      saveSchedule?.();
+      saveSchedule?.(editingSchedule);
     })
   }
 
