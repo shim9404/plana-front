@@ -110,16 +110,18 @@ const PlanMap = () => {
     };
 
     initializeMap();
-
+    console.log("맵 초기화");
     return () => {
       isMounted = false;
       clearMarkers();
+      console.log("맵 삭제");
     };
   }, []);
 
 
   // 좌표 들어오면 중심 이동
   useEffect(() => {
+    
     if (!map || !objRegions?.mapX || !objRegions?.mapY) return;
 
     const x = Number(objRegions.mapX); 
