@@ -15,7 +15,7 @@ export async function fetchWithRetry(fn, retries = 3, delay = 1000) {
 
 
 // delay 만큼 최소 시간 기다리고 결과값을 반환하는 함수
-export const withMinDelay = (promise, delay = 1000) => {
+export const withMinDelay = (promise, delay = 1500) => {
   return Promise.all([
     promise,
     new Promise((resolve) => setTimeout(resolve, delay)),

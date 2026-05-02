@@ -134,15 +134,15 @@ const [pagination, setPagination] = useState({
   useEffect(() => {
     const getRegionData = async () => {
       try {
-        setLoading(true);
-        const response = await withMinDelay(getRegionByIdApi(selectedSigu));
+        // 이전 좌표 먼저 초기화해야 두번 렌더링 막음
+        setObjRegions(null);
+        const response = await getRegionByIdApi(selectedSigu);
         const data = response.data.regions;
         setObjRegions(data);
+
       } catch (error) {
         console.log(error);
-      } finally {{
-        setLoading(false);
-      }}
+      }
     };
     getRegionData();
   }, [selectedSigu]);
@@ -150,7 +150,8 @@ const [pagination, setPagination] = useState({
   // DB 장소 목록 호출 - 페이징
   const loadAreaData = async (type, page = 1) => {
     try {
-      const response = await getAreaApi(selectedSigu, type, page, PAGE_SIZE);
+      setLoading(true);
+      const response = await withMinDelay(getAreaApi(selectedSigu, type, page, PAGE_SIZE));
       const typeKey = type.toLowerCase();
 
       setAreas((prev) => ({
@@ -168,17 +169,19 @@ const [pagination, setPagination] = useState({
     } catch (error) {
       const msg = error?.response?.data?.message || null;
       console.warn(`장소 데이터 호출 오류 >> ${msg}`);
+    } finally {
+      setLoading(false);
     }
   };
 
 // API 장소 목록 호출 - 페이지 파라미터 추가
 const loadPlaceData = async (keyword, page = 1) => {
   try {
-    const response = await getPlaceApi(keyword, objRegions.mapX, objRegions.mapY, page);
+    setLoading(true);
+    const response = await withMinDelay( 
+      getPlaceApi(keyword, objRegions.mapX, objRegions.mapY, page)
+    );
     const data = response.data;
-
-    console.log("place data", data); 
-
     setPlaces(data);
 
     setPagination((prev) => ({
@@ -192,6 +195,8 @@ const loadPlaceData = async (keyword, page = 1) => {
   } catch (error) {
     const msg = error?.response?.data?.message || null;
     console.warn(`장소 데이터 호출 오류 >> ${msg}`);
+  } finally {
+    setLoading(false);
   }
 };
 
@@ -214,7 +219,8 @@ const loadPlaceData = async (keyword, page = 1) => {
       }));
       loadAreaData(searchType, 1);
     }
-  }, [searchType, selectedSigu, objRegions]);
+
+  }, [searchType, objRegions]);
 
   // 페이지 변경
 const onPageChange = (page) => {
