@@ -10,7 +10,7 @@ import { usePlanBookmark } from "../../hooks/trip/PlanBookmarkContext";
 
 const PlanBookmarkContainer = () => {
   const { bookmarks } = usePlanBookmark();
-  const [arrDisplay, setArrDisplay] = useState([]);
+  const [filterBookmarks, setFilterBookmarks] = useState([]);
   const [filterType, setFilterType] = useState("");
 
   const getFilterStyle = (type, isSelected) => {
@@ -36,21 +36,21 @@ const PlanBookmarkContainer = () => {
     setFilterType(type);
     switch (type) {
       case "ALL":
-        setArrDisplay(bookmarks);
+        setFilterBookmarks(bookmarks);
         break;
       default:
-        setArrDisplay(bookmarks.filter((b) => b.bookmarkType == type));
+        setFilterBookmarks(bookmarks.filter((b) => b.bookmarkType == type));
         break;
     }
   };
 
   useEffect(() => {
-    setArrDisplay(bookmarks);
+    setFilterBookmarks(bookmarks);
   }, [bookmarks]);
 
   useEffect(() => {
-    console.log("arrDisplay:: ", arrDisplay);
-  }, [arrDisplay]);
+    console.log("filterBookmarks:: ", filterBookmarks);
+  }, [filterBookmarks]);
 
   return (
     <FlexContainer>
@@ -109,8 +109,8 @@ const PlanBookmarkContainer = () => {
           settings={{ justify: "flex-start", align: "start" }}
           style={ScrollStyle.scrollX}
         >
-          {arrDisplay && arrDisplay?.length > 0 ? (
-            arrDisplay?.map((bookmark, idx) => {
+          {filterBookmarks && filterBookmarks?.length > 0 ? (
+            filterBookmarks?.map((bookmark, idx) => {
               return (
                 <DragableBookmarkItem
                   bookmark={bookmark}

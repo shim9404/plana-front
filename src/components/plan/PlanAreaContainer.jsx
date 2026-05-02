@@ -277,6 +277,12 @@ const onPageChange = (page) => {
     if (listRef.current) listRef.current.scrollTop = 0;
   }, [searchResults]);
 
+  useEffect(() => {
+    if (listRef && listRef.current) {
+      listRef.current.addEventListener("scroll", scrollEvent);
+    }
+  }, []);
+  
   return (
   <FlexContainer>
     <FlexBox

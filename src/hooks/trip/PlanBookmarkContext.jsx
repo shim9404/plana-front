@@ -1,10 +1,10 @@
-import { createContext, useContext, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useMemo, useState } from "react";
 
 /** === 북마크 ==================================== 
  * PlanBookmarkContext 구독 컴포넌트 목록
  * - PlanBookmarkContainer
- * - AreaItem => AreaBookmarkButton 북마크 버튼 컴포넌트 분리
- * - SortableScheduleItem => ScheduleDroppableItem 컴포넌트 분리
+ * - AreaBookmarkButton
+ * - ScheduleDroppableItem
  =============================================== */
 
 const PlanBookmarkContext = createContext(null);
@@ -13,12 +13,17 @@ export const PlanBookmarkProvider = ({ children }) => {
   // 북마크 데이터
   const [bookmarks, setBookmarks] = useState([]);
 
-  const getBookmark = (id) => {
+  const getBookmark = useCallback((id) => {
     return bookmarks.find(bookmark => bookmark.bookmarkId === id);
-  };
+  }, [bookmarks]);
+
+  const getBookmarkType = useCallback((id) => {
+    const findBookmark = bookmarks.find(bookmark => bookmark.bookmarkId === id || bookmark.placeId === id || bookmark.areaId === id);
+    return findBookmark? findBookmark.bookmarkType : "NONE";
+  }, [bookmarks]);
 
   const planBookmarkValue = useMemo(() => ({
-    bookmarks, setBookmarks, getBookmark
+    bookmarks, setBookmarks, getBookmark, getBookmarkType
   }), [bookmarks]);
 
   return (
