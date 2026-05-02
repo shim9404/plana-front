@@ -119,10 +119,13 @@ const PlanAreaContainer = () => {
   const handleBookmarkChanged = (type) => {
     let data;
     if (selectedAreaId) {
-      data = searchResults.find((a) => a.areaId === selectedAreaId);
+      // SPOT, FOOD - areaId만 있으면 됨
+      data = { areaId: selectedAreaId };
     } else {
+      // PLACE - area 전체 데이터 필요
       data = searchResults.find((a) => a.placeId === selectedPlaceId);
     }
+
     addBookmark(type, data);
     setSelectedAreaId("");
     setSelectedPlaceId("");
@@ -131,11 +134,15 @@ const PlanAreaContainer = () => {
   const addBookmark = async (type, areaData) => {
     const result = await addBookmarkApi(tripId, {
       bookmarkType: type,
-      area: { ...areaData, regionId: selectedSigu },
-    });
+      // areaId 있으면 area 객체 안 보냄
+      ...(areaData.areaId
+        ? { areaId: areaData.areaId }
+        : { area: { ...areaData, regionId: selectedSigu } }
+      ),
+    })
     setBookmarks((prev) => [...prev, result.data]);
-  };
 
+  };
   const [loading, setLoading] = useState(false);
   // 지역 데이터 호출
   useEffect(() => {
