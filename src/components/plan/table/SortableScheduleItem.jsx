@@ -216,6 +216,7 @@ const SortableScheduleItem = ({ id, dayId, scheduleId, index, schedule, isOnly, 
   const { tripId } = useTripInfo();
   const { isExpanded } = usePlanUI();
   const { isDeleteRef, isDeleteBookmarkRef, editingSchedule, setEditingSchedule, focusRef, saveSchedule, deleteSchedule, setBookmarkInSchedule } = useEditSchedule();
+  const { setLinkedCountBookmark } = usePlanBookmark();
   const [isHover, setIsHover] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
@@ -288,8 +289,9 @@ const SortableScheduleItem = ({ id, dayId, scheduleId, index, schedule, isOnly, 
    */
   const handleDeleteBookmarkEvent = () => {
     isDeleteBookmarkRef.current = true;
-    requestUnlinkBookmark(() => {
+    requestUnlinkBookmark((bookmarkId) => {
       setBookmarkInSchedule(scheduleId);
+      setLinkedCountBookmark(bookmarkId, -1);
     });
 
     // 편집 중인 스케줄의 북마크를 삭제한 경우 editingSchedule 갱신
@@ -393,13 +395,12 @@ const SortableScheduleItem = ({ id, dayId, scheduleId, index, schedule, isOnly, 
    * @param {*} successCallback 
    */
   const requestUnlinkBookmark = async(successCallback) => {
-    console.log("requestUnlinkBookmark");
+    const { bookmarkId } = schedule;
     try {
       const request = { bookmarkId: "" };
       const isSuccess = await editScheduleApi(tripId, dayId, scheduleId, request);
-      console.log("editScheduleApi: BOOKMARK", isSuccess);
       if (isSuccess) {
-        successCallback?.();
+        successCallback?.(bookmarkId);
       }
     } catch (e) {
       console.log(e);

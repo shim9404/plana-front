@@ -176,3 +176,16 @@ p {
   text-align: center;
   white-space: nowrap;
 }
+
+*:disabled,
+*[disabled],
+*[aria-disabled="true"] {
+  cursor: default !important;
+}
+
+/* antd 특화 클래스 일괄 처리 */
+[class*="ant-"][disabled],
+[class*="ant-"]:disabled,
+[class*="ant-"][aria-disabled="true"] {
+  cursor: default !important;
+}

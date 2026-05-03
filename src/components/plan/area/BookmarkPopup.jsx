@@ -48,11 +48,11 @@ export const BookmarkPopup = ({ bookmarkType, bookmarkEvent }) => {
   return (
     <FlexBox>
       <PentagonWrapper>
-        <FlexBox w="248px" bg="none">
-          <IconButton  width="40px" height="40px" type={bookmarkType === "NONE" ? "default" : "primary"} 
+        <FlexBox w="208px" bg="none" settings={{justify: "center"}} style={{gap: "8px"}}>
+          {/* <IconButton  width="40px" height="40px" type={bookmarkType === "NONE" ? "default" : "primary"} 
           style={{backgroundColor: bookmarkType === "NONE" ? "#FFFFFF" : getBookmarkColor(bookmarkType)}}>
             <StarTwoTone twoToneColor={getBookmarkSubColor(bookmarkType)} style={{fontSize: "32px"}}/>
-          </IconButton>
+          </IconButton> */}
           <Button name="RED" style={{ background: BOOKMARK_COLOR.RED.bg }} onClick={handleBookmark}/>
           <Button name="YELLOW" style={{ background: BOOKMARK_COLOR.YELLOW.bg }} onClick={handleBookmark}/>
           <Button name="GREEN" style={{ background: BOOKMARK_COLOR.GREEN.bg }} onClick={handleBookmark}/>

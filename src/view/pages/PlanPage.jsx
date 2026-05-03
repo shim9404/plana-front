@@ -1,5 +1,5 @@
 import { Layout } from "antd";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FlexBox } from "../../components/common/PLA_FlexBox";
 import { getRegionDataForCascader } from "../../services/regionDataParser";
 import { useRegion } from "../../hooks/home/RegionContext";
@@ -13,7 +13,7 @@ import { useModal } from "../../hooks/ModalProvider";
 import { oneBtnPreset } from "../../utils/alertModalPreset";
 import { getRegionApi } from "../../services/regionApi";
 import { SCHEDULE_CATEGORYS } from "../../constants/scheduleCategory";
-import { DragDropProvider } from "@dnd-kit/react";
+import { DragDropProvider, DragOverlay  } from "@dnd-kit/react";
 import { arrayMove } from "@dnd-kit/helpers";
 import { DUMMY_BOOKMARKS } from "../../components/plan/table/PLAN_DUMMY";
 import { useTripInfo } from "../../hooks/trip/TripInfoContext";
@@ -22,6 +22,7 @@ import { usePlanBookmark } from "../../hooks/trip/PlanBookmarkContext";
 import { usePlanUI } from "../../hooks/trip/PlanUIContext";
 import { useEditSchedule } from "../../hooks/trip/EditScheduleContext";
 import { usePlanDays } from "../../hooks/trip/PlanDaysContext";
+import BookmarkItem from "../../components/bookmark/BookmarkItem";
 const { Header, Sider, Content } = Layout;
 
 const layoutStyle = {
@@ -65,12 +66,17 @@ const PlanPage = () => {
   const { setScheduleCategorys, setBookmarkInSchedule } = useEditSchedule();
   const { setPlanDays, getScheduleDayId } = usePlanDays();
   const { isExpanded } = usePlanUI();
-  const { getBookmark } = usePlanBookmark();
+  const { getBookmark, setLinkedCountBookmark } = usePlanBookmark();
   const { tripId } = useTripInfo();
   const { regionData, updateRegionData } = useRegion();
   const { cascaderOptions } = regionData;
   const { openOneBtnModal } = useModal();
 
+  const [isDraggingBookmark, setIsDraggingBookmark] = useState(false); // 표시 여부만 state
+  const draggingBookmarkRef = useRef(null); // 실제 데이터는 ref로 관리
+
+  console.log("PlanPage 렌더링");
+  
   // 컴포넌트 마운트 시 Region 데이터 검증
   useEffect(() => {
     // TODO: 여행 계획 데이터 전체 요청
@@ -94,12 +100,24 @@ const PlanPage = () => {
     fetchRegionData();
   }, []);
 
+  // 북마크 드래그 시 원본이 아닌 Overlay 표시를 위한 셋팅
+  const handleDragStart = (event) => {
+    const { source } = event.operation;
+    if (source?.type === "bookmark") {
+      // setDraggingBookmark(<BookmarkItem bookmark={getBookmark(source.id)}/>);
+      draggingBookmarkRef.current = <BookmarkItem bookmark={getBookmark(source.id)}/>; // ref에 저장 - 리렌더링 없음
+      setIsDraggingBookmark(true);             // 오버레이 표시만 state로
+    }
+  };
+
   const handleDragEnd = (event) => {
     const { source, target } = event.operation;
     if (!source || !target) return;
 
-    // 북마크 → 스케줄 드롭
     if (source.type === "bookmark") {
+      // setDraggingBookmark(null);  // 북마크 드래그 시 출력되는 오버레이 제거
+      setIsDraggingBookmark(false);            // 오버레이 숨김
+      draggingBookmarkRef.current = null;      // ref 초기화 - 리렌더링 없음
       if (!target || target.type !== "item") return;
       handleBookmarkDrop(event);
       return;
@@ -111,11 +129,11 @@ const PlanPage = () => {
 
   const handleDragOver = (event) => {
     const { source, target } = event.operation;
-    if (!source || !target) return;
-
+    
     // 북마크 드래그 중에는 정렬 미리보기 실행 안 함
     if (source.type === "bookmark") return;
-
+    
+    if (!source || !target) return;
     handlePlanMove(event);
   };
 
@@ -129,7 +147,10 @@ const PlanPage = () => {
     const bookmarkId = source.id;
     const scheduleId = target.id;
     // 북마크 저장 API
-    requestLinkBookmark(scheduleId, bookmarkId, setBookmarkInSchedule);
+    requestLinkBookmark(scheduleId, bookmarkId, (scheduleId, bookmarkId, context) => {
+      setBookmarkInSchedule(scheduleId, bookmarkId, context);
+      setLinkedCountBookmark(bookmarkId, 1);
+    });
   };
 
   /**
@@ -229,9 +250,21 @@ const PlanPage = () => {
       {/* 헤더 영역의 추가 콘텐츠 - absolute */}
       <PlanHeader />
       <DragDropProvider
-        onDragOver={handleDragOver} // 드래그 중 실시간 미리보기
-        onDragEnd={handleDragEnd} // 드롭 시 최종 반영
+        onDragStart={handleDragStart}
+        onDragOver={handleDragOver}
+        onDragEnd={handleDragEnd}
       >
+      <DragOverlay>
+        {isDraggingBookmark  ? (
+          <FlexBox style={{
+            transition: "opacity 0.1s ease",
+            opacity: 0.9,
+            cursor: "grabbing",
+          }}>
+            {draggingBookmarkRef.current}
+          </FlexBox>
+        ) : null}
+      </DragOverlay>
         <Layout style={layoutStyle}>
           {/* 북마크 리스트 영역 */}
           <Header style={bookmarkListStyle}>

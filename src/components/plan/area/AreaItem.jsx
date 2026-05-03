@@ -18,7 +18,7 @@ const AreaBookmarkButton = ({ findId, onClickEvent }) => {
   }, [getBookmarkType(findId)])
 
   return (
-    <IconButton width="36px" height="36px" type={bookmarkType === "NONE" ? "default" : "primary"} 
+    <IconButton width="36px" height="36px"
     style={{backgroundColor: bookmarkType === "NONE" ? "#FFFFFF" : getBookmarkColor(bookmarkType)}}
     onClickEvent={onClickEvent} >
       <StarTwoTone twoToneColor={getBookmarkSubColor(bookmarkType)} />
@@ -27,7 +27,6 @@ const AreaBookmarkButton = ({ findId, onClickEvent }) => {
 }
 
 const AreaItem = ({ id, area, number, margin, popupBookmark }) => {
-  // const [findId, setFindId] = useState("");
   const buttonRef = useRef();
 
   const handleBookmark = () => {

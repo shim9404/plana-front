@@ -22,8 +22,23 @@ export const PlanBookmarkProvider = ({ children }) => {
     return findBookmark? findBookmark.bookmarkType : "NONE";
   }, [bookmarks]);
 
+  const deleteBookmark = useCallback((bookmarkId) => {
+    setBookmarks((prev) => {
+      return prev.filter(bookmark => bookmark.bookmarkId !== bookmarkId);
+    });
+  }, []);
+
+  const setLinkedCountBookmark = useCallback((bookmarkId, changeCount) => {
+    console.log("LC: ", bookmarkId);
+    setBookmarks((prev) => {
+      return prev.map(bookmark => bookmark.bookmarkId === bookmarkId ? 
+        {...bookmark, linkedCount: Math.max((bookmark.linkedCount == null ? changeCount : bookmark.linkedCount + changeCount), 0) } 
+        : bookmark);
+    })
+  }, []);
+
   const planBookmarkValue = useMemo(() => ({
-    bookmarks, setBookmarks, getBookmark, getBookmarkType
+    bookmarks, setBookmarks, getBookmark, getBookmarkType, deleteBookmark, setLinkedCountBookmark
   }), [bookmarks]);
 
   return (
