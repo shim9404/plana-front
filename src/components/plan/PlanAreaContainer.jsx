@@ -55,9 +55,14 @@ const PlanAreaContainer = () => {
   
 
   // 장소 데이터(DB)
-  const [areas, setAreas] = useState([]);
+  const [areaCache, setAreaCache] = useState({
+    SPOT: { pages: {}, totalCount: 0 },
+    FOOD: { pages: {}, totalCount: 0 },
+  });
   // 장소 데이터(API)
-  const [places, setPlaces] = useState([]);
+  const [placeCache, setPlaceCache] = useState({
+    pages: {}, totalCount: 0
+  });
 
   // 장소 검색 타입
   const [searchType, setSearchType] = useState("PLACE");
@@ -81,20 +86,8 @@ const PlanAreaContainer = () => {
   //#endregion
 
   const onToggleChange = (selected) => {
-    // 타입 변경 시 이전 데이터 초기화
-    setSearchResults([]);
-    setAreas((prev) => ({
-      ...prev,
-      [selected.toLowerCase()]: null,
-    }));
-    setPlaces(null);
-    
-    // 페이지 1로 초기화
-    setPagination((prev) => ({
-      ...prev,
-      [selected]: { current: 1, total: 0, isEnd: false },
-    }));
-
+    setSearchKeyword("");
+    setIsSearched(false);
     setSearchType(selected);
   };
 
@@ -127,8 +120,6 @@ const PlanAreaContainer = () => {
     }
 
     addBookmark(type, data);
-    setSelectedAreaId("");
-    setSelectedPlaceId("");
   };
 
   const addBookmark = async (type, areaData) => {
@@ -158,57 +149,104 @@ const PlanAreaContainer = () => {
         console.log(error);
       }
     };
+    setAreaCache({
+      SPOT: { pages: {}, totalCount: 0 },
+      FOOD: { pages: {}, totalCount: 0 },
+    });
+    setPlaceCache({ pages: {}, totalCount: 0 });
+
     getRegionData();
+
   }, [selectedSigu]);
 
   // DB 장소 목록 호출 - 페이징
-  const loadAreaData = async (type, page = 1) => {
-    try {
-      setLoading(true);
-      const response = await withMinDelay(getAreaApi(selectedSigu, type, page, PAGE_SIZE));
-      const typeKey = type.toLowerCase();
+const loadAreaData = async (type, page = 1) => {
+  // 캐시에 있으면 재요청 안 함
+  if (areaCache[type]?.pages[page]) {
+    const cached = areaCache[type].pages[page];
+    setSearchResults(cached);
+    setPagination(prev => ({
+      ...prev,
+      [type]: { current: page, total: areaCache[type].totalCount }
+    }));
+    return;
+  }
 
-      setAreas((prev) => ({
-        ...prev,
-        [typeKey]: response.data.data,  // .data.data
-      }));
+  try {
+    setLoading(true);
+    const response = await withMinDelay(getAreaApi(selectedSigu, type, page, PAGE_SIZE));
+    const data = response.data.data;
 
-      setPagination((prev) => ({
-        ...prev,
-        [type]: {
-          current: response.data.data.currentPage,
-          total: response.data.data.totalCount,
-        },
-      }));
-    } catch (error) {
-      const msg = error?.response?.data?.message || null;
-      console.warn(`장소 데이터 호출 오류 >> ${msg}`);
-    } finally {
-      setLoading(false);
-    }
-  };
+    // 캐시에 저장
+    setAreaCache(prev => ({
+      ...prev,
+      [type]: {
+        pages: { ...prev[type].pages, [page]: data.areas },
+        totalCount: data.totalCount,
+      }
+    }));
+    
+    setSearchResults(data.areas);
+    setPagination(prev => ({
+      ...prev,
+      [type]: { current: page, total: data.totalCount }
+    }));
+  } catch (error) {
+    console.warn(`장소 데이터 호출 오류`);
+  } finally {
+    setLoading(false);
+  }
+};
 
 // API 장소 목록 호출 - 페이지 파라미터 추가
 const loadPlaceData = async (keyword, page = 1) => {
+  // 키워드 검색은 캐시 안 씀
+  if (keyword) {
+    try {
+      setLoading(true);
+      const response = await withMinDelay(getPlaceApi(keyword, objRegions.mapX, objRegions.mapY, page));
+      setSearchResults(response.data.places);
+      setPagination(prev => ({
+        ...prev,
+        PLACE: { current: page, total: response.data.totalCount, isEnd: response.data.isEnd }
+      }));
+    } catch (error) {
+      console.warn(`장소 데이터 호출 오류`);
+    } finally {
+      setLoading(false);
+    }
+    return;
+  }
+
+  // 키워드 없으면 캐시 확인
+  if (placeCache.pages[page]) {
+    setSearchResults(placeCache.pages[page]);
+    setPagination(prev => ({
+      ...prev,
+      PLACE: { current: page, total: placeCache.totalCount }
+    }));
+    return;
+  }
+
   try {
     setLoading(true);
-    const response = await withMinDelay( 
-      getPlaceApi(keyword, objRegions.mapX, objRegions.mapY, page)
-    );
+    const response = await withMinDelay(getPlaceApi("", objRegions.mapX, objRegions.mapY, page));
     const data = response.data;
-    setPlaces(data);
 
-    setPagination((prev) => ({
+    // 캐시에 저장
+    setPlaceCache(prev => ({
       ...prev,
-      PLACE: {
-        current: data.currentPage,
-        total: data.totalCount,
-        isEnd: data.isEnd,  // 마지막 페이지 여부
-      },
+      pages: { ...prev.pages, [page]: data.places },
+      totalCount: data.totalCount,
+    }));
+
+    setSearchResults(data.places);
+    setPagination(prev => ({
+      ...prev,
+      PLACE: { current: page, total: data.totalCount, isEnd: data.isEnd }
     }));
   } catch (error) {
-    const msg = error?.response?.data?.message || null;
-    console.warn(`장소 데이터 호출 오류 >> ${msg}`);
+    console.warn(`장소 데이터 호출 오류`);
   } finally {
     setLoading(false);
   }
@@ -219,38 +257,28 @@ const loadPlaceData = async (keyword, page = 1) => {
 
   // 초기화 (searchType 또는 지역 변경 시)
   useEffect(() => {
+    if (!objRegions) return; 
+
     setSearchKeyword("");
     setFilteredLists([]);
     setIsSearched(false);
 
     if (searchType === "PLACE") {
-      loadPlaceData("");
+      loadPlaceData("", 1);
     } else {
-      // 페이지 1로 초기화 후 호출
-      setPagination((prev) => ({
-        ...prev,
-        [searchType]: { ...prev[searchType], current: 1 },
-      }));
       loadAreaData(searchType, 1);
     }
-
   }, [searchType, objRegions]);
 
   // 페이지 변경
-const onPageChange = (page) => {
-  if (searchType === "PLACE") {
-    loadPlaceData(searchKeyword, page);  // searchKeyword 넘기고 있는지 확인
-  } else {
-    loadAreaData(searchType, page);
-  }
-  if (listRef.current) listRef.current.scrollTop = 0;
-};
-  const arrDisplay =
-    searchType === "SPOT"
-      ? areas?.spot?.areas || []
-      : searchType === "FOOD"
-      ? areas?.food?.areas || []
-      : places?.places || [];
+  const onPageChange = (page) => {
+    if (searchType === "PLACE") {
+      loadPlaceData(searchKeyword, page);
+    } else {
+      loadAreaData(searchType, page);
+    }
+    if (listRef.current) listRef.current.scrollTop = 0;
+  };
 
   const onKeywordChange = (keyword) => {
     setSearchKeyword(keyword);
@@ -263,34 +291,30 @@ const onPageChange = (page) => {
     if (!finalKeyword) {
       setFilteredLists([]);
       setIsSearched(false);
+      // 캐시에서 현재 페이지 데이터 복원
+      const currentPage = pagination[searchType]?.current || 1;
+      if (searchType === "PLACE") {
+        loadPlaceData("", currentPage);
+      } else {
+        loadAreaData(searchType, currentPage);
+      }
       return;
     }
 
     if (searchType === "PLACE") {
-      setFilteredLists([]);
       setIsSearched(true);
       loadPlaceData(finalKeyword);
       return;
     }
 
-    const result = arrDisplay.filter((item) => item.name?.includes(finalKeyword));
+    // SPOT, FOOD는 캐시에서 꺼내서 필터링
+    const currentPage = pagination[searchType]?.current || 1;
+    const cachedAreas = areaCache[searchType]?.pages[currentPage] ?? [];
+    const result = cachedAreas.filter((item) => item.name?.includes(finalKeyword));
     setFilteredLists(result);
+    setSearchResults(result);
     setIsSearched(true);
   };
-
-  // 최종 화면 데이터
-  useEffect(() => {
-    if (!areas && !places) return;
-
-    const result =
-      searchType === "PLACE"
-        ? places?.places || []
-        : isSearched
-        ? filteredLists
-        : arrDisplay;
-
-    setSearchResults(result);
-  }, [searchType, places, filteredLists, isSearched, areas, selectedSigu]);
 
   // 리스트 스크롤 초기화
   useEffect(() => {
@@ -300,8 +324,16 @@ const onPageChange = (page) => {
   useEffect(() => {
     if (listRef && listRef.current) {
       listRef.current.addEventListener("scroll", scrollEvent);
+      return () => listRef.current?.removeEventListener("scroll", scrollEvent);
     }
   }, []);
+
+  useEffect(() => {
+  return () => {
+    // 언마운트 시 초기화
+    setObjRegions(null);
+  };
+}, []);
   
   return (
   <FlexContainer >
