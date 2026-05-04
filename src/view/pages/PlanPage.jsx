@@ -1,4 +1,4 @@
-import { Layout } from "antd";
+import { Layout, message } from "antd";
 import { useEffect, useRef, useState } from "react";
 import { FlexBox } from "../../components/common/PLA_FlexBox";
 import { getRegionDataForCascader } from "../../services/regionDataParser";
@@ -15,14 +15,16 @@ import { getRegionApi } from "../../services/regionApi";
 import { SCHEDULE_CATEGORYS } from "../../constants/scheduleCategory";
 import { DragDropProvider, DragOverlay  } from "@dnd-kit/react";
 import { arrayMove } from "@dnd-kit/helpers";
-import { DUMMY_BOOKMARKS } from "../../components/plan/table/PLAN_DUMMY";
 import { useTripInfo } from "../../hooks/trip/TripInfoContext";
-import { editScheduleApi } from "../../services/tripApi";
+import { editScheduleApi, reorderDaysApi, reorderSchedulesApi } from "../../services/tripApi";
 import { usePlanBookmark } from "../../hooks/trip/PlanBookmarkContext";
 import { usePlanUI } from "../../hooks/trip/PlanUIContext";
 import { useEditSchedule } from "../../hooks/trip/EditScheduleContext";
 import { usePlanDays } from "../../hooks/trip/PlanDaysContext";
 import BookmarkItem from "../../components/bookmark/BookmarkItem";
+import { usePlaceSearch } from "../../hooks/trip/PlaceSearchContext";
+import { NAV_PRESET } from "../../utils/protectedNavPreset";
+import useProtectedNavigate from "../../hooks/useProtectedNavigate";
 const { Header, Sider, Content } = Layout;
 
 const layoutStyle = {
@@ -63,27 +65,40 @@ const mapStyle = {
 }
 
 const PlanPage = () => {
-  const { scheduleCategorys, setScheduleCategorys, setBookmarkInSchedule } = useEditSchedule();
+  const { scheduleCategorys, setScheduleCategorys, setEditingSchedule, setBookmarkInSchedule } = useEditSchedule();
   const { setPlanDays, getScheduleDayId } = usePlanDays();
-  const { isExpanded } = usePlanUI();
+  const { isExpanded, setIsExpanded } = usePlanUI();
   const { getBookmark, setLinkedCountBookmark } = usePlanBookmark();
   const { tripId } = useTripInfo();
   const { regionData, updateRegionData } = useRegion();
+  const { setIsSearched } = usePlaceSearch();
   const { cascaderOptions } = regionData;
   const { openOneBtnModal } = useModal();
 
   const [isDraggingBookmark, setIsDraggingBookmark] = useState(false); // 표시 여부만 state
   const draggingBookmarkRef = useRef(null); // 실제 데이터는 ref로 관리
+  let dayOrdersRef = useRef(null);
 
-  console.log("PlanPage 렌더링");
-  
-  // 컴포넌트 마운트 시 Region 데이터 검증
+  const protectedNavigate = useProtectedNavigate();
+
+  // 컴포넌트 마운트
   useEffect(() => {
-    // TODO: 여행 계획 데이터 전체 요청
+    // tripId가 없을 경우 홈으로 강제 이동
+    if (!tripId) {
+      protectedNavigate(NAV_PRESET.HOME);
+      message.warning("여행이 존재하지 않습니다.");
+      return;
+    }
+    // TODO: tripId는 있으나 여행 계획 데이터가 없을 경우 전체 요청
     if (!scheduleCategorys) {
-      setScheduleCategorys(SCHEDULE_CATEGORYS);
+    setScheduleCategorys(SCHEDULE_CATEGORYS);
     }
     // 기본 값에 없는 구분이 데이터에 있을 경우 scheduleCategorys에 추가
+
+    // Context 초기화
+    setIsExpanded(false);
+    setEditingSchedule(null);
+    setIsSearched(false);
 
     // Region 데이터가 유효하지 않은 경우 재요청 (홈을 통해 접근하지 않았을 경우 등)
     if (regionData && cascaderOptions.length > 0) return;
@@ -102,9 +117,10 @@ const PlanPage = () => {
     fetchRegionData();
   }, []);
 
-  // 북마크 드래그 시 원본이 아닌 Overlay 표시를 위한 셋팅
+  // 드래그 시작 이벤트
   const handleDragStart = (event) => {
     const { source } = event.operation;
+    // 북마크 드래그 시 원본이 아닌 Overlay 표시를 위한 셋팅
     if (source?.type === "bookmark") {
       // setDraggingBookmark(<BookmarkItem bookmark={getBookmark(source.id)}/>);
       draggingBookmarkRef.current = <BookmarkItem bookmark={getBookmark(source.id)}/>; // ref에 저장 - 리렌더링 없음
@@ -112,11 +128,14 @@ const PlanPage = () => {
     }
   };
 
+  // 드래그 종료 이벤트
   const handleDragEnd = (event) => {
     const { source, target } = event.operation;
     if (!source || !target) return;
+    const sourceType = source.type;
 
-    if (source.type === "bookmark") {
+    // 북마크 드롭
+    if (sourceType === "bookmark") {
       // setDraggingBookmark(null);  // 북마크 드래그 시 출력되는 오버레이 제거
       setIsDraggingBookmark(false);            // 오버레이 숨김
       draggingBookmarkRef.current = null;      // ref 초기화 - 리렌더링 없음
@@ -125,8 +144,22 @@ const PlanPage = () => {
       return;
     }
 
-    // 일자/스케줄 정렬
-    handlePlanMove(event);
+    // 일자 맟 스케줄 드롭 : 순서 반영을 위한 API 호출
+    if (sourceType === "list") {
+      if (dayOrdersRef.current == null || dayOrdersRef.current.length <= 0) return;
+      requestReorderDays(() => {
+        dayOrdersRef.current = null;
+      })
+    }
+    
+    if (sourceType === "item") {
+      if (dayOrdersRef.current == null || dayOrdersRef.current.length <= 0) return;
+      requestReorderSchedules(() => {
+        dayOrdersRef.current = null;
+      })
+    }
+    // 정렬 처리
+    // handlePlanMove(event);
   };
 
   const handleDragOver = (event) => {
@@ -163,10 +196,6 @@ const PlanPage = () => {
   const handlePlanMove  = (event) => {
     const { source, target } = event.operation;
     if (!source || !target) return;
-    // console.log("source id:", source.id);
-    // console.log("source type:", source.type);
-    // console.log("target id:", target.id);
-    // console.log("target type:", target.type);
 
     const sourceId = source.id;
     const targetId = target.id;
@@ -179,7 +208,12 @@ const PlanPage = () => {
         const newIndex = prev.findIndex((d) => d.tripDayId === targetId);
         if (oldIndex === -1 || newIndex === -1 || oldIndex === newIndex)
           return prev;
-        return arrayMove(prev, oldIndex, newIndex);
+
+        const newDays = arrayMove(prev, oldIndex, newIndex);
+
+        // 일자 재정렬 API 요청을 위한 request 데이터 셋팅
+        dayOrdersRef.current = newDays.map((day, index) => {return {tripDayId: day.tripDayId, indexSort: index + 1}});
+        return newDays;
       }
 
       // 아이템 재정렬
@@ -219,6 +253,13 @@ const PlanPage = () => {
           const [removed] = sourceSchedules.splice(oldIndex, 1);
           targetSchedules.splice(newIndex, 0, removed);
         }
+        
+        // 일자 재정렬 API 요청을 위한 request 데이터 셋팅
+        dayOrdersRef.current = newDays.map((day, dIndex) => {
+          return {tripDayId: day.tripDayId, scheduleOrders: day.schedules.map((schedule, sIndex) => {
+              return {tripScheduleId: schedule.tripScheduleId, indexSort: sIndex + 1}
+          })}
+        });
         return newDays;
       }
 
@@ -241,6 +282,40 @@ const PlanPage = () => {
       const isSuccess = await editScheduleApi(tripId, dayId, scheduleId, request);
       if (isSuccess) {
         successCallback?.(scheduleId, bookmarkId, context);
+      }
+    } catch (e) {
+      console.log(e);
+    } 
+  }
+
+  /**
+   * 일자 재정렬 API 요청
+   * @param {*} scheduleId 
+   * @param {*} bookmarkId 
+   * @param {*} successCallback 
+   */
+  const requestReorderDays = async(successCallback) => {
+    try {
+      const isSuccess = await reorderDaysApi(tripId, {dayOrders: dayOrdersRef.current});
+      if (isSuccess) {
+        successCallback?.();
+      }
+    } catch (e) {
+      console.log(e);
+    } 
+  }
+
+  /**
+   * 스케줄 재정렬 API 요청
+   * @param {*} scheduleId 
+   * @param {*} bookmarkId 
+   * @param {*} successCallback 
+   */
+  const requestReorderSchedules = async(successCallback) => {
+    try {
+      const isSuccess = await reorderSchedulesApi(tripId, {dayOrders: dayOrdersRef.current});
+      if (isSuccess) {
+        successCallback?.();
       }
     } catch (e) {
       console.log(e);

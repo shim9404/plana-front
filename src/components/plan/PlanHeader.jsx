@@ -20,10 +20,10 @@ const PlanHeader = () => {
   const [isSaving, setIsSaving] = useState(false);
 
   const cascaderValue = selectedSigu
-  ? [selectedZdo, selectedSigu]     // 시군구까지 선택된 경우
-  : selectedZdo
-    ? [selectedZdo]                 // 시도만 선택된 경우
-    : undefined;                    // 아무것도 선택 안 된 경우
+    ? [selectedZdo, selectedSigu]     // 시군구까지 선택된 경우
+    : selectedZdo
+      ? [selectedZdo]                 // 시도만 선택된 경우
+      : undefined;                    // 아무것도 선택 안 된 경우
 
   const textboxStyle = { minWidth: "60px", marginLeft: "8px" };
 
@@ -35,8 +35,11 @@ const PlanHeader = () => {
       return;
     }
 
+    const regionId = value[1] ?? `${value[0]}000`
     setSelectedZdo(value[0] ?? null);
-    setSelectedSigu(value[1] ?? `${value[0]}000`);
+    setSelectedSigu(regionId);
+
+    requestUpdateRegion(regionId);
   };
 
   const handleChangeTripName = (value) => {
@@ -54,11 +57,11 @@ const PlanHeader = () => {
 
   const handleSaveTripDate = (dates) => {
     // TODO: 팝업 확인 및 로딩 추가 필요
-    requestUpdateTripDate(dates, (addDays, activeDayCount) => { 
+    requestUpdateTripDate(dates, (addDays, activeDayCount) => {
       if (addDays && addDays.length > 0) {
-        addPlanDays(addDays); 
+        addPlanDays(addDays);
       }
-      
+
       setActiveDayCount(activeDayCount);
     });
   }
@@ -67,7 +70,7 @@ const PlanHeader = () => {
    * 여행명 수정 API 요청
    * @param {*} successCallback 
    */
-  const requestUpdateTripName = async(successCallback) => {
+  const requestUpdateTripName = async (successCallback) => {
     try {
       const request = { name: tripName };
       const isSuccess = await editTripInfoApi(tripId, request);
@@ -83,10 +86,10 @@ const PlanHeader = () => {
    * 여행 일정 수정 API 요청
    * @param {*} successCallback 
    */
-  const requestUpdateTripDate = async(dates, successCallback) => {
+  const requestUpdateTripDate = async (dates, successCallback) => {
     console.log(dates);
     try {
-      const request = { startDate: dates[0].format("YYYY-MM-DD"), endDate: dates[1].format("YYYY-MM-DD")};
+      const request = { startDate: dates[0].format("YYYY-MM-DD"), endDate: dates[1].format("YYYY-MM-DD") };
       const result = await editTripDateApi(tripId, request);
       if (result) {
         const addDays = result.data.addDays;
@@ -97,29 +100,45 @@ const PlanHeader = () => {
       console.log(e);
     }
   };
-  
+
+
+  /**
+ * 여행 지역 수정 API 요청
+ * @param {string} regionId
+ */
+  const requestUpdateRegion = async (regionId) => {
+    try {
+      const request = { regionId: regionId };
+      await editTripInfoApi(tripId, request);
+
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   return (
     <FlexBox h="64px" style={{ position: "absolute", zIndex: 100, top: "0px", margin: "18px 0px", minWidth: "708px", pointerEvents: "none" }} settings={{ justify: "center" }}>
-      <FlexBox w={`calc(100vw - ${ 120 + 210 + 200 }px)`} bg="none" style={{gap: "12px", minWidth: "708px", pointerEvents: "auto" }}>
+      <FlexBox w={`calc(100vw - ${120 + 210 + 200}px)`} bg="none" style={{ gap: "12px", minWidth: "708px", pointerEvents: "auto" }}>
         {/* 여행 일정 영역 */}
-        <FlexBox w="400px" settings={{isVertical: true}}>
+        <FlexBox w="400px" settings={{ isVertical: true }}>
           <TextBox alignW="left" bg="none" style={textboxStyle}>
             여행 일정
           </TextBox>
-          <TripDatePicker width="400px" height="48px" handleSave={(dates) => handleSaveTripDate(dates)}/>
+          <TripDatePicker width="400px" height="48px" handleSave={(dates) => handleSaveTripDate(dates)} />
 
         </FlexBox>
         {/* 검색 지역 영역 */}
-        <FlexBox w="220px" settings={{isVertical: true}} bg="none">
+        <FlexBox w="220px" settings={{ isVertical: true }} bg="none">
           <TextBox alignW="left" bg="none" style={textboxStyle}>
             검색 지역
           </TextBox>
           <TripRegionPicker
             width="220px" height="48px"
             value={cascaderValue}
+            allowClear={false}
             onChange={handleChangeRegion}
             changeOnSelect={handleChangeRegion}
-            />
+          />
         </FlexBox>
         {/* 여행명 영역 */}
         <FlexBox settings={{ isVertical: true }} bg="none">
@@ -127,12 +146,12 @@ const PlanHeader = () => {
             여행 이름
           </TextBox>
           <FlexBox h="48px" style={{ position: "relative" }}>
-            <DebounceInput showCount maxLength={30} style={{ height: "48px", fontSize:"16px", color:"#565656", padding: "8px 56px 8px 18px"}}
-            defaultValue={tripName} onChangeEvent={handleChangeTripName} onBlur={() => {handleSaveTripName()}}/>
-            <FlexBox w="52px" h="52px" settings={{ justify:"center" }} style={{ fontSize:"20px", right: "0%", position: "absolute", zIndex: 10 }}>
+            <DebounceInput showCount maxLength={30} style={{ height: "48px", fontSize: "16px", color: "#565656", padding: "8px 56px 8px 18px" }}
+              defaultValue={tripName} onChangeEvent={handleChangeTripName} onBlur={() => { handleSaveTripName() }} />
+            <FlexBox w="52px" h="52px" settings={{ justify: "center" }} style={{ fontSize: "20px", right: "0%", position: "absolute", zIndex: 10 }}>
               {
-                isSaving?
-                <SyncOutlined spin /> : <CheckCircleTwoTone twoToneColor="#52c41a" />
+                isSaving ?
+                  <SyncOutlined spin /> : <CheckCircleTwoTone twoToneColor="#52c41a" />
               }
             </FlexBox>
           </FlexBox>
