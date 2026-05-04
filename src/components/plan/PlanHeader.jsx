@@ -3,7 +3,7 @@ import { FlexBox, TextBox } from "../common/PLA_FlexBox";
 import TripDatePicker from "../home/TripDatePicker";
 import TripRegionPicker from "../home/TripRegionPicker";
 import { CheckCircleTwoTone, SyncOutlined } from "@ant-design/icons";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { editTripDateApi, editTripInfoApi } from "../../services/tripApi";
 import { usePlanDays } from "../../hooks/trip/PlanDaysContext";
 import { useTripRegion } from "../../hooks/trip/TripRegionContext";
