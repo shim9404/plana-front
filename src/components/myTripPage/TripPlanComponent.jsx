@@ -126,7 +126,8 @@ const TripPlanComponent = ({tripList, myPlanDates, myBookmarks, mySchedules, sel
                             <div>{item.startTime || "-"}</div>
                             <div>{item.endTime || "-"}</div>
                             <div>
-                              {CATEGORY_NAME[bookmark?.areaInfo?.category] || item.category || "-"}
+                              {/* {CATEGORY_NAME[bookmark?.areaInfo?.category] || item.category || "-"} */}
+                              {item.category || "-"}
                             </div>
                             <div style={{width: "100%", borderRadius: "20px", background: color.bg}}>
                               {bookmark?.areaInfo?.name || item.context || "-"}

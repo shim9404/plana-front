@@ -20,6 +20,8 @@ import dayjs from "dayjs";
 import { usePlanBookmark } from "../../hooks/trip/PlanBookmarkContext";
 import { useTripDate } from "../../hooks/trip/TripDateContext";
 import { usePlanDays } from "../../hooks/trip/PlanDaysContext";
+import { useEditSchedule } from "../../hooks/trip/EditScheduleContext";
+import { SCHEDULE_CATEGORYS } from "../../constants/scheduleCategory";
 
 const { Sider, Content } = Layout;
 
@@ -55,6 +57,8 @@ const MyTripPage = () => {
   const { setTripName } = useTripInfo();
   // 여행일자 전역 변수
   const { setConfirmedDates } = useTripDate();
+  // 여행 계획 카테고리
+  const { setScheduleCategorys } = useEditSchedule();
 
   // 여행 목록(간단)초기값
   const [trips, setTrips] = useState([]);
@@ -107,17 +111,48 @@ const MyTripPage = () => {
     try {
       const uri = `/api/trips/${selectedMenu}`;
       const result = await axiosInstance.get(uri, null);
-      // 북마크 목록
-      const bookmark = result.data.data.bookmarks;
-      setMybookmarks(bookmark);
-      setSelectedColor("")
-      // 여행 일자
+
+      // 1) 여행 일자
       const startDate = result.data.data.startDate;
       const endDate = result.data.data.endDate;
       setMyPlanDates({startDate: startDate, endDate: endDate});
-      // 스케줄 목록
+
+      // 2) 스케줄 목록
       const schedule = result.data.data.days;
       setMySchedules(schedule);
+
+      // 2-1) 스케줄 목록 내 분류
+      const extraCategories = schedule.flatMap(day =>
+        day.schedules
+          .map(schedule => schedule.category)
+          .filter(Boolean) // undefined & null 제거
+      );
+      // 중복 제거(기본 값(SCHEDULE_CATEGORYS)외 존재 시, 추가)
+      const uniqueCategories = [...new Set([
+        ...SCHEDULE_CATEGORYS,
+        ...extraCategories
+      ])];
+      setScheduleCategorys(uniqueCategories);
+
+      // 3) 북마크 목록
+      const bookmark = result.data.data.bookmarks;
+      // 3-1) 북마크 - 여행 계획 목록 연결 개수 추가
+      const countMap = {};      
+      schedule.forEach(day => {
+        day.schedules
+          .forEach(s => {
+            if (s.bookmarkId) {
+            countMap[s.bookmarkId] = (countMap[s.bookmarkId] || 0) + 1;
+            }
+          });
+      });
+      const updatedBookmarks = bookmark.map(item => ({
+        ...item,
+        linkedCount: countMap[item.bookmarkId] || 0
+      }));
+      setMybookmarks(updatedBookmarks);
+      setSelectedColor("")
+
     } catch (error) {
       console.log(error);
     }

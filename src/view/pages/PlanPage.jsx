@@ -63,7 +63,7 @@ const mapStyle = {
 }
 
 const PlanPage = () => {
-  const { setScheduleCategorys, setBookmarkInSchedule } = useEditSchedule();
+  const { scheduleCategorys, setScheduleCategorys, setBookmarkInSchedule } = useEditSchedule();
   const { setPlanDays, getScheduleDayId } = usePlanDays();
   const { isExpanded } = usePlanUI();
   const { getBookmark, setLinkedCountBookmark } = usePlanBookmark();
@@ -80,7 +80,9 @@ const PlanPage = () => {
   // 컴포넌트 마운트 시 Region 데이터 검증
   useEffect(() => {
     // TODO: 여행 계획 데이터 전체 요청
-    setScheduleCategorys(SCHEDULE_CATEGORYS);
+    if (!scheduleCategorys) {
+      setScheduleCategorys(SCHEDULE_CATEGORYS);
+    }
     // 기본 값에 없는 구분이 데이터에 있을 경우 scheduleCategorys에 추가
 
     // Region 데이터가 유효하지 않은 경우 재요청 (홈을 통해 접근하지 않았을 경우 등)
