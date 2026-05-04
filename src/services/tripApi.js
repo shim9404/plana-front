@@ -143,7 +143,7 @@ export const addBookmarkApi = async (tripId, payload) => {
  * @returns 
  */
 export const deleteBookmarkApi = async (tripId, bookmarkId) => {
-  const response = await axiosInstance.delete(`/api/trips/${tripId}/bookmarks/${bookmarkId}`, payload);
+  const response = await axiosInstance.delete(`/api/trips/${tripId}/bookmarks/${bookmarkId}`);
   const result = response.data ?? {};
   return result.success;
 }
