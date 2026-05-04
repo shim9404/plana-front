@@ -10,6 +10,8 @@ import { TwoBtnModal } from "./view/modals/TwoBtnModal.jsx";
 import { oneBtnPreset } from "./utils/alertModalPreset.js";
 import { SESSION_EXPIRED_NOTICE_KEY } from "./services/axiosInstance.js";
 import TripPlanProviders from "./hooks/trip/TripPlanProviders.jsx";
+import { isMobile } from "react-device-detect";
+import MobileGuard from "./view/layouts/MobileGuard.jsx";
 
 
 function App() {
@@ -35,6 +37,9 @@ useEffect(() => {
   window.addEventListener("trip-session-expired", checkExpired); // 인터셉터 refresh 실패 케이스
   return () => window.removeEventListener("trip-session-expired", checkExpired);
 }, []);
+
+
+  if (isMobile) return <MobileGuard />;
 
   return (
     <RegionProvider>
