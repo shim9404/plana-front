@@ -45,7 +45,8 @@ const TripInfoSelector = ({ setHoveredId }) => {
       memberId: memberId,
       name: "새 여행 이름",
       startDate: confirmedDates[0].format("YYYY-MM-DD"),
-      endDate: confirmedDates[1].format("YYYY-MM-DD")
+      endDate: confirmedDates[1].format("YYYY-MM-DD"),
+      regionId: selectedSigu
     };
 
     try {
