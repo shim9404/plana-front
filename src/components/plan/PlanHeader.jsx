@@ -17,6 +17,9 @@ const PlanHeader = () => {
   const { addPlanDays } = usePlanDays();
   const [isSaving, setIsSaving] = useState(false);
   const [ cascaderValue, setCascaderValue ] = useState([])
+  const [changedName, setChangedName] = useState("");         // Input 변동 값 (API 요청 용도)
+  const [displayName, setDisplayName] = useState(tripName);   // Input 비었을 경우 복구 용도
+  const nameRef = useRef("");                                 // Input 비었을 경우 복구 용도
 
   useEffect(() => {
     let value = [];
@@ -33,10 +36,6 @@ const PlanHeader = () => {
     } else {
       value = undefined; // 아무것도 선택 안 된 경우
     }
-  const [changedName, setChangedName] = useState("");         // Input 변동 값 (API 요청 용도)
-  const [displayName, setDisplayName] = useState(tripName);   // Input 비었을 경우 복구 용도
-  const nameRef = useRef("");                                 // Input 비었을 경우 복구 용도
-
     setCascaderValue(value);                 
   }, [selectedSigu])
 
