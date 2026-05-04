@@ -10,6 +10,7 @@ export const DebounceInput = ({defaultValue, onChangeEvent, ...rest}) => {
   }
 
   useEffect(() => {
+    if (defaultValue === null) return;
     setInputValue(defaultValue);
   }, [defaultValue])
   
