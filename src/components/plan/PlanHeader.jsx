@@ -45,7 +45,7 @@ const PlanHeader = () => {
 
   const handleFocusTripName = () => {
     nameRef.current = tripName;
-    setDisplayName("");
+    setDisplayName(null);
   }
 
   const handleChangeTripName = (value) => {
