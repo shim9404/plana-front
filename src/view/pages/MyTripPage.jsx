@@ -23,6 +23,7 @@ import { usePlanDays } from "../../hooks/trip/PlanDaysContext";
 import { useEditSchedule } from "../../hooks/trip/EditScheduleContext";
 import { SCHEDULE_CATEGORYS } from "../../constants/scheduleCategory";
 import { useTripRegion } from "../../hooks/trip/TripRegionContext";
+import { hideLoader, showLoader } from "../../utils/uiUtil";
 
 const { Sider, Content } = Layout;
 
@@ -114,7 +115,7 @@ const MyTripPage = () => {
 
   const getTripByTripId = useCallback(async () => {
     if (!selectedMenu) return;
-
+    showLoader();
     try {
       const uri = `/api/trips/${selectedMenu}`;
       const result = await axiosInstance.get(uri, null);
@@ -159,6 +160,8 @@ const MyTripPage = () => {
       
     } catch (error) {
       console.log(error);
+    } finally {
+      hideLoader(250);
     }
   }, [selectedMenu])
 
@@ -173,7 +176,6 @@ const MyTripPage = () => {
 
   const getTrashPlan = useCallback(async () => {
     if (!memberId) return;
-
     try {
       const uri = `/api/members/${memberId}/trips/trashs`;
       const result = await axiosInstance.get(uri, null);
@@ -181,7 +183,7 @@ const MyTripPage = () => {
       setTrashPlans(trashPlan);
     } catch (error) {
       console.log(error);
-    }
+    } 
   }, [memberId])
 
   useEffect(() => {
@@ -225,6 +227,7 @@ const MyTripPage = () => {
       ...oneBtnPreset.editCheck,
       onOk: async () => {
         setLoading(true);
+        showLoader();
         // React 한번에 처리하기 못하게 한박자 쉬게 만드는 코드
         await new Promise(resolve => setTimeout(resolve, 0));
 
