@@ -247,17 +247,21 @@ const SortableScheduleItem = ({ id, dayId, scheduleId, index, schedule, isOnly, 
         return;
       }
 
-      // 이전에 선택했던 스케줄이 있고 동일함
-      if (editingSchedule && editingSchedule.tripScheduleId === scheduleId) return;
-      // 이전에 선택했던 스케줄이 있고 동일하지 않음
-      if (editingSchedule && editingSchedule.tripScheduleId !== schedule.tripScheduleId) {
-        // 이전 스케줄 저장
-        handleSaveSchedule();
-        // saveSchedule?.();
+      // 선택된 스케줄이 없는 경우 즉시 편집
+      if (!editingSchedule) {
+        setEditingSchedule({...schedule});
+        return;
       }
 
-      // TODO: 저장 후 성공 시 편집 시작
-      setEditingSchedule({...schedule});
+      // 선택되어 있던 스케줄과 선택 하려는 스케줄이 동일하지 않음
+      if (editingSchedule.tripScheduleId !== schedule.tripScheduleId) {
+        // 이전 스케줄 저장
+        handleSaveSchedule(() => {
+          // 저장 성공 시 선택 하려는 스케줄의 편집 시작
+          setEditingSchedule({...schedule});
+        });
+        return;
+      }
     }, 150);
   };
 
@@ -278,9 +282,10 @@ const SortableScheduleItem = ({ id, dayId, scheduleId, index, schedule, isOnly, 
   /**
    * 스케줄 저장
    */
-  const handleSaveSchedule = () => {
+  const handleSaveSchedule = (savedCallback) => {
     requestUpdateSchedule(() => {
       saveSchedule?.(editingSchedule);
+      savedCallback?.();
     })
   }
 
