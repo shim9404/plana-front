@@ -1,6 +1,8 @@
 export const GLOBAL_TOKEN = {
   token: {
     borderRadius: 8,
+    colorPrimary: "#A8A8A8",
+    colorPrimaryHover: "#a8a8a8",
   },
   components: {
     Button: {
@@ -15,6 +17,9 @@ export const GLOBAL_TOKEN = {
       dangerShadow: "0px 2px 4px rgba(128, 0, 0, 0.25)",
       colorBgContainerDisabled: "rgba(245, 245, 245, 0.45)",
       borderColorDisabled: "rgba(168, 168, 168, 0.45)",
+    },
+    Spin: {
+      colorPrimary: "#565656"
     },
   },
 };
