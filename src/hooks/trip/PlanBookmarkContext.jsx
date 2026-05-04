@@ -29,7 +29,6 @@ export const PlanBookmarkProvider = ({ children }) => {
   }, []);
 
   const setLinkedCountBookmark = useCallback((bookmarkId, changeCount) => {
-    console.log("LC: ", bookmarkId);
     setBookmarks((prev) => {
       return prev.map(bookmark => bookmark.bookmarkId === bookmarkId ? 
         {...bookmark, linkedCount: Math.max((bookmark.linkedCount == null ? changeCount : bookmark.linkedCount + changeCount), 0) } 

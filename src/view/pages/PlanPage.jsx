@@ -246,8 +246,8 @@ const PlanPage = () => {
     const bookmarkId = source.id;
     const scheduleId = target.id;
     // 북마크 저장 API
-    requestLinkBookmark(scheduleId, bookmarkId, (scheduleId, bookmarkId, context) => {
-      setBookmarkInSchedule(scheduleId, bookmarkId, context);
+    requestLinkBookmark(scheduleId, bookmarkId, (scheduleId, bookmarkId, context, link) => {
+      setBookmarkInSchedule(scheduleId, bookmarkId, context, link);
       setLinkedCountBookmark(bookmarkId, 1);
     });
   };
@@ -354,12 +354,14 @@ const PlanPage = () => {
    */
   const requestLinkBookmark = async(scheduleId, bookmarkId, successCallback) => {
     try {
-      const context = getBookmark(bookmarkId)?.areaInfo?.name;
-      const request = { bookmarkId: bookmarkId, context: context };
+      const bookmark = getBookmark(bookmarkId);
+      const context = bookmark?.areaInfo?.name;
+      const link = bookmark?.areaInfo?.link;
+      const request = { bookmarkId: bookmarkId, context: context, link: link };
       const dayId = getScheduleDayId(scheduleId); // 스케줄이 속한 day id 반환
       const isSuccess = await editScheduleApi(tripId, dayId, scheduleId, request);
       if (isSuccess) {
-        successCallback?.(scheduleId, bookmarkId, context);
+        successCallback?.(scheduleId, bookmarkId, context, link);
       }
     } catch (e) {
       console.log(e);
