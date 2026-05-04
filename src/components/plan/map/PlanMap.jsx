@@ -2,8 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import { useRegion } from "../../../hooks/home/RegionContext";
 import MapMarkerImage from "../area/MapMarkerImage";
 import { renderToString } from "react-dom/server";
-import { TextButton } from "../../common/PLA_Buttons";
+import { IconButton, TextButton } from "../../common/PLA_Buttons";
 import { usePlaceSearch } from "../../../hooks/trip/PlaceSearchContext";
+import { Button, Flex } from "antd";
+import { Eye, EyeOff, MouseLeft, MouseOff, SearchX, ZoomIn, ZoomOut } from "lucide-react";
 
 /**
  * Kakao Maps SDK 로드 함수
@@ -69,7 +71,7 @@ const PlanMap = () => {
   const markerOverlayRefs = useRef([]); // 현재 생성된 CustomOverlay 마커
   const [isDrag, setisDrag] = useState(true); // 드래그
   const [isZoom, setIsZoom] = useState(true); // 줌
-  const [isActive, setIsActive] = useState(false); // UI on/off
+  const [isHide, setIsHide] = useState(false); // UI on/off
   
   // 검색 타입 데이터
   const { isSearched, searchResults } = usePlaceSearch();
@@ -199,46 +201,40 @@ const PlanMap = () => {
     setIsZoom(!isZoom);
   };
 
-  // 지도 활성화 (앞으로)
-  const activateMap = () => {
-    setIsActive(true);
-  };
-
-  // UI 모드 (뒤로)
-  const deactivateMap = () => {
-    setIsActive(false);
-  };  
 
   return (
     <>
     <div style={{ position: "relative", width: "100%", height: "100%"}}>
       <div id="map" ref={mapContainerRef}
-        style={{ width: "100%", height: "100%", position: "absolute" , zIndex: isActive ? 10 : 0 }} />
+        style={{ width: "100%", height: "100%", position: "absolute" , zIndex: isHide ? 10 : 0 }} />
       {/* BUTTON UI */}
-      <div        
+      <Flex  
         style={{
+          flexDirection: "column",
           position: "absolute",
-          bottom: "10px",
-          left: "40%",
-          transform: "translateX(-50%)",
+          bottom: "40px",
+          left: isHide ? "40px " : "450px",
           display: "flex",
           gap: "10px",
           zIndex: 15,
         }}
       >
-        <TextButton onClickEvent={activateMap} height='25px'>
-          지도 조작
-        </TextButton>
-        <TextButton onClickEvent={deactivateMap} height='25px'>
-          UI 모드
-        </TextButton>
-        <TextButton onClickEvent={toggleDrag} height='25px'>
-          드래그 {isDrag ? "ON" : "OFF"}
-        </TextButton>
-        <TextButton onClickEvent={toggleZoom} height='25px'>
-          줌 {isZoom ? "ON" : "OFF"}
-        </TextButton>
-      </div>
+        <Button 
+          icon={isHide ? <EyeOff size={20}/> : <Eye size={20} /> } 
+          onClick={() => setIsHide(!isHide)}
+          style={{ width:'40px', height: '40px',  borderRadius: '50%', display: 'flex', alignItems: 'center' }}
+        />
+        <Button 
+          icon={isDrag ? <MouseLeft size={20}/> : <MouseOff size={20} /> } 
+          onClick={toggleDrag}
+          style={{ width:'40px', height: '40px',  borderRadius: '50%', display: 'flex', alignItems: 'center' }}
+        />
+        <Button 
+          icon={isZoom ? <ZoomIn size={20}/> : <SearchX size={20} /> } 
+          onClick={toggleZoom}
+          style={{ width:'40px', height: '40px', borderRadius: '50%' , display: 'flex', alignItems: 'center' }}
+        />
+      </Flex>
     </div>
     </>
   )
