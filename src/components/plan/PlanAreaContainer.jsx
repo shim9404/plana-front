@@ -52,7 +52,7 @@ const PlanAreaContainer = () => {
   const { setBookmarks } = usePlanBookmark();
   const { isSearched, setIsSearched, searchResults, setSearchResults } = usePlaceSearch();
   const { objRegions, setObjRegions } = useRegion();
-  
+
 
   // 장소 데이터(DB)
   const [areaCache, setAreaCache] = useState({
@@ -165,104 +165,107 @@ const PlanAreaContainer = () => {
   }, [selectedSigu]);
 
   // DB 장소 목록 호출 - 페이징
-const loadAreaData = async (type, page = 1) => {
-  // 캐시에 있으면 재요청 안 함
-  if (areaCache[type]?.pages[page]) {
-    const cached = areaCache[type].pages[page];
-    setSearchResults(cached);
-    setPagination(prev => ({
-      ...prev,
-      [type]: { current: page, total: areaCache[type].totalCount }
-    }));
-    return;
-  }
-
-  try {
-    setLoading(true);
-    const response = await withMinDelay(getAreaApi(selectedSigu, type, page, PAGE_SIZE));
-    const data = response.data.data;
-
-    // 캐시에 저장
-    setAreaCache(prev => ({
-      ...prev,
-      [type]: {
-        pages: { ...prev[type].pages, [page]: data.areas },
-        totalCount: data.totalCount,
-      }
-    }));
-    
-    setSearchResults(data.areas);
-    setPagination(prev => ({
-      ...prev,
-      [type]: { current: page, total: data.totalCount }
-    }));
-  } catch (error) {
-    console.warn(`장소 데이터 호출 오류`);
-  } finally {
-    setLoading(false);
-  }
-};
-
-// API 장소 목록 호출 - 페이지 파라미터 추가
-const loadPlaceData = async (keyword, page = 1) => {
-  // 키워드 검색은 캐시 안 씀
-  if (keyword) {
-    try {
-      setLoading(true);
-      const response = await withMinDelay(getPlaceApi(keyword, objRegions.mapX, objRegions.mapY, page));
-      setSearchResults(response.data.places);
+  const loadAreaData = async (type, page = 1) => {
+    // 캐시에 있으면 재요청 안 함
+    if (areaCache[type]?.pages[page]) {
+      const cached = areaCache[type].pages[page];
+      setSearchResults(cached);
       setPagination(prev => ({
         ...prev,
-        PLACE: { current: page, total: response.data.totalCount, isEnd: response.data.isEnd }
+        [type]: { current: page, total: areaCache[type].totalCount }
+      }));
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const response = await withMinDelay(getAreaApi(selectedSigu, type, page, PAGE_SIZE));
+      const data = response.data.data;
+
+      // 캐시에 저장
+      setAreaCache(prev => ({
+        ...prev,
+        [type]: {
+          pages: { ...prev[type].pages, [page]: data.areas },
+          totalCount: data.totalCount,
+        }
+      }));
+
+      setSearchResults(data.areas);
+      setPagination(prev => ({
+        ...prev,
+        [type]: { current: page, total: data.totalCount }
       }));
     } catch (error) {
       console.warn(`장소 데이터 호출 오류`);
     } finally {
       setLoading(false);
     }
-    return;
-  }
+  };
 
-  // 키워드 없으면 캐시 확인
-  if (placeCache.pages[page]) {
-    setSearchResults(placeCache.pages[page]);
-    setPagination(prev => ({
-      ...prev,
-      PLACE: { current: page, total: placeCache.totalCount }
-    }));
-    return;
-  }
+  // API 장소 목록 호출 - 페이지 파라미터 추가
+  const loadPlaceData = async (keyword, page = 1) => {
+    // 정보 로드 전 접근 차단
+    if (!objRegions || !objRegions?.mapX || !objRegions?.mapY) return;
 
-  try {
-    setLoading(true);
-    const response = await withMinDelay(getPlaceApi("", objRegions.mapX, objRegions.mapY, page));
-    const data = response.data;
+    // 키워드 검색은 캐시 안 씀
+    if (keyword) {
+      try {
+        setLoading(true);
+        const response = await withMinDelay(getPlaceApi(keyword, objRegions.mapX, objRegions.mapY, page));
+        setSearchResults(response.data.places);
+        setPagination(prev => ({
+          ...prev,
+          PLACE: { current: page, total: response.data.totalCount, isEnd: response.data.isEnd }
+        }));
+      } catch (error) {
+        console.warn(`장소 데이터 호출 오류`);
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
 
-    // 캐시에 저장
-    setPlaceCache(prev => ({
-      ...prev,
-      pages: { ...prev.pages, [page]: data.places },
-      totalCount: data.totalCount,
-    }));
+    // 키워드 없으면 캐시 확인
+    if (placeCache.pages[page]) {
+      setSearchResults(placeCache.pages[page]);
+      setPagination(prev => ({
+        ...prev,
+        PLACE: { current: page, total: placeCache.totalCount }
+      }));
+      return;
+    }
 
-    setSearchResults(data.places);
-    setPagination(prev => ({
-      ...prev,
-      PLACE: { current: page, total: data.totalCount, isEnd: data.isEnd }
-    }));
-  } catch (error) {
-    console.warn(`장소 데이터 호출 오류`);
-  } finally {
-    setLoading(false);
-  }
-};
+    try {
+      setLoading(true);
+      const response = await withMinDelay(getPlaceApi("", objRegions.mapX, objRegions.mapY, page));
+      const data = response.data;
+
+      // 캐시에 저장
+      setPlaceCache(prev => ({
+        ...prev,
+        pages: { ...prev.pages, [page]: data.places },
+        totalCount: data.totalCount,
+      }));
+
+      setSearchResults(data.places);
+      setPagination(prev => ({
+        ...prev,
+        PLACE: { current: page, total: data.totalCount, isEnd: data.isEnd }
+      }));
+    } catch (error) {
+      console.warn(`장소 데이터 호출 오류`);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // 검색 필터링 데이터
   const [filteredLists, setFilteredLists] = useState([]);
 
   // 초기화 (searchType 또는 지역 변경 시)
   useEffect(() => {
-    if (!objRegions) return; 
+    if (!objRegions) return;
 
     setSearchKeyword("");
     setFilteredLists([]);
@@ -334,105 +337,105 @@ const loadPlaceData = async (keyword, page = 1) => {
   }, []);
 
   useEffect(() => {
-  return () => {
-    // 언마운트 시 초기화
-    setObjRegions(null);
-  };
-}, []);
-  
+    return () => {
+      // 언마운트 시 초기화
+      setObjRegions(null);
+    };
+  }, []);
+
   return (
-  <FlexContainer >
-    <LoadingOverlay loading={loading}>
-      <FlexBox
-        settings={{ isVertical: true, justify: "flex-start", position: "relative" }}
-        style={{ padding: "12px 20px" }}
-        bg="none"
-      >
-        {/* 헤더 */}
+    <FlexContainer >
+      <LoadingOverlay loading={loading}>
         <FlexBox
-          h="108px"
-          settings={{ isVertical: true, justify: "space-around" }}
-          style={{ borderBottom: "solid 1px #A8A8A8" }}
+          settings={{ isVertical: true, justify: "flex-start", position: "relative" }}
+          style={{ padding: "12px 20px" }}
           bg="none"
         >
-          <FlexBox h="40px" bg="none">
-            <ToggleButtonGroup toggles={FILTER_TOGGLES} onChangedEvent={onToggleChange} />
-          </FlexBox>
-          <FlexBox h="48px" bg="none">
-            <SearchInput
-              placeholder={"여행 장소를 검색해 보세요!"}
-              value={searchKeyword}
-              onSearchEvent={onKeywordSearch}
-              onChange={onKeywordChange}
-            />
-          </FlexBox>
-        </FlexBox>
-
-        {/* 리스트 */}
-        <FlexBox
-          h="70%"
-          settings={{ isVertical: true, justify: "flex-start" }}
-          style={{ padding: "12px 0px", ...ScrollStyle.scrollY }}
-          ref={listRef}
-        >
-          {searchResults?.length > 0 ? (
-            searchResults.map((area, idx) => (
-              <AreaItem
-                key={area.areaId || area.placeId}
-                area={area}
-                number={idx + 1}
-                margin="4px"
-                popupBookmark={openBookmarkPopup}
+          {/* 헤더 */}
+          <FlexBox
+            h="108px"
+            settings={{ isVertical: true, justify: "space-around" }}
+            style={{ borderBottom: "solid 1px #A8A8A8" }}
+            bg="none"
+          >
+            <FlexBox h="40px" bg="none">
+              <ToggleButtonGroup toggles={FILTER_TOGGLES} onChangedEvent={onToggleChange} />
+            </FlexBox>
+            <FlexBox h="48px" bg="none">
+              <SearchInput
+                placeholder={"여행 장소를 검색해 보세요!"}
+                value={searchKeyword}
+                onSearchEvent={onKeywordSearch}
+                onChange={onKeywordChange}
               />
-            ))
-          ) : (
-            <FlexBox settings={{ isVertical: true, justify: "center" }}>
-              <Empty description={"검색 결과가 없습니다😥"} />
+            </FlexBox>
+          </FlexBox>
+
+          {/* 리스트 */}
+          <FlexBox
+            h="70%"
+            settings={{ isVertical: true, justify: "flex-start" }}
+            style={{ padding: "12px 0px", ...ScrollStyle.scrollY }}
+            ref={listRef}
+          >
+            {searchResults?.length > 0 ? (
+              searchResults.map((area, idx) => (
+                <AreaItem
+                  key={area.areaId || area.placeId}
+                  area={area}
+                  number={idx + 1}
+                  margin="4px"
+                  popupBookmark={openBookmarkPopup}
+                />
+              ))
+            ) : (
+              <FlexBox settings={{ isVertical: true, justify: "center" }}>
+                <Empty description={"검색 결과가 없습니다😥"} />
+              </FlexBox>
+            )}
+          </FlexBox>
+
+          {/* 페이지네이션 - 검색 중엔 숨김 */}
+          {!isSearched && (
+            <FlexBox h="40px" bg="none" style={{ justifyContent: "center", padding: "8px 0" }}>
+              <Pagination
+                current={pagination[searchType]?.current || 1}
+                total={pagination[searchType]?.total || 0}
+                pageSize={PAGE_SIZE}
+                onChange={onPageChange}
+                showSizeChanger={false}
+                size="small"
+                itemRender={(page, type, element) => {
+                  if (type === "next" && searchType === "PLACE" && pagination[searchType]?.isEnd) {
+                    return <span style={{ pointerEvents: "none", opacity: 0.3 }}>{element}</span>;
+                  }
+                  return element;
+                }}
+              />
+            </FlexBox>
+          )}
+
+          {/* 북마크 팝업 */}
+          {((selectedAreaId?.length > 0) || (selectedPlaceId?.length > 0)) && (
+            <FlexBox
+              w="312px"
+              h="60px"
+              bg="none"
+              style={{
+                position: "absolute",
+                top: "0%",
+                right: "0%",
+                transform: `translate(85%, ${popupPosY}px)`,
+                zIndex: 20,
+              }}
+            >
+              <BookmarkPopup bookmarkEvent={handleBookmarkChanged} />
             </FlexBox>
           )}
         </FlexBox>
-
-        {/* 페이지네이션 - 검색 중엔 숨김 */}
-        {!isSearched && (
-          <FlexBox h="40px" bg="none" style={{ justifyContent: "center", padding: "8px 0" }}>
-            <Pagination
-              current={pagination[searchType]?.current || 1}
-              total={pagination[searchType]?.total || 0}
-              pageSize={PAGE_SIZE}
-              onChange={onPageChange}
-              showSizeChanger={false}
-              size="small"
-              itemRender={(page, type, element) => {
-                if (type === "next" && searchType === "PLACE" && pagination[searchType]?.isEnd) {
-                  return <span style={{ pointerEvents: "none", opacity: 0.3 }}>{element}</span>;
-                }
-                return element;
-              }}
-            />
-          </FlexBox>
-        )}
-
-        {/* 북마크 팝업 */}
-        {((selectedAreaId?.length > 0) || (selectedPlaceId?.length > 0)) && (
-          <FlexBox
-            w="312px"
-            h="60px"
-            bg="none"
-            style={{
-              position: "absolute",
-              top: "0%",
-              right: "0%",
-              transform: `translate(85%, ${popupPosY}px)`,
-              zIndex: 20,
-            }}
-          >
-            <BookmarkPopup bookmarkEvent={handleBookmarkChanged} />
-          </FlexBox>
-        )}
-      </FlexBox>
-    </LoadingOverlay>
-  </FlexContainer>
-);
+      </LoadingOverlay>
+    </FlexContainer>
+  );
 };
 
 export default PlanAreaContainer;

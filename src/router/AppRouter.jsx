@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useNavigate } from "react-router-dom";
 
 // 권한 체크용 라우터
 import PrivateRouter from "./PrivateRouter";
@@ -8,14 +8,18 @@ import MyTripPage from "../view/pages/MyTripPage";
 import AdminPage from "../view/pages/AdminPage";
 import ErrorPage from "../view/pages/ErrorPage";
 import HomePage from "../view/pages/HomePage";
+import { navRef } from "../utils/navUtil";
 
 const AppRouter = () => {
+
+  const navigate = useNavigate();
+  navRef.navigate = navigate; // 이제 인터셉터에서도 이 navigate를 쓸 수 있음
 
   return (
     <Routes>
       {/* 공개 페이지: 누구나 접근 가능 */}
       <Route path="/" element={<HomePage />} />
-      <Route path="/error" element={<ErrorPage />}></Route>
+      <Route path="/error" element={<ErrorPage />} />
 
       {/* 권한 필요: ADMIN 또는 MANAGER, MEMBER만 접근 가능 */}
       <Route
@@ -62,6 +66,7 @@ const AppRouter = () => {
           </PrivateRouter>
         }
       ></Route>
+      <Route path="*" element={<ErrorPage defaultKey="NOT_FOUND" />} />
     </Routes>
   );
 };
