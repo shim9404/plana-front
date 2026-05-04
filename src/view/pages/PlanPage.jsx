@@ -28,6 +28,7 @@ import { useTripDate } from "../../hooks/trip/TripDateContext";
 import { useTripRegion } from "../../hooks/trip/TripRegionContext";
 import dayjs from "dayjs";
 import { SCHEDULE_CATEGORYS } from "../../constants/scheduleCategory";
+import { hideLoader, showLoader } from "../../utils/uiUtil";
 const { Header, Sider, Content } = Layout;
 
 const layoutStyle = {
@@ -104,6 +105,7 @@ const PlanPage = () => {
       handleLoadTripData(savedTripId);
     } else {
       window.localStorage.setItem("tripId", tripId);
+      hideLoader();
     }
 
     // Context 초기화
@@ -114,6 +116,7 @@ const PlanPage = () => {
     // Region 데이터가 유효하지 않은 경우 재요청 (홈을 통해 접근하지 않았을 경우 등)
     if (!regionData ||  cascaderOptions.length <= 0) {
       async function fetchRegionData() {
+        showLoader();
         console.log("지역(REGION) 데이터 재요청");
         try {
           const response = await getRegionApi();
@@ -122,6 +125,8 @@ const PlanPage = () => {
         } catch (error) {
           openOneBtnModal(oneBtnPreset.retryOver);
           console.error("데이터 로드 실패:", error);
+        } finally {
+          hideLoader();
         }
       }
       fetchRegionData();
@@ -328,6 +333,7 @@ const PlanPage = () => {
 
   const requestTripData = async(tripId, successCallback) => {
     try {
+      showLoader();
       const result = await getTripApi(tripId);
       if (result) {
         const tripData = result.data;
@@ -335,6 +341,8 @@ const PlanPage = () => {
       }
     } catch (e) {
       console.log(e);
+    } finally {
+      hideLoader();
     }
   }
 

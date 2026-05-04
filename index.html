@@ -4,12 +4,20 @@
 <head>
   <meta charset="UTF-8" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="stylesheet" href="src/styles/loader.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PLAN A</title>
 </head>
 
 <body>
   <div id="root"></div>
+  <!-- 전역 로딩 스피너 레이어 -->
+  <div id="global-loader">
+    <div class="spinner-container">
+      <div class="spinner"></div>
+      <p class="loading-text">PLAN A와 함께 여행을 준비 중입니다...🛫</p>
+    </div>
+  </div>
   <script type="module" src="/src/main.jsx"></script>
 </body>
 
