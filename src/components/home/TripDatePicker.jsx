@@ -35,7 +35,17 @@ const TripDatePicker = ({ width="400px", height="52px", placement, handleSave })
   };
 
   const handleCalendarChange = (values, dateStrings) => {
+  if (!values || !values[0] || !values[1]) {
     setTempDates(values);
+    return;
+  }
+
+  // 날짜 순서 잘 못 지정 시, 순서 뒤집기
+  let [start, end] = values;
+  if (start.isAfter(end)) {
+    [start, end] = [end, start];
+  }
+  setTempDates([start, end]);
 
     // 버튼 활성화
     if (dateStrings?.[0] && dateStrings?.[1]) {
@@ -44,8 +54,7 @@ const TripDatePicker = ({ width="400px", height="52px", placement, handleSave })
   }
 
   const handleOpenChange = (visible) => {
-    if (visible) setOpen(true)
-    else return;
+    setOpen(visible)
   }
 
   const handleCancel = () => {
@@ -80,16 +89,16 @@ const TripDatePicker = ({ width="400px", height="52px", placement, handleSave })
       placement={placement ?? "topLeft"}
       style={labelStyle}
       // '확인' 버튼 커스텀 렌더링
-      renderExtraFooter={() => (
-        <div style={{ display: 'flex', justifyContent: 'Space-Between', padding: '8px 0' }}>
-          <TextButton danger type="primary" fontSize="14px" onClickEvent={handleCancel} width='20%' height='40px'>
-            취소
-          </TextButton>
-          <TextButton type="primary" fontSize="14px" disabled={disabled} onClickEvent={handleConfirm} width='78%' height='40px'>
-            이 일정으로 선택
-          </TextButton>
-        </div>
-      )}
+      // renderExtraFooter={() => (
+      //   <div style={{ display: 'flex', justifyContent: 'Space-Between', padding: '8px 0' }}>
+      //     <TextButton danger type="primary" fontSize="14px" onClickEvent={handleCancel} width='20%' height='40px'>
+      //       취소
+      //     </TextButton>
+      //     <TextButton type="primary" fontSize="14px" disabled={disabled} onClickEvent={handleConfirm} width='78%' height='40px'>
+      //       이 일정으로 선택
+      //     </TextButton>
+      //   </div>
+      // )}
     />
   );
 };
