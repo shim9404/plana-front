@@ -5,17 +5,36 @@ import { IconButton } from "../common/PLA_Buttons";
 import { CloseCircleFilled, PushpinFilled } from "@ant-design/icons";
 import { FlexBox } from "../common/PLA_FlexBox";
 import { usePlanBookmark } from "../../hooks/trip/PlanBookmarkContext";
+import { deleteBookmarkApi } from "../../services/tripApi";
+import { useTripInfo } from "../../hooks/trip/TripInfoContext";
 
 const DraggableBookmarkItem = ({ bookmark }) => {
   const { ref, isDragging } = useDraggable({ id: bookmark.bookmarkId, type: "bookmark" });
   const { deleteBookmark } = usePlanBookmark();
+  const { tripId } = useTripInfo();
   const [isHover, setIsHover] = useState(false);
 
   const handleDeleteBookmark = ()  => {
     const bookmarkId = bookmark?.bookmarkId;
-    deleteBookmark(bookmarkId);
+    requestDeleteBookmark(bookmarkId, deleteBookmark)
   };
 
+  /**
+   * 북마크 삭제 API 요청
+   * @param {*} bookmarkId 
+   * @param {*} successCallback 
+   */
+  const requestDeleteBookmark = async(bookmarkId, successCallback) => {
+    console.log("try delete");
+    try {
+      const isSuccess = await deleteBookmarkApi(tripId, bookmarkId);
+      if (isSuccess) {
+        successCallback?.(bookmarkId);
+      }
+    } catch (e) {
+      console.log(e);
+    } 
+  }
   useEffect(() => {
     console.log("create bookmark:: " + bookmark)
   }, []);
