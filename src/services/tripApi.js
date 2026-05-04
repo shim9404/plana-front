@@ -68,6 +68,19 @@ export const deleteDayApi = async (tripId, dayId) => {
   const reulst = response.data ?? {};
   return reulst.success;
 }
+
+/**
+ * 여행 일자 순서 변경
+ * @param {String} tripId 
+ * @param {String} dayId 
+ * @param {*} payload 
+ * @returns 
+ */
+export const reorderDaysApi = async (tripId, payload) => {
+  const response = await axiosInstance.patch(`/api/trips/${tripId}/days/reorder`, payload);
+  const result = response.data ?? {};
+  return result.success;
+};
 //#endregion
 
 //#region 여행 스케줄(TRIP_SCHEDULE)
@@ -103,8 +116,8 @@ export const editScheduleApi = async (tripId, dayId, scheduleId, payload) => {
  * @param {*} payload 
  * @returns 
  */
-export const reorderScheduleApi = async (tripId, dayId, payload) => {
-  const response = await axiosInstance.patch(`/api/trips/${tripId}/days/${dayId}/schedules/${scheduleId}`, payload);
+export const reorderSchedulesApi = async (tripId, payload) => {
+  const response = await axiosInstance.patch(`/api/trips/${tripId}/days/schedules/reorder`, payload);
   const result = response.data ?? {};
   return result.success;
 };
