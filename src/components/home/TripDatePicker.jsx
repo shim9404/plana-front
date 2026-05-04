@@ -35,7 +35,17 @@ const TripDatePicker = ({ width="400px", height="52px", placement, handleSave })
   };
 
   const handleCalendarChange = (values, dateStrings) => {
+  if (!values || !values[0] || !values[1]) {
     setTempDates(values);
+    return;
+  }
+
+  // 날짜 순서 잘 못 지정 시, 순서 뒤집기
+  let [start, end] = values;
+  if (start.isAfter(end)) {
+    [start, end] = [end, start];
+  }
+  setTempDates([start, end]);
 
     // 버튼 활성화
     if (dateStrings?.[0] && dateStrings?.[1]) {
@@ -44,8 +54,7 @@ const TripDatePicker = ({ width="400px", height="52px", placement, handleSave })
   }
 
   const handleOpenChange = (visible) => {
-    if (visible) setOpen(true)
-    else return;
+    setOpen(visible)
   }
 
   const handleCancel = () => {
