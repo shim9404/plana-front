@@ -142,6 +142,8 @@ const PlanAreaContainer = () => {
   const [loading, setLoading] = useState(false);
   // 지역 데이터 호출
   useEffect(() => {
+    if (selectedSigu == null || selectedSigu.length <= 0) return;
+    
     const getRegionData = async () => {
       try {
         // 이전 좌표 먼저 초기화해야 두번 렌더링 막음
