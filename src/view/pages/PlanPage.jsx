@@ -65,7 +65,7 @@ const mapStyle = {
 }
 
 const PlanPage = () => {
-  const { setScheduleCategorys, setEditingSchedule, setBookmarkInSchedule } = useEditSchedule();
+  const { setEditingSchedule, setBookmarkInSchedule } = useEditSchedule();
   const { setPlanDays, getScheduleDayId } = usePlanDays();
   const { isExpanded, setIsExpanded } = usePlanUI();
   const { getBookmark, setLinkedCountBookmark } = usePlanBookmark();
@@ -90,10 +90,6 @@ const PlanPage = () => {
       return;
     }
     // TODO: tripId는 있으나 여행 계획 데이터가 없을 경우 전체 요청
-    
-
-    setScheduleCategorys(SCHEDULE_CATEGORYS);
-    // 기본 값에 없는 구분이 데이터에 있을 경우 scheduleCategorys에 추가
 
     // Context 초기화
     setIsExpanded(false);
