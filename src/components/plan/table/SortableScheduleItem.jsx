@@ -312,6 +312,7 @@ const SortableScheduleItem = ({ id, dayId, scheduleId, index, schedule, isOnly, 
     isDeleteRef.current = true;  // 삭제 전 플래그 설정
     requestDeleteSchedule(() => {
       deleteSchedule?.(scheduleId);
+      if (schedule?.bookmarkId) setLinkedCountBookmark(schedule.bookmarkId, -1); // 북마크 연결 수 감소 처리
     })
   }
 
@@ -472,11 +473,10 @@ const SortableScheduleItem = ({ id, dayId, scheduleId, index, schedule, isOnly, 
                 width="32px"
                 height="28px"
                 fontSize="12px"
-                disabled={isOnly ? true : false}
                 ghost={isHover ? false : true}
                 style={{visibility: schedule.link?.length > 0 ? "visible" : "hidden"}}
                 onClickEvent={() => {
-                  // 행 삭제 이벤트 연결
+                  console.log(schedule.link);
                   window.open(schedule.link, "_blank");
                 }}
               >

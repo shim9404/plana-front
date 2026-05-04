@@ -87,12 +87,15 @@ export const EditScheduleProvider = ({ children }) => {
    * @param {String} bookmarkId 
    * @param {String} context 
    */
-  const setBookmarkInSchedule = useCallback((scheduleId, bookmarkId, context) => {
+  const setBookmarkInSchedule = useCallback((scheduleId, bookmarkId, context, link) => {
+    console.log(bookmarkId);
+    console.log(context);
+    console.log(link);
     setPlanDays((prev) =>
       prev.map((day) => ({
         ...day,
         schedules: day.schedules.map((s) =>
-          s.tripScheduleId === scheduleId ? { ...s, bookmarkId: bookmarkId, context: context || s.context } : s
+          s.tripScheduleId === scheduleId ? { ...s, bookmarkId: bookmarkId, context: context || s.context, link: link || s.link } : s
       )}))
     );
   }, []);
