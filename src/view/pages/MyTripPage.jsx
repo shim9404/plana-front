@@ -22,6 +22,7 @@ import { useTripDate } from "../../hooks/trip/TripDateContext";
 import { usePlanDays } from "../../hooks/trip/PlanDaysContext";
 import { useEditSchedule } from "../../hooks/trip/EditScheduleContext";
 import { SCHEDULE_CATEGORYS } from "../../constants/scheduleCategory";
+import { useTripRegion } from "../../hooks/trip/TripRegionContext";
 
 const { Sider, Content } = Layout;
 
@@ -53,12 +54,14 @@ const MyTripPage = () => {
   const { setBookmarks } = usePlanBookmark();
   // 여행 계획표 전역 변수
   const { setPlanDays } = usePlanDays();
-  // 여행명 전역 변수
-  const { setTripName } = useTripInfo();
-  // 여행일자 전역 변수
-  const { setConfirmedDates } = useTripDate();
+  // 여행 ID + 여행명 + 참여 인원 전역 변수
+  const { setTripId, setTripName, setEntryCount } = useTripInfo();
+  // 여행일자 + 여행 기간(활성화 된 일자 수) 전역 변수
+  const { setConfirmedDates, setActiveDayCount } = useTripDate();
   // 여행 계획 카테고리
   const { setScheduleCategorys } = useEditSchedule();
+  // 지역 전역 변수
+  const { setSelectedSigu } = useTripRegion();
 
   // 여행 목록(간단)초기값
   const [trips, setTrips] = useState([]);
@@ -100,8 +103,12 @@ const MyTripPage = () => {
   const [myBookmarks, setMybookmarks] = useState([]);
   // 여행 일자 초기값
   const [myPlanDates, setMyPlanDates] = useState({ startDate: "", endDate: "" });
+  // 여행 기간(활성화 된 일자 수) 초기값
+  const [myActiveDay, setMyActiveDay] = useState(1);
   // 스케줄 목록 초기값
   const [mySchedules, setMySchedules] = useState([]);
+  // 참여 인원 초기값
+  const [myEntryCount, setMyEntryCount] = useState(1);
   // 북마크 색상 (색 버튼 클릭) 
   const [selectedColor, setSelectedColor] = useState("");
 
@@ -112,31 +119,25 @@ const MyTripPage = () => {
       const uri = `/api/trips/${selectedMenu}`;
       const result = await axiosInstance.get(uri, null);
 
-      // 1) 여행 일자
+      // 1) trip ID + region ID
+      setTripId(selectedMenu)
+      setSelectedSigu(result.data.data.regionId)
+
+      // 2) 여행 일자
       const startDate = result.data.data.startDate;
       const endDate = result.data.data.endDate;
       setMyPlanDates({startDate: startDate, endDate: endDate});
+      // 2-1) 여행 기간(활성화 된 일자 수)
+      const activeDay = result.data.data.activeDayCount;
+      setMyActiveDay(activeDay);
 
-      // 2) 스케줄 목록
+      // 3) 스케줄 목록
       const schedule = result.data.data.days;
       setMySchedules(schedule);
 
-      // 2-1) 스케줄 목록 내 분류
-      const extraCategories = schedule.flatMap(day =>
-        day.schedules
-          .map(schedule => schedule.category)
-          .filter(Boolean) // undefined & null 제거
-      );
-      // 중복 제거(기본 값(SCHEDULE_CATEGORYS)외 존재 시, 추가)
-      const uniqueCategories = [...new Set([
-        ...SCHEDULE_CATEGORYS,
-        ...extraCategories
-      ])];
-      setScheduleCategorys(uniqueCategories);
-
-      // 3) 북마크 목록
+      // 4) 북마크 목록
       const bookmark = result.data.data.bookmarks;
-      // 3-1) 북마크 - 여행 계획 목록 연결 개수 추가
+      // 4-1) 북마크 - 여행 계획 목록 연결 개수 추가
       const countMap = {};      
       schedule.forEach(day => {
         day.schedules
@@ -151,8 +152,11 @@ const MyTripPage = () => {
         linkedCount: countMap[item.bookmarkId] || 0
       }));
       setMybookmarks(updatedBookmarks);
-      setSelectedColor("")
+      setSelectedColor("");
 
+      // 5) 참여 인원
+      setMyEntryCount(result.data.data.entryCount);
+      
     } catch (error) {
       console.log(error);
     }
@@ -224,13 +228,26 @@ const MyTripPage = () => {
         // React 한번에 처리하기 못하게 한박자 쉬게 만드는 코드
         await new Promise(resolve => setTimeout(resolve, 0));
 
-
         // 북마크, 여행 계획표 Context 담기 
         setBookmarks(myBookmarks);
         setPlanDays(mySchedules);
-        // 여행명, 여행일자 Context 담기
+        // 여행명, 여행일자, 여행 기간, 참여인원 Context 담기
         setTripName(myTripName);
         setConfirmedDates([dayjs(myPlanDates.startDate),dayjs(myPlanDates.endDate)]);
+        setActiveDayCount(myActiveDay);
+        setEntryCount(myEntryCount);
+        // 스케줄 목록 내 분류 Context 담기
+        const extraCategories = mySchedules.flatMap(day =>
+          day.schedules
+            .map(schedule => schedule.category)
+            .filter(Boolean) // undefined & null 제거
+        );
+        // 중복 제거(기본 값(SCHEDULE_CATEGORYS)외 존재 시, 추가)
+        const uniqueCategories = [...new Set([
+          ...SCHEDULE_CATEGORYS,
+          ...extraCategories
+        ])];
+        setScheduleCategorys(uniqueCategories);
 
         setLoading(false);
         navigate("/plan")
@@ -378,8 +395,9 @@ const MyTripPage = () => {
               <div id="pdf-area">
                 {/* 여행 계획표 카드 */}
                 <TripPlanComponent
-                  tripList={tripList}
+                  myEntryCount={myEntryCount}
                   myPlanDates={myPlanDates}
+                  myActiveDay={myActiveDay}
                   myBookmarks={myBookmarks}
                   mySchedules={mySchedules}
                 />

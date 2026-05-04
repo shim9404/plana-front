@@ -7,7 +7,7 @@ import { BOOKMARK_COLOR } from "../../Constants/bookmarkColor";
 import { CATEGORY_NAME } from '../../constants/categoryName';
 
 {/* 여행 계획표 */}
-const TripPlanComponent = ({tripList, myPlanDates, myBookmarks, mySchedules, selectedMenu}) => {
+const TripPlanComponent = ({myEntryCount, myPlanDates, myActiveDay, myBookmarks, mySchedules}) => {
 
   // ! 데이터 표현 함수 모음 !
   // 날짜 변환 함수(yyyy.mm.dd)
@@ -19,16 +19,6 @@ const TripPlanComponent = ({tripList, myPlanDates, myBookmarks, mySchedules, sel
     const day = Date.substring(8, 10);
 
     return `${year}.${month}.${day}`;
-  };
-
-  // 날짜 차이 계산(dimmed 처리 여부 확인)
-    const getTotalDays = (startDate, endDate) => {
-    if (!startDate || !endDate) return "";
-
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-
-    return (end - start) / (1000 * 60 * 60 * 24) + 1;
   };
 
   // 날짜 변환 함수(yyyy.mm.dd + 1day~)
@@ -92,7 +82,7 @@ const TripPlanComponent = ({tripList, myPlanDates, myBookmarks, mySchedules, sel
         ) : (
           <div className="schedule-container">
             {mySchedules.map((day) => {
-              const dimmedDate = day.indexSort > (getTotalDays(myPlanDates.startDate, myPlanDates.endDate))
+              const dimmedDate = day.indexSort > myActiveDay
               return(
                 <div key={day.tripDayId} className={`schedule-day-card ${dimmedDate ? 'dimmed' : ''}`}>
                   <div className="schedule-day-header">
@@ -164,7 +154,7 @@ const TripPlanComponent = ({tripList, myPlanDates, myBookmarks, mySchedules, sel
                   <div className="summary-item">
                     <span>참여 인원</span>
                     <span className="summary-value" style={{width: '50px'}}>
-                      {tripList.find((trip) => trip.tripId === selectedMenu)?.entryCount || 1}
+                      {myEntryCount}
                     </span>
                   </div>
                   <div className="summary-item">
@@ -176,7 +166,7 @@ const TripPlanComponent = ({tripList, myPlanDates, myBookmarks, mySchedules, sel
                   <div className="summary-item">
                     <span>인당</span>
                     <span className="summary-value" style={{width: '100px'}}>
-                      {( totalPrice / (tripList.find((trip) => trip.tripId === selectedMenu)?.entryCount || 1)).toLocaleString()} 원
+                      {Math.floor(totalPrice / myEntryCount).toLocaleString()} 원
                     </span>
                   </div>
                 </div>

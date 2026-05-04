@@ -18,12 +18,26 @@ const PlanHeader = () => {
   const { setActiveDayCount } = useTripDate();
   const { addPlanDays } = usePlanDays();
   const [isSaving, setIsSaving] = useState(false);
+  const [ cascaderValue, setCascaderValue ] = useState([])
 
-  const cascaderValue = selectedSigu
-    ? [selectedZdo, selectedSigu]     // 시군구까지 선택된 경우
-    : selectedZdo
-      ? [selectedZdo]                 // 시도만 선택된 경우
-      : undefined;                    // 아무것도 선택 안 된 경우
+  useEffect(() => {
+    let value = [];
+    if (selectedSigu) {
+      const num = Number(selectedSigu);
+
+      const zdo = Math.floor(num / 1000);
+      const sigu = num % 1000;
+
+      if (sigu === 0) { 
+        value = [String(zdo)]; }  // 시도만 선택된 경우
+      else { 
+        value = [String(zdo), selectedSigu]; } // 시군구까지 선택된 경우
+    } else {
+      value = undefined; // 아무것도 선택 안 된 경우
+    }
+
+    setCascaderValue(value);                 
+  }, [selectedSigu])
 
   const textboxStyle = { minWidth: "60px", marginLeft: "8px" };
 
