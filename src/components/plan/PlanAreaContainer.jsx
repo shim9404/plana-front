@@ -89,17 +89,21 @@ const PlanAreaContainer = () => {
     setSearchKeyword("");
     setIsSearched(false);
     setSearchType(selected);
+    closeBookmarkPopup();
   };
 
   const scrollEvent = () => {
-    setSelectedAreaId("");
-    setSelectedPlaceId("");
+    closeBookmarkPopup();
   };
 
+  const closeBookmarkPopup = () => {
+    setSelectedAreaId("");
+    setSelectedPlaceId("");
+  }
+
   const openBookmarkPopup = (posY, areaId, placeId) => {
-    if (areaId == selectedAreaId) {
-      setSelectedAreaId("");
-      setSelectedPlaceId("");
+    if (areaId == selectedAreaId || placeId == selectedPlaceId) {
+      closeBookmarkPopup();
       return;
     }
     const parentRect = listRef.current.getBoundingClientRect().top;
@@ -132,8 +136,9 @@ const PlanAreaContainer = () => {
       ),
     })
     setBookmarks((prev) => [...prev, result.data]);
-
+    closeBookmarkPopup();
   };
+
   const [loading, setLoading] = useState(false);
   // 지역 데이터 호출
   useEffect(() => {

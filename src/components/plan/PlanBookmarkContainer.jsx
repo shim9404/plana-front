@@ -5,7 +5,7 @@ import { FlexBox, TextBox } from "../common/PLA_FlexBox";
 import { useEffect, useState } from "react";
 import { Button, Empty } from "antd";
 import { getBookmarkColor } from "../../utils/plan/bookmarkUtils";
-import DragableBookmarkItem from "../bookmark/DragableBookmarkItem";
+import DraggableBookmarkItem from "../bookmark/DraggableBookmarkItem";
 import { usePlanBookmark } from "../../hooks/trip/PlanBookmarkContext";
 
 const PlanBookmarkContainer = () => {
@@ -112,7 +112,7 @@ const PlanBookmarkContainer = () => {
           {filterBookmarks && filterBookmarks?.length > 0 ? (
             filterBookmarks?.map((bookmark, idx) => {
               return (
-                <DragableBookmarkItem
+                <DraggableBookmarkItem
                   bookmark={bookmark}
                   id={bookmark.bookmarkId}
                 />
