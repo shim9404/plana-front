@@ -1,12 +1,10 @@
-import { Input } from "antd";
 import { useTripInfo } from "../../hooks/trip/TripInfoContext";
 import { FlexBox, TextBox } from "../common/PLA_FlexBox";
 import TripDatePicker from "../home/TripDatePicker";
 import TripRegionPicker from "../home/TripRegionPicker";
 import { CheckCircleTwoTone, SyncOutlined } from "@ant-design/icons";
-import { useEffect, useState } from "react";
+import { useRef, useState } from "react";
 import { editTripDateApi, editTripInfoApi } from "../../services/tripApi";
-import dayjs from "dayjs";
 import { usePlanDays } from "../../hooks/trip/PlanDaysContext";
 import { useTripRegion } from "../../hooks/trip/TripRegionContext";
 import { useTripDate } from "../../hooks/trip/TripDateContext";
@@ -18,6 +16,9 @@ const PlanHeader = () => {
   const { setActiveDayCount } = useTripDate();
   const { addPlanDays } = usePlanDays();
   const [isSaving, setIsSaving] = useState(false);
+  const [changedName, setChangedName] = useState("");         // Input 변동 값 (API 요청 용도)
+  const [displayName, setDisplayName] = useState(tripName);   // Input 비었을 경우 복구 용도
+  const nameRef = useRef("");                                 // Input 비었을 경우 복구 용도
 
   const cascaderValue = selectedSigu
     ? [selectedZdo, selectedSigu]     // 시군구까지 선택된 경우
@@ -42,13 +43,24 @@ const PlanHeader = () => {
     requestUpdateRegion(regionId);
   };
 
+  const handleFocusTripName = () => {
+    nameRef.current = tripName;
+    setDisplayName("");
+  }
+
   const handleChangeTripName = (value) => {
-    setTripName(value);
+    setChangedName(value);
   }
 
   const handleSaveTripName = () => {
+    if (changedName == "" || changedName.length <= 0) {
+      setDisplayName(nameRef.current);
+      nameRef.current = null;
+      return;
+    }
     setIsSaving(true);
-    requestUpdateTripName(() => {
+    requestUpdateTripName(changedName, () => {
+      setTripName(changedName);
       setTimeout(() => {
         setIsSaving(false);
       }, 500);
@@ -70,7 +82,7 @@ const PlanHeader = () => {
    * 여행명 수정 API 요청
    * @param {*} successCallback 
    */
-  const requestUpdateTripName = async (successCallback) => {
+  const requestUpdateTripName = async (tripName, successCallback) => {
     try {
       const request = { name: tripName };
       const isSuccess = await editTripInfoApi(tripId, request);
@@ -147,7 +159,10 @@ const PlanHeader = () => {
           </TextBox>
           <FlexBox h="48px" style={{ position: "relative" }}>
             <DebounceInput showCount maxLength={30} style={{ height: "48px", fontSize: "16px", color: "#565656", padding: "8px 56px 8px 18px" }}
-              defaultValue={tripName} onChangeEvent={handleChangeTripName} onBlur={() => { handleSaveTripName() }} />
+              placeholder={tripName} defaultValue={displayName} 
+              onChangeEvent={handleChangeTripName} 
+              onFocus={handleFocusTripName}
+              onBlur={() => { handleSaveTripName() }} />
             <FlexBox w="52px" h="52px" settings={{ justify: "center" }} style={{ fontSize: "20px", right: "0%", position: "absolute", zIndex: 10 }}>
               {
                 isSaving ?
