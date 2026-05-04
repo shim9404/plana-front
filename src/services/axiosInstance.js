@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { getMemberIdFromAccessToken } from '../utils/auth/jwtUtil';
 import { tokenStore } from '../utils/auth/tokenStore';
+import { handleSystemRedirect } from '../utils/navUtil';
 
 /** refresh 실패 후 세션 만료 안내를 띄울 때 사용 */
 export const SESSION_EXPIRED_NOTICE_KEY = 'trip_session_expired_notice';
@@ -62,6 +63,25 @@ axiosInstance.interceptors.response.use(
     if (!originalRequest) return Promise.reject(error);
 
     console.log("에러발생!:: ", error.response);
+
+    // 에러 데이터 추출
+    const errorData = error.response?.data;
+    const errorCode = errorData?.code; // 서버의 에러 코드 (예: "C005")
+
+    // --- 에러 코드별 페이지 이동 로직 ---
+    const fatalErrors = {
+      "C005": "SERVER_ERROR",   // 서버 오류
+      "C006": "SERVER_ERROR",   // Bad Gateway
+      "A003": "FORBIDDEN",      // 접근 권한 없음
+    };
+
+    const targetKey = fatalErrors[errorCode];
+
+    // 만약 정의된 치명적 에러 코드라면 에러 페이지로 즉시 이동
+    if (targetKey) {
+      handleSystemRedirect("/error", { state: { errorKey: targetKey } });
+      return Promise.reject(error);
+    }
 
     if (error.response?.status === 401) {
 
