@@ -12,7 +12,13 @@ const useProtectedNavigate = () => {
   const { openLoginModal, openOneBtnModal } = useModal();
 
   // nav: protectedNavPreset 
-  const protectedNavigate = (nav) => {
+  const protectedNavigate = (nav, state = null) => {
+
+    // error 전달용
+    if (state) {
+      navigate(nav.path, { state });
+      return;
+    }
     // 로그아웃 버튼으로 나갔을 경우
     if (sessionStorage.getItem("isLogout") === "true") {
       sessionStorage.removeItem("isLogout"); // 플래그 초기화
@@ -36,6 +42,7 @@ const useProtectedNavigate = () => {
     }
 
     navigate(nav.path);
+
   };
 
   return protectedNavigate;
