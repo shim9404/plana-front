@@ -89,16 +89,16 @@ const TripDatePicker = ({ width="400px", height="52px", placement, handleSave })
       placement={placement ?? "topLeft"}
       style={labelStyle}
       // '확인' 버튼 커스텀 렌더링
-      renderExtraFooter={() => (
-        <div style={{ display: 'flex', justifyContent: 'Space-Between', padding: '8px 0' }}>
-          <TextButton danger type="primary" fontSize="14px" onClickEvent={handleCancel} width='20%' height='40px'>
-            취소
-          </TextButton>
-          <TextButton type="primary" fontSize="14px" disabled={disabled} onClickEvent={handleConfirm} width='78%' height='40px'>
-            이 일정으로 선택
-          </TextButton>
-        </div>
-      )}
+      // renderExtraFooter={() => (
+      //   <div style={{ display: 'flex', justifyContent: 'Space-Between', padding: '8px 0' }}>
+      //     <TextButton danger type="primary" fontSize="14px" onClickEvent={handleCancel} width='20%' height='40px'>
+      //       취소
+      //     </TextButton>
+      //     <TextButton type="primary" fontSize="14px" disabled={disabled} onClickEvent={handleConfirm} width='78%' height='40px'>
+      //       이 일정으로 선택
+      //     </TextButton>
+      //   </div>
+      // )}
     />
   );
 };
