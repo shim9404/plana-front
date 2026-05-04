@@ -135,6 +135,7 @@ const PlanHeader = () => {
           <TripRegionPicker
             width="220px" height="48px"
             value={cascaderValue}
+            allowClear={false}
             onChange={handleChangeRegion}
             changeOnSelect={handleChangeRegion}
           />

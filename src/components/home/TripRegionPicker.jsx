@@ -1,12 +1,11 @@
 import { Cascader } from "antd";
 import styles from "../../styles/TripInfoSelector.module.css";
 import { useEffect, useState } from "react";
-import { FlexContainer } from "../common/PLA_Containers";
 import { FlexBox, TextBox } from "../common/PLA_FlexBox";
 import { LoadingOutlined } from "@ant-design/icons";
 import { useRegion } from "../../hooks/home/RegionContext";
 
-const TripRegionPicker = ({ width="400px", height="52px", ...rest }) => {
+const TripRegionPicker = ({ width = "400px", height = "52px", ...rest }) => {
   const { regionData } = useRegion();
   const { cascaderOptions } = regionData;
 
@@ -34,10 +33,10 @@ const TripRegionPicker = ({ width="400px", height="52px", ...rest }) => {
           placeholder="여행 지역을 선택해 주세요"
         />
       ) : (
-        <FlexBox w={width} h={height} settings={{justify: "center"}} style={{border: "solid 1px #D9D9D9", borderRadius: "8px"}}>
-          <LoadingOutlined  style={{margin: "12px"}}/>
-          <TextBox/>
-            데이터 로딩중...
+        <FlexBox w={width} h={height} settings={{ justify: "center" }} style={{ border: "solid 1px #D9D9D9", borderRadius: "8px" }}>
+          <LoadingOutlined style={{ margin: "12px" }} />
+          <TextBox />
+          데이터 로딩중...
         </FlexBox>
       )}
     </>
