@@ -12,11 +12,10 @@ import PlanMap from "../../components/plan/map/PlanMap";
 import { useModal } from "../../hooks/ModalProvider";
 import { oneBtnPreset } from "../../utils/alertModalPreset";
 import { getRegionApi } from "../../services/regionApi";
-import { SCHEDULE_CATEGORYS } from "../../constants/scheduleCategory";
 import { DragDropProvider, DragOverlay  } from "@dnd-kit/react";
 import { arrayMove } from "@dnd-kit/helpers";
 import { useTripInfo } from "../../hooks/trip/TripInfoContext";
-import { editScheduleApi, reorderDaysApi, reorderSchedulesApi } from "../../services/tripApi";
+import { editScheduleApi, getTripApi, reorderDaysApi, reorderSchedulesApi } from "../../services/tripApi";
 import { usePlanBookmark } from "../../hooks/trip/PlanBookmarkContext";
 import { usePlanUI } from "../../hooks/trip/PlanUIContext";
 import { useEditSchedule } from "../../hooks/trip/EditScheduleContext";
@@ -25,6 +24,10 @@ import BookmarkItem from "../../components/bookmark/BookmarkItem";
 import { usePlaceSearch } from "../../hooks/trip/PlaceSearchContext";
 import { NAV_PRESET } from "../../utils/protectedNavPreset";
 import useProtectedNavigate from "../../hooks/useProtectedNavigate";
+import { useTripDate } from "../../hooks/trip/TripDateContext";
+import { useTripRegion } from "../../hooks/trip/TripRegionContext";
+import dayjs from "dayjs";
+import { SCHEDULE_CATEGORYS } from "../../constants/scheduleCategory";
 const { Header, Sider, Content } = Layout;
 
 const layoutStyle = {
@@ -65,11 +68,13 @@ const mapStyle = {
 }
 
 const PlanPage = () => {
-  const { setEditingSchedule, setBookmarkInSchedule } = useEditSchedule();
+  const { setEditingSchedule, setBookmarkInSchedule, setScheduleCategorys } = useEditSchedule();
   const { setPlanDays, getScheduleDayId } = usePlanDays();
+  const { setConfirmedDates, setActiveDayCount } = useTripDate();
   const { isExpanded, setIsExpanded } = usePlanUI();
-  const { getBookmark, setLinkedCountBookmark } = usePlanBookmark();
-  const { tripId } = useTripInfo();
+  const { setBookmarks, getBookmark, setLinkedCountBookmark } = usePlanBookmark();
+  const { tripId, setTripId, setTripName, setEntryCount } = useTripInfo();
+  const { setSelectedSigu } = useTripRegion();
   const { regionData, updateRegionData } = useRegion();
   const { setIsSearched } = usePlaceSearch();
   const { cascaderOptions } = regionData;
@@ -83,13 +88,23 @@ const PlanPage = () => {
 
   // 컴포넌트 마운트
   useEffect(() => {
-    // tripId가 없을 경우 홈으로 강제 이동
+    console.log(tripId);
+    console.log("PlanPage Init");
+    // context의 tripId가 없을 경우(다른 페이지를 통해 넘어오지 않은 경우 발생) 
     if (!tripId) {
-      protectedNavigate(NAV_PRESET.HOME);
-      message.warning("여행이 존재하지 않습니다.");
-      return;
+      // local storage에 저장된 tripId 확인
+      const savedTripId = window.localStorage.getItem("tripId");
+      if (!savedTripId) { // 없을 경우 홈으로 강제 이동
+        protectedNavigate(NAV_PRESET.HOME);
+        message.warning("여행이 존재하지 않습니다.");
+        return;
+      }
+      // local storage에 저장된 tripId는 있을 경우 데이터 불러오기 설정
+      setTripId(savedTripId);
+      handleLoadTripData(savedTripId);
+    } else {
+      window.localStorage.setItem("tripId", tripId);
     }
-    // TODO: tripId는 있으나 여행 계획 데이터가 없을 경우 전체 요청
 
     // Context 초기화
     setIsExpanded(false);
@@ -97,21 +112,69 @@ const PlanPage = () => {
     setIsSearched(false);
 
     // Region 데이터가 유효하지 않은 경우 재요청 (홈을 통해 접근하지 않았을 경우 등)
-    if (regionData && cascaderOptions.length > 0) return;
-
-    async function fetchRegionData() {
-      console.log("지역(REGION) 데이터 재요청");
-      try {
-        const response = await getRegionApi();
-        const regionData = getRegionDataForCascader(response.data.regions);
-        if (regionData) updateRegionData(regionData);
-      } catch (error) {
-        openOneBtnModal(oneBtnPreset.retryOver);
-        console.error("데이터 로드 실패:", error);
+    if (!regionData ||  cascaderOptions.length <= 0) {
+      async function fetchRegionData() {
+        console.log("지역(REGION) 데이터 재요청");
+        try {
+          const response = await getRegionApi();
+          const regionData = getRegionDataForCascader(response.data.regions);
+          if (regionData) updateRegionData(regionData);
+        } catch (error) {
+          openOneBtnModal(oneBtnPreset.retryOver);
+          console.error("데이터 로드 실패:", error);
+        }
       }
+      fetchRegionData();
     }
-    fetchRegionData();
+
+    return() => {
+      window.localStorage.removeItem("tripId")
+    }
   }, []);
+
+  const handleLoadTripData = (tripId) => {
+    requestTripData(tripId, (tripData) => {
+      // 여행명, 여행일자, 여행 기간, 참여인원 Context 담기
+      setTripName(tripData.name);
+      setConfirmedDates([dayjs(tripData.startDate),dayjs(tripData.endDate)]);
+      setActiveDayCount(tripData.activeDayCount);
+      setEntryCount(tripData.entryCount ?? 1);
+      setSelectedSigu(tripData.regionId);
+      
+      const days = tripData.days;
+      setPlanDays(days);
+
+      // 스케줄 목록 내 분류 Context 담기
+      const extraCategories = days.flatMap(day =>
+        day.schedules
+          .map(schedule => schedule.category)
+          .filter(Boolean) // undefined & null 제거
+      );
+      // 중복 제거(기본 값(SCHEDULE_CATEGORYS)외 존재 시, 추가)
+      const uniqueCategories = [...new Set([
+        ...SCHEDULE_CATEGORYS,
+        ...extraCategories
+      ])];
+      setScheduleCategorys(uniqueCategories);
+
+      const bookmarkData = tripData.bookmarks;
+      const countMap = {};      
+      days.forEach(day => {
+        day.schedules
+          .forEach(s => {
+            if (s.bookmarkId) {
+              countMap[s.bookmarkId] = (countMap[s.bookmarkId] || 0) + 1;
+            }
+          });
+      });
+      const updatedBookmarks = bookmarkData.map(item => ({
+        ...item,
+        linkedCount: countMap[item.bookmarkId] || 0
+      }));
+      
+      setBookmarks(updatedBookmarks);
+    });
+  }
 
   // 드래그 시작 이벤트
   const handleDragStart = (event) => {
@@ -263,6 +326,17 @@ const PlanPage = () => {
     });
   };
 
+  const requestTripData = async(tripId, successCallback) => {
+    try {
+      const result = await getTripApi(tripId);
+      if (result) {
+        const tripData = result.data;
+        successCallback?.(tripData);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }
 
   /**
    * 북마크 등록 API 요청
