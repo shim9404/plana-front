@@ -1,4 +1,4 @@
-import { Layout } from "antd";
+import { Layout, message } from "antd";
 import { useEffect, useRef, useState } from "react";
 import { FlexBox } from "../../components/common/PLA_FlexBox";
 import { getRegionDataForCascader } from "../../services/regionDataParser";
@@ -15,7 +15,6 @@ import { getRegionApi } from "../../services/regionApi";
 import { SCHEDULE_CATEGORYS } from "../../constants/scheduleCategory";
 import { DragDropProvider, DragOverlay  } from "@dnd-kit/react";
 import { arrayMove } from "@dnd-kit/helpers";
-import { DUMMY_BOOKMARKS } from "../../components/plan/table/PLAN_DUMMY";
 import { useTripInfo } from "../../hooks/trip/TripInfoContext";
 import { editScheduleApi, reorderDaysApi, reorderSchedulesApi } from "../../services/tripApi";
 import { usePlanBookmark } from "../../hooks/trip/PlanBookmarkContext";
@@ -23,6 +22,9 @@ import { usePlanUI } from "../../hooks/trip/PlanUIContext";
 import { useEditSchedule } from "../../hooks/trip/EditScheduleContext";
 import { usePlanDays } from "../../hooks/trip/PlanDaysContext";
 import BookmarkItem from "../../components/bookmark/BookmarkItem";
+import { usePlaceSearch } from "../../hooks/trip/PlaceSearchContext";
+import { NAV_PRESET } from "../../utils/protectedNavPreset";
+import useProtectedNavigate from "../../hooks/useProtectedNavigate";
 const { Header, Sider, Content } = Layout;
 
 const layoutStyle = {
@@ -63,12 +65,13 @@ const mapStyle = {
 }
 
 const PlanPage = () => {
-  const { setScheduleCategorys, setBookmarkInSchedule } = useEditSchedule();
+  const { setScheduleCategorys, setEditingSchedule, setBookmarkInSchedule } = useEditSchedule();
   const { setPlanDays, getScheduleDayId } = usePlanDays();
-  const { isExpanded } = usePlanUI();
+  const { isExpanded, setIsExpanded } = usePlanUI();
   const { getBookmark, setLinkedCountBookmark } = usePlanBookmark();
   const { tripId } = useTripInfo();
   const { regionData, updateRegionData } = useRegion();
+  const { setIsSearched } = usePlaceSearch();
   const { cascaderOptions } = regionData;
   const { openOneBtnModal } = useModal();
 
@@ -76,13 +79,26 @@ const PlanPage = () => {
   const draggingBookmarkRef = useRef(null); // 실제 데이터는 ref로 관리
   let dayOrdersRef = useRef(null);
 
-  console.log("PlanPage 렌더링");
-  
-  // 컴포넌트 마운트 시 Region 데이터 검증
+  const protectedNavigate = useProtectedNavigate();
+
+  // 컴포넌트 마운트
   useEffect(() => {
-    // TODO: 여행 계획 데이터 전체 요청
+    // tripId가 없을 경우 홈으로 강제 이동
+    if (!tripId) {
+      protectedNavigate(NAV_PRESET.HOME);
+      message.warning("여행이 존재하지 않습니다.");
+      return;
+    }
+    // TODO: tripId는 있으나 여행 계획 데이터가 없을 경우 전체 요청
+    
+
     setScheduleCategorys(SCHEDULE_CATEGORYS);
     // 기본 값에 없는 구분이 데이터에 있을 경우 scheduleCategorys에 추가
+
+    // Context 초기화
+    setIsExpanded(false);
+    setEditingSchedule(null);
+    setIsSearched(false);
 
     // Region 데이터가 유효하지 않은 경우 재요청 (홈을 통해 접근하지 않았을 경우 등)
     if (regionData && cascaderOptions.length > 0) return;
