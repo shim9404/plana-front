@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { DatePicker } from 'antd';
 import styles from "../../styles/TripInfoSelector.module.css"
 import { TextButton } from '../common/PLA_Buttons';
@@ -7,12 +7,15 @@ import { useTripDate } from '../../hooks/trip/TripDateContext';
 
 const { RangePicker } = DatePicker;
 
-const TripDatePicker = ({ width="400px", height="52px", placement, handleSave }) => {
+const TripDatePicker = ({ width="400px", height="52px", placement, isShowConfirm, handleSave }) => {
   // 최종 확정 날짜 ["YYYY-MM-DD","YYYY-MM-DD"] (확인 버튼 클릭 시에만 업데이트)
   const { confirmedDates, setConfirmedDates } = useTripDate();
-
+  
   // 임시 선택 날짜 ["YYYY-MM-DD","YYYY-MM-DD"] (달력에서 클릭할 때마다 변함)
   const [tempDates, setTempDates] = useState([]);
+  
+  // confirm 버튼이 있는 버전에서 취소를 눌렀을 경우 이전 날짜로 돌리기 위한 저장
+  const prevDatesRef = useRef(null);
 
   // 팝업 열림 제어
   const [open, setOpen] = useState(false);
@@ -54,12 +57,27 @@ const TripDatePicker = ({ width="400px", height="52px", placement, handleSave })
   }
 
   const handleOpenChange = (visible) => {
-    setOpen(visible)
+    if (visible) {
+      setOpen(true);
+      if (isShowConfirm) {
+        prevDatesRef.current = confirmedDates;
+      }
+    }
+    else {
+      if (!isShowConfirm) {
+        setOpen(false);
+        handleConfirm();
+      }
+    }
   }
 
   const handleCancel = () => {
     setDisabled(true);
     setOpen(false);
+    if (isShowConfirm) {
+      setTempDates(prevDatesRef.current);
+      prevDatesRef.current = null;
+    }
   }
 
   useEffect(() => {
@@ -89,16 +107,17 @@ const TripDatePicker = ({ width="400px", height="52px", placement, handleSave })
       placement={placement ?? "topLeft"}
       style={labelStyle}
       // '확인' 버튼 커스텀 렌더링
-      // renderExtraFooter={() => (
-      //   <div style={{ display: 'flex', justifyContent: 'Space-Between', padding: '8px 0' }}>
-      //     <TextButton danger type="primary" fontSize="14px" onClickEvent={handleCancel} width='20%' height='40px'>
-      //       취소
-      //     </TextButton>
-      //     <TextButton type="primary" fontSize="14px" disabled={disabled} onClickEvent={handleConfirm} width='78%' height='40px'>
-      //       이 일정으로 선택
-      //     </TextButton>
-      //   </div>
-      // )}
+      renderExtraFooter={() => (
+        isShowConfirm &&
+        <div style={{ display: 'flex', justifyContent: 'Space-Between', padding: '8px 0' }}>
+          <TextButton danger type="primary" fontSize="14px" onClickEvent={handleCancel} width='20%' height='40px'>
+            취소
+          </TextButton>
+          <TextButton type="primary" fontSize="14px" disabled={disabled} onClickEvent={handleConfirm} width='78%' height='40px'>
+            이 일정으로 선택
+          </TextButton>
+        </div>
+      )}
     />
   );
 };

@@ -142,7 +142,7 @@ const PlanHeader = () => {
           <TextBox alignW="left" bg="none" style={textboxStyle}>
             여행 일정
           </TextBox>
-          <TripDatePicker width="400px" height="48px" handleSave={(dates) => handleSaveTripDate(dates)} />
+          <TripDatePicker width="400px" height="48px" isShowConfirm handleSave={(dates) => handleSaveTripDate(dates)} />
 
         </FlexBox>
         {/* 검색 지역 영역 */}
