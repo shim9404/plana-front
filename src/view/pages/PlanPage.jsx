@@ -75,9 +75,9 @@ const PlanPage = () => {
   const { cascaderOptions } = regionData;
   const { openOneBtnModal } = useModal();
 
-  const [isDraggingBookmark, setIsDraggingBookmark] = useState(false); // 표시 여부만 state
-  const draggingBookmarkRef = useRef(null); // 실제 데이터는 ref로 관리
-  let dayOrdersRef = useRef(null);
+  const [isDraggingBookmark, setIsDraggingBookmark] = useState(false); // 북마크 드래그 오버레이 표시 여부
+  const draggingBookmarkRef = useRef(null); // 표시되는 북마크 오버레이 아이템
+  let dayOrdersRef = useRef(null);          // 재정렬 API 호출용 데이터
 
   const protectedNavigate = useProtectedNavigate();
 
@@ -122,27 +122,27 @@ const PlanPage = () => {
     const { source } = event.operation;
     // 북마크 드래그 시 원본이 아닌 Overlay 표시를 위한 셋팅
     if (source?.type === "bookmark") {
-      // setDraggingBookmark(<BookmarkItem bookmark={getBookmark(source.id)}/>);
-      draggingBookmarkRef.current = <BookmarkItem bookmark={getBookmark(source.id)}/>; // ref에 저장 - 리렌더링 없음
-      setIsDraggingBookmark(true);             // 오버레이 표시만 state로
+      draggingBookmarkRef.current = <BookmarkItem bookmark={getBookmark(source.id)}/>;
+      setIsDraggingBookmark(true);
     }
   };
-
+  
   // 드래그 종료 이벤트
   const handleDragEnd = (event) => {
     const { source, target } = event.operation;
-    if (!source || !target) return;
+    if (!source) return;
     const sourceType = source.type;
-
+    
     // 북마크 드롭
     if (sourceType === "bookmark") {
-      // setDraggingBookmark(null);  // 북마크 드래그 시 출력되는 오버레이 제거
-      setIsDraggingBookmark(false);            // 오버레이 숨김
-      draggingBookmarkRef.current = null;      // ref 초기화 - 리렌더링 없음
+      setIsDraggingBookmark(false);
+      draggingBookmarkRef.current = null;
       if (!target || target.type !== "item") return;
       handleBookmarkDrop(event);
       return;
     }
+
+    if (!target) return;
 
     // 일자 맟 스케줄 드롭 : 순서 반영을 위한 API 호출
     if (sourceType === "list") {
@@ -166,7 +166,7 @@ const PlanPage = () => {
     const { source, target } = event.operation;
     
     // 북마크 드래그 중에는 정렬 미리보기 실행 안 함
-    if (source.type === "bookmark") return;
+    if (source?.type === "bookmark") return;
     
     if (!source || !target) return;
     handlePlanMove(event);
@@ -331,17 +331,18 @@ const PlanPage = () => {
         onDragOver={handleDragOver}
         onDragEnd={handleDragEnd}
       >
-      <DragOverlay>
-        {isDraggingBookmark  ? (
-          <FlexBox style={{
-            transition: "opacity 0.1s ease",
-            opacity: 0.9,
-            cursor: "grabbing",
-          }}>
-            {draggingBookmarkRef.current}
-          </FlexBox>
-        ) : null}
-      </DragOverlay>
+        {/* 북마크 드래그 오버레이 */}
+        <DragOverlay>
+          {isDraggingBookmark  ? (
+            <FlexBox style={{
+              transition: "opacity 0.1s ease",
+              opacity: 0.9,
+              cursor: "grabbing",
+            }}>
+              {draggingBookmarkRef.current}
+            </FlexBox>
+          ) : null}
+        </DragOverlay>
         <Layout style={layoutStyle}>
           {/* 북마크 리스트 영역 */}
           <Header style={bookmarkListStyle}>
