@@ -19,8 +19,8 @@ export const TripRegionProvider = ({ children }) => {
   const [selectedSigu, setSelectedSigu] = useState(null);
 
   const tripRegionValue = useMemo(() => ({
-      selectedZdo, setSelectedZdo,
-      selectedSigu, setSelectedSigu,
+    selectedZdo, setSelectedZdo,
+    selectedSigu, setSelectedSigu,
   }), [selectedZdo, selectedSigu]);
 
   return (
