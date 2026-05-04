@@ -9,11 +9,18 @@ import { getRegionApi } from "../../services/regionApi";
 import { fetchWithRetry } from "../../utils/apiUtil.js";
 import { oneBtnPreset } from "../../utils/alertModalPreset.js";
 import { useModal } from "../../hooks/ModalProvider.jsx";
+import { useTripDate } from "../../hooks/trip/TripDateContext.jsx";
+import { useTripInfo } from "../../hooks/trip/TripInfoContext.jsx";
+import { useTripRegion } from "../../hooks/trip/TripRegionContext.jsx";
 
-const MainContents = () => {
-  const hoveredIdRef = useRef(null);
+const HomePage = () => {
+  const { setTripId } = useTripInfo();
+  const { setConfirmedDates, setActiveDayCount } = useTripDate();
+  const { setSelectedZdo, setSelectedSigu } = useTripRegion();
   const { regionData, updateRegionData } = useRegion();
   const { openOneBtnModal } = useModal();
+  const hoveredIdRef = useRef(null);
+
   const layoutStyle = {
     position: "relative",
     backgroundColor: "#D0DBEB",
@@ -37,8 +44,13 @@ const MainContents = () => {
   }, []);
 
 
-  // 컴포넌트 마운트 시 DB 데이터 불러오기
+  // 컴포넌트 마운트 시 DB 데이터 불러오기 및 context 초기화
   useEffect(() => {
+    setTripId(null);
+    setActiveDayCount(null);
+    setSelectedZdo(null);
+    setSelectedSigu(null);
+
     // 데이터가 이미 있으면 요청 안함
     if (regionData && regionData.lenght > 0) return;
 
@@ -58,19 +70,13 @@ const MainContents = () => {
   }, []);
 
   return (
-    <div style={layoutStyle}>
-      <Flex flex={1} justify="flex-end" align="flex-start" >
-        <Map />
-      </Flex>
-      <TripInfoSelector setHoveredId={setHoveredId} />
-    </div>
-  )
-};
-
-const HomePage = () => {
-  return (
     <PageLayout isVisiableFooter>
-      <MainContents />
+      <div style={layoutStyle}>
+        <Flex flex={1} justify="flex-end" align="flex-start" >
+          <Map />
+        </Flex>
+        <TripInfoSelector setHoveredId={setHoveredId} />
+      </div>
     </PageLayout>
   );
 };
