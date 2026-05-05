@@ -11,9 +11,10 @@ import { createContext, useContext, useMemo, useState } from "react";
 const PlanUIContext = createContext(null);
 
 export const PlanUIProvider = ({ children }) => {
-  // 여행 계획표 확장
+  // 여행 계획표 확장 및 접기
   const [isExpandTable, setIsExpandTable] = useState(false);
   const [canExpandTable, setCanExpandTable] = useState(false);
+  const [isFoldTable, setIsFoldTable] = useState(false);
   // 북마크 리스트 확장
   const [isExpandBookmark, setIsExpandBookmark] = useState(false);
   const [canExpandBookmark, setCanExpandBookmark] = useState(false);
@@ -21,9 +22,10 @@ export const PlanUIProvider = ({ children }) => {
   const planUIValue = useMemo(() => ({
     isExpandTable, setIsExpandTable, 
     canExpandTable, setCanExpandTable,
+    isFoldTable, setIsFoldTable,
     isExpandBookmark, setIsExpandBookmark,
     canExpandBookmark, setCanExpandBookmark
-  }), [isExpandTable, canExpandTable, isExpandBookmark, canExpandBookmark]);
+  }), [isExpandTable, canExpandTable, isFoldTable, isExpandBookmark, canExpandBookmark]);
 
   return (
     <PlanUIContext.Provider value={planUIValue}>
