@@ -39,7 +39,7 @@ useEffect(() => {
 }, []);
 
 
-  if (isMobile) return <MobileGuard />;
+  if (isMobile && window.innerWidth < 768) return <MobileGuard />;
 
   return (
     <RegionProvider>

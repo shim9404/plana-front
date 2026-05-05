@@ -1,4 +1,4 @@
-import { Layout, message } from "antd";
+import { Button, Layout, message } from "antd";
 import { useEffect, useRef, useState } from "react";
 import { FlexBox } from "../../components/common/PLA_FlexBox";
 import { getRegionDataForCascader } from "../../services/regionDataParser";
@@ -29,6 +29,8 @@ import { useTripRegion } from "../../hooks/trip/TripRegionContext";
 import dayjs from "dayjs";
 import { SCHEDULE_CATEGORYS } from "../../constants/scheduleCategory";
 import { hideLoader, showLoader } from "../../utils/uiUtil";
+import { DoubleLeftOutlined, DoubleRightOutlined } from "@ant-design/icons";
+import { FlexContainer } from "../../components/common/PLA_Containers";
 const { Header, Sider, Content } = Layout;
 
 //#region layout styles
@@ -74,7 +76,7 @@ const PlanPage = () => {
   const { setEditingSchedule, setBookmarkInSchedule, setScheduleCategorys } = useEditSchedule();
   const { setPlanDays, getScheduleDayId } = usePlanDays();
   const { setConfirmedDates, setActiveDayCount } = useTripDate();
-  const { isExpandTable, setIsExpandTable, setCanExpandTable, isExpandBookmark, setIsExpandBookmark, setCanExpandBookmark } = usePlanUI();
+  const { isExpandTable, setIsExpandTable, setCanExpandTable, isExpandBookmark, setIsExpandBookmark, setCanExpandBookmark, isFoldTable, setIsFoldTable } = usePlanUI();
   const { setBookmarks, getBookmark, setLinkedCountBookmark } = usePlanBookmark();
   const { tripId, setTripId, setTripName, setEntryCount } = useTripInfo();
   const { setSelectedSigu } = useTripRegion();
@@ -90,6 +92,7 @@ const PlanPage = () => {
   const [tableWidth, setTableWidth] = useState(752);      // resize event 대응 - 계획표 폭
   const [tableExWidth, setTableExWidth] = useState(1392); // resize event 대응 - 계획표 폭
   const timerRef = useRef(null);                          // resize event 대응 - timer
+  const [isFoldHover, setIsFoldHover] = useState(false);
 
   const protectedNavigate = useProtectedNavigate();
 
@@ -495,11 +498,43 @@ const PlanPage = () => {
             </Sider>
             {/* 계획표(확장 영역 포함) */}
             <Content style={{ position: "relative" }}>
+              {/* absolute: 계획표 접기 버튼 */}
+              <FlexBox w="14px" bg="none" style={{ position: "absolute", top: "0px", right: "0px",}}>
+                <Button type="default"
+                  style={{height: "100%", width: "100%", 
+                    padding: "0px", margin: "0px",
+                    border: "0px", borderRadius: "6px 0px 0px 6px", 
+                    borderRadius: "",
+                    backgroundColor: isFoldHover ? "#D9D9D9" : "#FFFFFF",
+                    opacity: isFoldHover ? 0.5 : 0.1,
+                    zIndex: 1,
+                    pointerEvents: "auto"
+                  }}
+                  onMouseOver={() => setIsFoldHover(true) }
+                  onMouseLeave={() => setIsFoldHover(false)}
+                  onClick={() => setIsFoldTable(prev => !prev)}
+                >
+                  {
+                    isFoldTable ? 
+                    <DoubleLeftOutlined/>
+                    :
+                    <DoubleRightOutlined/>
+                  }
+                </Button>
+              </FlexBox>
+
+              {/* 계획표 컨테이너 */}
+              {isFoldTable? 
+              <FlexBox w="14px" style={{ position: "absolute", top: "0px", right: "0px",}}>
+                <FlexContainer/>
+              </FlexBox>
+              :
               <FlexBox bg="none" settings={{ justify: "flex-end" }} style={{ zIndex: 10, isolation: "isolate" }}>
                 <FlexBox w={isExpandTable ? tableExWidth : tableWidth} style={{ overflowX: "hidden", pointerEvents: "auto", position: "absolute" }}>
                   <PlanTableContainer/>
                 </FlexBox>
               </FlexBox>
+              }
             </Content>
           </Layout>
         </Layout>
