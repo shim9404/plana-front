@@ -51,20 +51,23 @@ const ExpandedHeaderContents = ({ styles }) => {
 };
 
 const PlanTableHeader = ({ styles }) => {
-  const { isExpanded } = usePlanUI();
+  const { isExpandTable } = usePlanUI();
 
   return (
-    <FlexBox h="30px" style={styles.headerStyle} settings={{justify: "flex-start"}}>
-      <FlexBox w="85px" bg="none" style={{ ...styles.headerTextStyle }} >
-        일자
-      </FlexBox>
-      {isExpanded ? (
-        <ExpandedHeaderContents styles={styles} />
-      ) : (
-        <DefaultHeaderContents styles={styles} />
-      )}
-      <FlexBox w="36px" bg="none" style={styles.headerTextStyle} >
-        <DeleteFilled />
+    <FlexBox h="30px" style={styles.headerStyle}>
+      <FlexBox w="auto" settings={{justify: "flex-start"}}>
+
+        <FlexBox w="85px" bg="none" style={{ ...styles.headerTextStyle }} >
+          일자
+        </FlexBox>
+        {isExpandTable ? (
+          <ExpandedHeaderContents styles={styles} />
+        ) : (
+          <DefaultHeaderContents styles={styles} />
+        )}
+        <FlexBox w="36px" bg="none" style={styles.headerTextStyle} >
+          <DeleteFilled />
+        </FlexBox>
       </FlexBox>
     </FlexBox>
   );

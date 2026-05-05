@@ -1,8 +1,9 @@
 import { Button } from 'antd';
 import { useTripInfo } from '../../../hooks/trip/TripInfoContext';
-import { FlexBox } from '../../common/PLA_FlexBox';
+import { FlexBox, TextBox } from '../../common/PLA_FlexBox';
 import { addScheduleApi } from '../../../services/tripApi'
 import { useEditSchedule } from '../../../hooks/trip/EditScheduleContext';
+import { PlusOutlined } from '@ant-design/icons';
 
 const AddScheduleButton = ({ dayId }) => {
   const { editingSchedule, addSchedule } = useEditSchedule();
@@ -33,11 +34,11 @@ const AddScheduleButton = ({ dayId }) => {
       onClick={() => handleAddSchedule()} disabled={editingSchedule == null ? false : true}>
       <FlexBox settings={{isVertical: false}}>
       <FlexBox w="20px" h="100%" bg="#A8a8a8" settings={{justify: "center"}}>
-        +
+        <PlusOutlined style={{ fontSize:"10px", color:"#FFFFFF" }}/>
       </FlexBox>
-      <FlexBox settings={{justify: "center"}}>
+      <TextBox color="#565656" settings={{justify: "center"}}>
         계획 추가
-      </FlexBox>
+      </TextBox>
       </FlexBox>
     </Button>
   )

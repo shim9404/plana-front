@@ -103,7 +103,7 @@ const SortableDayItem = ({ id, dayId, index, schedules, isDimmed, }) => {
               />
             ))}
           {/* ADD BUTTON */}
-          <FlexBox h="28px" settings={{justify: "center"}}>
+          <FlexBox w="99%" h="28px" settings={{justify: "center"}}>
             <AddScheduleButton dayId={dayId}/>
           </FlexBox>
           </FlexBox>

@@ -206,7 +206,7 @@ const PlanMap = () => {
     <>
     <div style={{ position: "relative", width: "100%", height: "100%"}}>
       <div id="map" ref={mapContainerRef}
-        style={{ width: "100%", height: "100%", position: "absolute" , zIndex: isHide ? 10 : 0 }} />
+        style={{ width: "100%", height: "100%", position: "absolute" , zIndex: isHide ? 1 : 0 }} />
       {/* BUTTON UI */}
       <Flex  
         style={{
@@ -216,7 +216,7 @@ const PlanMap = () => {
           left: isHide ? "40px " : "450px",
           display: "flex",
           gap: "10px",
-          zIndex: 15,
+          zIndex: isHide ? 1 : 0,
         }}
       >
         <Button 
