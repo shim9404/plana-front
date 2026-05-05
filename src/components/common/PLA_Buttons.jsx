@@ -138,6 +138,7 @@ export const ToggleButtonGroup = ({ toggles, isVertical, onChangedEvent, btnStyl
       {toggles.map((toggle, idx) => {
         return (
           <TextButton
+            key={toggle.type}
             width={toggle.width}
             height={toggle.height}
             fontSize={toggle.fontSize}
