@@ -39,6 +39,7 @@ const HeaderMain = () => {
 
   const isAdmin = isLoggedIn && userRole === 'ADMIN';
   const isPlanning = location.pathname === NAV_PRESET.PLAN.path;
+  const isHome = location.pathname === NAV_PRESET.HOME.path;
   const buttonsRef = useRef(null);
 
   const handleLogout = async () => {
@@ -106,7 +107,7 @@ const HeaderMain = () => {
   return (
     <Header style={headerStyle}>
       <FlexBox settings={{ justify: "center" }}>
-        <FlexBox w={isPlanning ? "100%" : "80%"} bg="none" style={{ margin: "48px" }}>
+        <FlexBox w={isHome ? "80%" : "100%"} bg="none" style={{ margin: "48px" }}>
           {/* 로고 */}
           <FlexBox w="200px" bg="none">
             <Link to="/" className="header-trip__brand">

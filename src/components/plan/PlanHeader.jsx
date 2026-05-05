@@ -138,11 +138,11 @@ const PlanHeader = () => {
     <FlexBox h="64px" style={{ position: "absolute", zIndex: 100, top: "0px", margin: "18px 0px", minWidth: "708px", pointerEvents: "none" }} settings={{ justify: "center" }}>
       <FlexBox w={`calc(100vw - ${120 + 210 + 200}px)`} bg="none" style={{ gap: "12px", minWidth: "708px", pointerEvents: "auto" }}>
         {/* 여행 일정 영역 */}
-        <FlexBox w="400px" settings={{ isVertical: true }}>
+        <FlexBox w="300px" settings={{ isVertical: true }}>
           <TextBox alignW="left" bg="none" style={textboxStyle}>
             여행 일정
           </TextBox>
-          <TripDatePicker width="400px" height="48px" isShowConfirm handleSave={(dates) => handleSaveTripDate(dates)} />
+          <TripDatePicker width="300px" height="48px" isShowConfirm handleSave={(dates) => handleSaveTripDate(dates)} />
 
         </FlexBox>
         {/* 검색 지역 영역 */}

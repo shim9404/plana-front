@@ -357,7 +357,11 @@ const PlanAreaContainer = () => {
           <FlexBox
             h="108px"
             settings={{ isVertical: true, justify: "space-around" }}
-            style={{ borderBottom: "solid 1px #A8A8A8" }}
+            style={{ 
+              borderBottom: "solid 1px #A8A8A8",
+              minHeight: "108px",
+
+             }}
             bg="none"
           >
             <FlexBox h="40px" bg="none">
@@ -375,7 +379,7 @@ const PlanAreaContainer = () => {
 
           {/* 리스트 */}
           <FlexBox
-            h="70%"
+            h="100%"
             settings={{ isVertical: true, justify: "flex-start" }}
             style={{ padding: "12px 0px", ...ScrollStyle.scrollY }}
             ref={listRef}
@@ -399,7 +403,9 @@ const PlanAreaContainer = () => {
 
           {/* 페이지네이션 - 검색 중엔 숨김 */}
           {!isSearched && (
-            <FlexBox h="40px" bg="none" style={{ justifyContent: "center", padding: "8px 0" }}>
+            <FlexBox h="40px" bg="none"
+              settings={{justify: "center"}}
+              style={{ minHeight:"40px", padding: "8px 0" }}>
               <Pagination
                 current={pagination[searchType]?.current || 1}
                 total={pagination[searchType]?.total || 0}
@@ -420,15 +426,15 @@ const PlanAreaContainer = () => {
           {/* 북마크 팝업 */}
           {((selectedAreaId?.length > 0) || (selectedPlaceId?.length > 0)) && (
             <FlexBox
-              w="312px"
-              h="60px"
+              w="240px"
+              h="80px"
               bg="none"
               style={{
                 position: "absolute",
                 top: "0%",
                 right: "0%",
-                transform: `translate(85%, ${popupPosY}px)`,
-                zIndex: 20,
+                zIndex: 2,
+                transform: `translate(-10%, ${popupPosY - 48 }px)`,
               }}
             >
               <BookmarkPopup bookmarkEvent={handleBookmarkChanged} />

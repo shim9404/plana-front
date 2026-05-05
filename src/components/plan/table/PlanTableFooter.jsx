@@ -1,5 +1,5 @@
 import { Input, InputNumber } from "antd";
-import { FlexBox } from "../../common/PLA_FlexBox";
+import { FlexBox, TextBox } from "../../common/PLA_FlexBox";
 import { useEffect, useState } from "react";
 import { useTripInfo } from "../../../hooks/trip/TripInfoContext";
 import { editTripInfoApi } from "../../../services/tripApi";
@@ -60,10 +60,10 @@ const PlanTableFooter = ({ styles }) => {
   }, [planDays])
 
   return (
-    <FlexBox h="40px" style={styles.footerStyle}>
-      <FlexBox w="240px" settings={{ justify: "center" }}>
+    <FlexBox h="40px" settings={{justify: "flex-end"}} style={styles.footerStyle}>
+      <TextBox w="auto" h="32px" alignH="center" alignW="left" style={{ marginLeft: "12px", overflow:"hidden", backgroundColor: "none" }}>
         {getDates() ? `${getDates().startDate} - ${getDates().endDate} (${getDates().diff})` : "여행 날짜를 선택해주세요"}
-      </FlexBox>
+      </TextBox>
       <FlexBox w="440px" settings={{ justify: "space-around" }}>
         <FlexBox w="110px">
           <FlexBox w="56px">참여 인원</FlexBox>

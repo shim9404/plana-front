@@ -214,7 +214,7 @@ const SortableScheduleItem = ({ id, dayId, scheduleId, index, schedule, isOnly, 
   const { ref: sortableRef, handleRef, isDragging } = useSortable({ id: scheduleId, index, type: "item" });
   const itemRef = useRef(null);
   const { tripId } = useTripInfo();
-  const { isExpanded } = usePlanUI();
+  const { isExpandTable } = usePlanUI();
   const { isDeleteRef, isDeleteBookmarkRef, editingSchedule, setEditingSchedule, focusRef, saveSchedule, deleteSchedule, setBookmarkInSchedule } = useEditSchedule();
   const { setLinkedCountBookmark } = usePlanBookmark();
   const [isHover, setIsHover] = useState(false);
@@ -464,7 +464,7 @@ const SortableScheduleItem = ({ id, dayId, scheduleId, index, schedule, isOnly, 
           </FlexBox>
         </FlexBox>
         {
-          isExpanded ? 
+          isExpandTable ? 
           <FlexBox w="auto" settings={{justify: "flex-start"}}>
             <ScheduleEditableItem isEditing={isEditing} columnId="memo"  onChange={handleChangeEditing} onClick={handleSelectEditing} w="380px" value={schedule.memo}/>
             <ScheduleEditableItem isEditing={isEditing} columnId="price" onChange={handleChangeEditing} onClick={handleSelectEditing} w="160px" value={schedule.price}/>

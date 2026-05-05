@@ -31,10 +31,12 @@ import { SCHEDULE_CATEGORYS } from "../../constants/scheduleCategory";
 import { hideLoader, showLoader } from "../../utils/uiUtil";
 const { Header, Sider, Content } = Layout;
 
+//#region layout styles
 const layoutStyle = {
   display: "flex",
   height: "calc(100vh - 118px)",
   padding: "8px 48px",
+  position: "relateve",
 };
 
 const bookmarkListStyle = {
@@ -43,7 +45,6 @@ const bookmarkListStyle = {
   justifyContent: "center",
   alignItems: "center",
   padding: "0px",
-  height: "255px",
   zIndex: 1
 };
 
@@ -67,12 +68,13 @@ const mapStyle = {
   position: "absolute",
   top: "0%",
 }
+//#endregion
 
 const PlanPage = () => {
   const { setEditingSchedule, setBookmarkInSchedule, setScheduleCategorys } = useEditSchedule();
   const { setPlanDays, getScheduleDayId } = usePlanDays();
   const { setConfirmedDates, setActiveDayCount } = useTripDate();
-  const { isExpanded, setIsExpanded } = usePlanUI();
+  const { isExpandTable, setIsExpandTable, setCanExpandTable, isExpandBookmark, setIsExpandBookmark, setCanExpandBookmark } = usePlanUI();
   const { setBookmarks, getBookmark, setLinkedCountBookmark } = usePlanBookmark();
   const { tripId, setTripId, setTripName, setEntryCount } = useTripInfo();
   const { setSelectedSigu } = useTripRegion();
@@ -85,12 +87,14 @@ const PlanPage = () => {
   const draggingBookmarkRef = useRef(null); // 표시되는 북마크 오버레이 아이템
   let dayOrdersRef = useRef(null);          // 재정렬 API 호출용 데이터
 
+  const [tableWidth, setTableWidth] = useState(752);      // resize event 대응 - 계획표 폭
+  const [tableExWidth, setTableExWidth] = useState(1392); // resize event 대응 - 계획표 폭
+  const timerRef = useRef(null);                          // resize event 대응 - timer
+
   const protectedNavigate = useProtectedNavigate();
 
   // 컴포넌트 마운트
   useEffect(() => {
-    console.log(tripId);
-    console.log("PlanPage Init");
     // context의 tripId가 없을 경우(다른 페이지를 통해 넘어오지 않은 경우 발생) 
     if (!tripId) {
       // local storage에 저장된 tripId 확인
@@ -109,9 +113,17 @@ const PlanPage = () => {
     }
 
     // Context 초기화
-    setIsExpanded(false);
+    setIsExpandTable(false);
     setEditingSchedule(null);
     setIsSearched(false);
+
+    // 브라우저 사이즈에 따른 초기화
+    handleResizeComponents();
+
+    // 브라우저 사이즈 변경 이벤트 연결
+    window.addEventListener("resize", () => {
+      handleWaitResize(handleResizeComponents);
+    }, 150);
 
     // Region 데이터가 유효하지 않은 경우 재요청 (홈을 통해 접근하지 않았을 경우 등)
     if (!regionData ||  cascaderOptions.length <= 0) {
@@ -179,6 +191,45 @@ const PlanPage = () => {
       
       setBookmarks(updatedBookmarks);
     });
+  };
+
+  const handleWaitResize = (onResize, delay = 300) => {
+    clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => {
+      onResize?.();
+    }, 300);
+  };
+
+  const handleResizeComponents = () => {
+    const innerWidth = window.innerWidth;
+    // 확대 시 최대 사이즈 1392px
+    // 축소 시 최대 사이즈 752px
+    if (innerWidth < 848) {
+      // console.log("848 미만");
+      setIsExpandTable(false);
+      setCanExpandTable(false);
+      setTableWidth(innerWidth - 96);
+      setTableExWidth(innerWidth - 96);
+    } else if (innerWidth < 1488) {
+      // console.log("1488 미만");
+      setTableWidth(752);
+      setTableExWidth(innerWidth - 96);
+      setCanExpandTable(true);
+    } else {
+      // console.log("둘 다 아님");
+      setTableExWidth(1392);
+      setTableWidth(752);
+      setCanExpandTable(true);
+    }
+
+    const innerHeight = window.innerHeight;
+    if (innerHeight < 570) {
+      setIsExpandBookmark(false);
+      setCanExpandBookmark(false);
+    } else {
+      setIsExpandBookmark(true);
+      setCanExpandBookmark(true);
+    }
   }
 
   // 드래그 시작 이벤트
@@ -226,6 +277,7 @@ const PlanPage = () => {
     // handlePlanMove(event);
   };
 
+  // 드래그 중 처리 이벤트
   const handleDragOver = (event) => {
     const { source, target } = event.operation;
     
@@ -331,6 +383,11 @@ const PlanPage = () => {
     });
   };
 
+  /**
+   * 단건 여행 데이터 조회 API 요청
+   * @param {} tripId 
+   * @param {*} successCallback 
+   */
   const requestTripData = async(tripId, successCallback) => {
     try {
       showLoader();
@@ -425,7 +482,7 @@ const PlanPage = () => {
         </DragOverlay>
         <Layout style={layoutStyle}>
           {/* 북마크 리스트 영역 */}
-          <Header style={bookmarkListStyle}>
+          <Header style={{ height: isExpandBookmark ? "240px" : "108px" ,...bookmarkListStyle}}>
             <FlexBox bg="none">
               <PlanBookmarkContainer />
             </FlexBox>
@@ -437,9 +494,9 @@ const PlanPage = () => {
               <PlanAreaContainer />
             </Sider>
             {/* 계획표(확장 영역 포함) */}
-            <Content>
-              <FlexBox bg="none" settings={{ justify: "flex-end" }}>
-                <FlexBox w={isExpanded ? "1392px" : "752px"} style={{ overflowX: "hidden", pointerEvents: "auto" }}>
+            <Content style={{ position: "relative" }}>
+              <FlexBox bg="none" settings={{ justify: "flex-end" }} style={{ zIndex: 10, isolation: "isolate" }}>
+                <FlexBox w={isExpandTable ? tableExWidth : tableWidth} style={{ overflowX: "hidden", pointerEvents: "auto", position: "absolute" }}>
                   <PlanTableContainer/>
                 </FlexBox>
               </FlexBox>

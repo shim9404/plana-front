@@ -1,4 +1,4 @@
-import { StarOutlined } from "@ant-design/icons";
+import { CaretDownOutlined, CaretUpOutlined, StarOutlined } from "@ant-design/icons";
 import { ScrollStyle } from "../../styles/planStyles";
 import { FlexContainer } from "../common/PLA_Containers";
 import { FlexBox, TextBox } from "../common/PLA_FlexBox";
@@ -7,9 +7,12 @@ import { Button, Empty } from "antd";
 import { getBookmarkColor } from "../../utils/plan/bookmarkUtils";
 import DraggableBookmarkItem from "../bookmark/DraggableBookmarkItem";
 import { usePlanBookmark } from "../../hooks/trip/PlanBookmarkContext";
+import { usePlanUI } from "../../hooks/trip/PlanUIContext";
 
 const PlanBookmarkContainer = () => {
   const { bookmarks } = usePlanBookmark();
+  const { isExpandBookmark, setIsExpandBookmark, canExpandBookmark } = usePlanUI();
+  const [isExpandHover, setIsExpandHover] = useState(false);
   const [filterBookmarks, setFilterBookmarks] = useState([]);
   const [filterType, setFilterType] = useState("");
 
@@ -55,7 +58,29 @@ const PlanBookmarkContainer = () => {
   return (
     <FlexContainer>
       <FlexBox settings={{ isVertical: true }} style={{ padding: "14px 30px" }}>
-        <FlexBox h="48px" bg="none">
+        {/* absolute: 확장 및 축소 버튼 */}
+        <FlexBox h="12px" bg="none" style={{ position: "absolute", bottom: "0px", left: "0px"}}>
+          <Button type="default" disabled={!canExpandBookmark}
+            style={{height: "100%", width: "100%", 
+              padding: "0px", margin: "0px",
+              border: "0px", borderRadius: "6px 0px 0px 6px", 
+              backgroundColor: isExpandHover ? "#D9D9D9" : "#FFFFFF",
+              opacity: isExpandHover ? 0.75 : 0.1
+            }}
+            onMouseOver={() => {if(canExpandBookmark) setIsExpandHover(true)}}
+            onMouseLeave={() => setIsExpandHover(false)}
+            onClick={() => setIsExpandBookmark(prev => !prev)}
+          >
+            {
+              isExpandBookmark ? 
+              <CaretUpOutlined/>
+              :
+              <CaretDownOutlined/>
+            }
+          </Button>
+        </FlexBox>
+
+        <FlexBox h="36px" bg="none">
           <FlexBox>
             {/* 헤더 좌측 타이틀 */}
             <TextBox size="16px" alignW="left" color="#565656">
@@ -105,7 +130,7 @@ const PlanBookmarkContainer = () => {
           </FlexBox>
         </FlexBox>
         <FlexBox
-          h="180px"
+          h={isExpandBookmark? "180px" : "44px"}
           settings={{ justify: "flex-start", align: "start" }}
           style={ScrollStyle.scrollX}
         >
@@ -120,7 +145,8 @@ const PlanBookmarkContainer = () => {
             })
           ) : (
             <FlexBox settings={{ isVertical: true, justify: "center" }}>
-              <Empty description={"아직 북마크한 장소가 없습니다"} />
+              {isExpandBookmark ? <Empty description={"아직 북마크한 장소가 없습니다..."} />
+              : <TextBox size="14px" weight={300}>아직 북마크한 장소가 없습니다...</TextBox>}
             </FlexBox>
           )}
         </FlexBox>
