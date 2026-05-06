@@ -6,6 +6,9 @@ import { IconButton, TextButton } from "../../common/PLA_Buttons";
 import { usePlaceSearch } from "../../../hooks/trip/PlaceSearchContext";
 import { Button, Flex } from "antd";
 import { Eye, EyeOff, MouseLeft, MouseOff, SearchX, ZoomIn, ZoomOut } from "lucide-react";
+import { usePlanBookmark } from "../../../hooks/trip/PlanBookmarkContext";
+import { getBookmarkColor, getBookmarkSubColor } from "../../../utils/plan/bookmarkUtils";
+import { StarTwoTone } from "@ant-design/icons";
 
 /**
  * Kakao Maps SDK 로드 함수
@@ -73,10 +76,13 @@ const PlanMap = () => {
   const [isZoom, setIsZoom] = useState(true); // 줌
   const [isHide, setIsHide] = useState(false); // UI on/off
   
-  // 검색 타입 데이터
+  // 검색 결과 + 클릭 여부 데이터
   const { isSearched, searchResults } = usePlaceSearch();
 
-  //  지역 데이터(이름 + 좌표)
+  // 북마크 + 북마크 타입 데이터
+  const { bookmarks, getBookmarkType } = usePlanBookmark();
+
+  //  지역(이름 + 좌표) 데이터
   const { objRegions } = useRegion();
 
 
@@ -137,14 +143,13 @@ const PlanMap = () => {
     map.relayout();
   }, [map, objRegions]);
   
+  
   // 마커 생성
   useEffect(() => {
     if (!map) return;
 
     // 전체 마커 제거 (강제 초기화)
     clearMarkers();
-
-    let firstPosition = null;
     
       // 검색 필터링 결과 목록들(""-> 전체 || 키워드 -> 키워드 필터링 or 결과없음 ) 마커 생성
     searchResults.forEach((item, index) => {
@@ -155,38 +160,79 @@ const PlanMap = () => {
       if (!x || !y || !Number.isFinite(x) || !Number.isFinite(y)) return;
 
       const position = new window.kakao.maps.LatLng(y, x);
-
-      if (!firstPosition) {
-        firstPosition = position; // 1번재 마커
-      }
+      const bookmarkType = getBookmarkType(item.areaId || item.placeId)
 
       const overlay =  new window.kakao.maps.CustomOverlay({
         map,
         position,
-        content: renderToString(<MapMarkerImage number={index + 1} />), // 마커 이미지
+        content: renderToString( // 마커 이미지
+          <>
+          {(bookmarkType && bookmarkType !== "NONE") && (
+            <>
+            <IconButton width="25px" height="25px" 
+              style={{ 
+                backgroundColor: bookmarkType === "NONE"? "#FFFFFF": getBookmarkColor(bookmarkType),
+                position: "absolute", top: "-14px", right: "-12px"
+                }}>
+              <StarTwoTone twoToneColor={getBookmarkSubColor(bookmarkType)} style={{fontSize: "20px"}}/>
+            </IconButton>
+            </>
+          )}
+          <div style={{ position: "absolute", top: "-42px", right: "-41px", pointerEvents: "none" }}>
+            <MapMarkerImage number={index + 1} />
+          </div>
+          </>
+        ), 
         yAnchor: 1,
       });
 
       markerOverlayRefs.current.push(overlay);
     });
 
-
-    // 렌더링 이후 강제 재계산
-    setTimeout(() => {
-      map.relayout();
-
-      if (firstPosition) {
-        map.setCenter(firstPosition);
-        map.panBy(150, -150); // 위치 이동(UI 가운데로)
-      }
-    }, 0);
-
     return () => { // 리스트 또는 컴포넌트 언마운트 시 마커 제거
       clearMarkers();
     };
 
-  }, [map, searchResults, isSearched]);
+  }, [map, searchResults, isSearched, bookmarks]);
   
+  // 지도 이동(1번째 마커 중심)
+  const prevPositionRef = useRef(null);
+  useEffect(() => {
+    if (!map || !searchResults.length) return;
+
+    let firstPosition = null;
+
+    searchResults.forEach((item, index) => {
+      const x = Number(item?.mapPos?.x);
+      const y = Number(item?.mapPos?.y);
+
+      // 방어 코드
+      if (!x || !y || !Number.isFinite(x) || !Number.isFinite(y)) return;
+
+      // 1번째 좌표
+      const position = new window.kakao.maps.LatLng(y, x);
+      if (!firstPosition) {
+        firstPosition = position; // 1번재 마커
+      }
+    })
+    
+    // 이전 좌표와 비교
+    if (
+      prevPositionRef.current &&
+      prevPositionRef.current.getLat() === firstPosition.getLat() &&
+      prevPositionRef.current.getLng() === firstPosition.getLng()
+    ) {
+      return; // 동일 시, 이동 안함
+    }
+    setTimeout(() => {
+      map.relayout();
+      map.setCenter(firstPosition);
+      map.panBy(150, -150);
+    });
+
+    prevPositionRef.current = firstPosition;
+  }, [map, searchResults]);
+
   // 드래그 on/off
   const toggleDrag = () => {
     if (!map) return;
