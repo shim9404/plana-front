@@ -95,9 +95,10 @@ const TripInfoSelector = ({ setHoveredId }) => {
         <FloatingContainer settings={{ transform: "translate(0%, -20%)", top: "40%", left: "36%", backgroundColor: "#FFFFFF", justify: "center" }} >
           <FlexBox w="85%" h="90%" settings={{ align: "flex-start", justify: "space-around" }} style={flexStyle} >
             <FlexBox w="100%" h="20%" bg="none" settings={{isVertical: true, justify: "flex-start"}} style={{ fontSize: "28px" }}>
+              {username && 
               <FlexBox w="100%">
                 {`${username} 님 :)`}
-              </FlexBox>
+              </FlexBox>}
               <FlexBox w="100%">
                 어떤 여행을 계획하고 있나요?
               </FlexBox>
