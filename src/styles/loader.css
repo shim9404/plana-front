@@ -1,0 +1,41 @@
+/* 전역 로딩 레이어 */
+#global-loader {
+  display: none; /* 기본값은 숨김 */
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(255, 255, 255, 0.8); /* 배경 투명도 */
+  backdrop-filter: blur(5px); /* 배경 흐림 효과 (고급스러움 추가) */
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.3s ease;
+}
+
+.spinner-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+/* 스피너 애니메이션 */
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db; /* PLAN A의 포인트 컬러로 변경하세요 */
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.loading-text {
+  font-family: 'Pretendard', sans-serif;
+  font-size: 14px;
+  color: #555;
+  font-weight: 500;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

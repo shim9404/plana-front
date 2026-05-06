@@ -1,0 +1,101 @@
+import { FlexContainer } from "../common/PLA_Containers";
+import { ScrollStyle, TableStyles } from "../../styles/planStyles";
+import { IconButton } from "../common/PLA_Buttons";
+import { FlexBox, TextBox } from "../common/PLA_FlexBox";
+import {
+  CaretLeftOutlined,
+  CaretRightOutlined,
+  DownloadOutlined,
+  EnvironmentFilled,
+  ShareAltOutlined,
+} from "@ant-design/icons";
+import PlanTableHeader from "./table/PlanTableHeader";
+import PlanTableContent from "./table/PlanTableContent";
+import PlanTableFooter from "./table/PlanTableFooter";
+import { Button } from "antd";
+import { useState } from "react";
+import { usePlanUI } from "../../hooks/trip/PlanUIContext";
+
+const containerSetting = {
+  isVertical: true,
+  align: "center",
+  justify: "center",
+  flex: "",
+  zIndex: 10,
+};
+
+/**
+ * 계획 페이지 우측 여행 계획표 영역 컨테이너
+ * @param {*} param0
+ * @returns
+ */
+const PlanTableContainer = () => {
+  const { isExpandTable, setIsExpandTable, canExpandTable } = usePlanUI();
+  const [isExpandHover, setIsExpandHover] = useState(false);
+
+  return (
+    <FlexContainer settings={containerSetting}>
+      <FlexBox
+        settings={{ isVertical: true }}
+        style={{ padding: "8px 20px", position: "relative" }}
+        bg="none"
+      >
+        {/* absolute: 확장 및 축소 버튼 */}
+        <FlexBox w="12px" bg="none" style={{ position: "absolute", top: "0px", left: "0px",}}>
+          <Button type="default" disabled={!canExpandTable}
+            style={{height: "100%", width: "100%", 
+              padding: "0px", margin: "0px",
+              border: "0px", borderRadius: "6px 0px 0px 6px", 
+              backgroundColor: isExpandHover ? "#D9D9D9" : "#FFFFFF",
+              opacity: isExpandHover ? 0.75 : 0.1
+            }}
+            onMouseOver={() => { if(canExpandTable) setIsExpandHover(true) }}
+            onMouseLeave={() => setIsExpandHover(false)}
+            onClick={() => setIsExpandTable(prev => !prev)}
+          >
+            {
+              isExpandTable ? 
+              <CaretRightOutlined/>
+              :
+              <CaretLeftOutlined/>
+            }
+          </Button>
+        </FlexBox>
+
+        {/* 여행 계획표 타이틀 영역 */}
+        <FlexBox h="52px" bg="none">
+          <TextBox size="16px" alignW="left" color="#565656">
+            <EnvironmentFilled style={{ margin: "0px 8px" }} />
+            여행 계획표
+          </TextBox>
+          {/* <FlexBox w="108px" bg="none">
+            <IconButton width="48px" height="36px" type="default">
+              <ShareAltOutlined />
+            </IconButton> */}
+            <IconButton width="36px" height="32px" type="default">
+              <DownloadOutlined style={{fontSize: "18px"}}/>
+            </IconButton>
+          {/* </FlexBox> */}
+        </FlexBox>
+
+        {/* 여행 계획표 헤더 영역 */}
+        <PlanTableHeader styles={TableStyles} />
+
+        {/* 여행 계획표 테이블 영역 */}
+        <FlexBox
+          h="90%"
+          bg="none"
+          style={ ScrollStyle.scrollY }
+          settings={{ justify: "flex-start" }}
+        >
+          <PlanTableContent style={TableStyles.tableStyle} />
+        </FlexBox>
+
+        {/* 하단 여행 요약 및 인원 예산 영역 */}
+        <PlanTableFooter styles={TableStyles} />
+      </FlexBox>
+    </FlexContainer>
+  );
+};
+
+export default PlanTableContainer;

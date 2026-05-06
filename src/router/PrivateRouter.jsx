@@ -1,18 +1,17 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
+import { useAuth } from "../hooks/AuthContext";
 
-const PrivateRouter = ({ role, children, allowedRoles }) => {
-  const userRole = role ?? "";
-  console.log("유저 역할" + role);
-  console.log(allowedRoles);
+//  role 체크 (권한 여부) 
+const PrivateRouter = ({ children, allowedRoles }) => {
+  const { userRole, isLoggedIn } = useAuth();
+  const location = useLocation();
 
-  if (!userRole.trim()) {
-    return <Navigate to="/" replace />;
-  }
+  // 권한 있음
+  if (allowedRoles.includes(userRole)) { return children; }
+  // 권한 없음
+  if (isLoggedIn) { return <Navigate to="/error" replace state={{ errorKey: "FORBIDDEN", from: location.pathname }} /> }
 
-  if (allowedRoles.includes(userRole)) {
-    return children;
-  }
-  return <Navigate to="/error" replace />;
+  return <Navigate to="/" replace />
 };
 
 export default PrivateRouter;

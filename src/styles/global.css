@@ -1,0 +1,191 @@
+/* Global */
+:root {
+  /* Color */
+  --color-white: #ffffff;
+  --color-red: #FF0000;
+  --color-dark-grey: #565656;
+  --color-grey: #A8A8A8;
+  --color-light-grey: #D9D9D9;
+  --color-black: #000000;
+  --color-naver: #03c75a;
+  /* Kakao 로그인 버튼 (가이드: 배경 노랑, 글자 짙은 검정) */
+  --color-kakao: #fee500;
+  --color-kakao-text: #191919;
+  --color-kakao-hover: #f5dc00;
+
+  /* Font size */
+  --font-large: 48px;
+  --font-medium: 28px;
+  --font-regular: 18px;
+  --font-small: 16px;
+  --font-micro: 12px;
+
+  /* Font weight */
+  --weight-bold: 700;
+  --weight-semi-bold: 600;
+  --weight-regular: 400;
+
+  /* Size */
+  --size-border-radius: 4px;
+  
+  /* Annimation */
+  --animation-duration: 300ms;
+
+  /* Brand (PLAN A) */
+  --font-brand: 'Outfit', system-ui, sans-serif;
+}
+
+/* Universal tags */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Open Sans', sans-serif;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
+
+a {
+  text-decoration: none;
+  color: var(--color-white);
+}
+
+ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+li {
+  list-style: none;
+}
+/* 버튼 속성 없애버리기 */
+button {
+  background-color: transparent;/*배경색으로 맞춤*/
+  cursor: pointer;
+  border: none;
+  outline: none;
+}
+
+/* Typography */
+h1 {
+  font-size: var(--font-large);
+  font-weight: var(--weight-bold);
+  color: var(--color-black);
+  margin: 16px 0px;
+}
+
+h2 {
+  font-size: var(--font-medium);
+  font-weight: var(--weight-semi-bold);
+  color: var(--color-black);
+  margin: 8px 0;
+}
+
+h3 {
+  font-size: var(--font-regular);
+  font-weight: var(--font-regular);
+  color: var(--color-black);
+  margin: 8px 0;
+}
+
+p {
+  font-size: var(--font-regular);
+  font-weight: var(--font-regular);
+  color: var(--color-black);
+  margin: 4px 0;
+}
+
+/* HeaderTrip */
+.header-trip {
+  background: var(--color-white);
+  border-bottom: 1px solid var(--color-light-grey);
+}
+
+.header-trip a.header-trip__brand {
+  color: var(--color-black);
+}
+
+.header-trip__brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: var(--font-medium);
+  text-decoration: none;
+}
+
+.header-trip__brand-icon {
+  color: var(--color-red);
+  flex-shrink: 0;
+}
+
+.header-trip__brand-title {
+  font-family: var(--font-brand);
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.05em;
+}
+
+.header-trip__brand-accent {
+  color: var(--color-red);
+}
+
+.header-trip__nav {
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.header-trip__nav-item {
+  margin: 6px 0px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 76px;
+  padding: 5px 10px;
+  background: var(--color-white);
+  border-radius: var(--size-border-radius);
+  cursor: pointer;
+  color: var(--color-black);
+  font-size: var(--font-micro);
+  font-family: inherit;
+  text-decoration: none;
+  transition: background-color var(--animation-duration) ease;
+}
+
+.header-trip a.header-trip__nav-item {
+  color: var(--color-black);
+}
+
+.header-trip__nav-item:hover {
+  filter: brightness(0.97);
+}
+
+.header-trip__nav-item--active {
+  background: var(--color-grey);
+}
+
+.header-trip__nav-label {
+  line-height: 1.15;
+  text-align: center;
+  white-space: nowrap;
+}
+
+*:disabled,
+*[disabled],
+*[aria-disabled="true"] {
+  cursor: default !important;
+}
+
+/* antd 특화 클래스 일괄 처리 */
+[class*="ant-"][disabled],
+[class*="ant-"]:disabled,
+[class*="ant-"][aria-disabled="true"] {
+  cursor: default !important;
+}

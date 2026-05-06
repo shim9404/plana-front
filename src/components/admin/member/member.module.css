@@ -1,0 +1,84 @@
+/* 조회 버튼: global.css의 회색 토큰 사용 */
+.searchButton:global(.ant-btn-primary) {
+  background: var(--color-light-grey) !important;
+  border-color: var(--color-grey) !important;
+  color: var(--color-black) !important;
+}
+
+.searchButton:global(.ant-btn-primary:not(:disabled):hover) {
+  background: var(--color-grey) !important;
+  border-color: var(--color-grey) !important;
+  color: var(--color-white) !important;
+}
+
+.searchButton:global(.ant-btn-primary:not(:disabled):active) {
+  background: var(--color-dark-grey) !important;
+  border-color: var(--color-dark-grey) !important;
+}
+
+.searchPanel {
+  padding: 16px;
+  height: 100%;
+  overflow: auto;
+}
+
+.searchForm {
+  width: 95%;
+  height: 95%;
+}
+
+.joinDatePicker {
+  width: 70%;
+}
+
+.lastLoginPicker {
+  width: 100%;
+}
+
+.compactSearch {
+  width: 100%;
+}
+
+.compactField {
+  width: 50%;
+  margin-bottom: 0;
+}
+
+.searchIcon {
+  color: rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+}
+
+.tablePanel {
+  padding: 16px;
+  height: 100%;
+  overflow: auto;
+}
+
+/* md 이하에서는 검색 컨트롤을 전체 폭으로 확장 */
+@media (max-width: 992px) {
+  .joinDatePicker {
+    width: 100%;
+  }
+}
+
+/* 모바일에서 가로 폭이 좁아질 때 라디오 버튼 가독성 보정 */
+@media (max-width: 768px) {
+  .searchPanel {
+    padding: 12px;
+  }
+
+  .tablePanel {
+    padding: 12px;
+  }
+
+  .searchForm :global(.ant-radio-group) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .searchForm :global(.ant-radio-button-wrapper) {
+    border-radius: 6px;
+  }
+}

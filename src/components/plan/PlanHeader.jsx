@@ -1,0 +1,185 @@
+import { useTripInfo } from "../../hooks/trip/TripInfoContext";
+import { FlexBox, TextBox } from "../common/PLA_FlexBox";
+import TripDatePicker from "../home/TripDatePicker";
+import TripRegionPicker from "../home/TripRegionPicker";
+import { CheckCircleTwoTone, SyncOutlined } from "@ant-design/icons";
+import { useEffect, useRef, useState } from "react";
+import { editTripDateApi, editTripInfoApi } from "../../services/tripApi";
+import { usePlanDays } from "../../hooks/trip/PlanDaysContext";
+import { useTripRegion } from "../../hooks/trip/TripRegionContext";
+import { useTripDate } from "../../hooks/trip/TripDateContext";
+import { DebounceInput } from "../common/PLA_Input";
+
+const PlanHeader = () => {
+  const { setSelectedZdo, selectedSigu, setSelectedSigu } = useTripRegion();
+  const { tripName, setTripName, tripId } = useTripInfo();
+  const { setActiveDayCount } = useTripDate();
+  const { addPlanDays } = usePlanDays();
+  const [isSaving, setIsSaving] = useState(false);
+  const [ cascaderValue, setCascaderValue ] = useState([])
+  const [changedName, setChangedName] = useState("");         // Input 변동 값 (API 요청 용도)
+  const [displayName, setDisplayName] = useState(tripName);   // Input 비었을 경우 복구 용도
+  const nameRef = useRef("");                                 // Input 비었을 경우 복구 용도
+
+  useEffect(() => {
+    let value = [];
+    if (selectedSigu) {
+      const zdo = selectedSigu.slice(0, -3);
+      value = [String(zdo), selectedSigu]; 
+    } else {
+      value = undefined; // 아무것도 선택 안 된 경우
+    }
+    setCascaderValue(value);                 
+  }, [selectedSigu])
+
+  const textboxStyle = { minWidth: "60px", marginLeft: "8px" };
+
+  const handleChangeRegion = (value) => {
+    // value는 [zdoCode, siguId] 배열 형태
+    if (value == null || value.length === 0) {
+      setSelectedZdo(null);
+      setSelectedSigu(null);
+      return;
+    }
+
+    const regionId = value[1] ?? `${value[0]}000`
+    setSelectedZdo(value[0] ?? null);
+    setSelectedSigu(regionId);
+
+    requestUpdateRegion(regionId);
+  };
+
+  const handleFocusTripName = () => {
+    nameRef.current = tripName;
+    setDisplayName(null);
+  }
+
+  const handleChangeTripName = (value) => {
+    setChangedName(value);
+  }
+
+  const handleSaveTripName = () => {
+    if (changedName == "" || changedName.length <= 0) {
+      setDisplayName(nameRef.current);
+      nameRef.current = null;
+      return;
+    }
+    setIsSaving(true);
+    requestUpdateTripName(changedName, () => {
+      setTripName(changedName);
+      setTimeout(() => {
+        setIsSaving(false);
+      }, 500);
+    })
+  }
+
+  const handleSaveTripDate = (dates) => {
+    // TODO: 팝업 확인 및 로딩 추가 필요
+    requestUpdateTripDate(dates, (addDays, activeDayCount) => {
+      if (addDays && addDays.length > 0) {
+        addPlanDays(addDays);
+      }
+
+      setActiveDayCount(activeDayCount);
+    });
+  }
+
+  /**
+   * 여행명 수정 API 요청
+   * @param {*} successCallback 
+   */
+  const requestUpdateTripName = async (tripName, successCallback) => {
+    try {
+      const request = { name: tripName };
+      const isSuccess = await editTripInfoApi(tripId, request);
+      if (isSuccess) {
+        successCallback?.();
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  /**
+   * 여행 일정 수정 API 요청
+   * @param {*} successCallback 
+   */
+  const requestUpdateTripDate = async (dates, successCallback) => {
+    console.log(dates);
+    try {
+      const request = { startDate: dates[0].format("YYYY-MM-DD"), endDate: dates[1].format("YYYY-MM-DD") };
+      const result = await editTripDateApi(tripId, request);
+      if (result) {
+        const addDays = result.data.addDays;
+        const activeDayCount = result.data.activeDayCount;
+        successCallback?.(addDays, activeDayCount);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+
+  /**
+ * 여행 지역 수정 API 요청
+ * @param {string} regionId
+ */
+  const requestUpdateRegion = async (regionId) => {
+    try {
+      const request = { regionId: regionId };
+      await editTripInfoApi(tripId, request);
+
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  return (
+    <FlexBox h="64px" style={{ position: "absolute", zIndex: 100, top: "0px", margin: "18px 0px", minWidth: "708px", pointerEvents: "none" }} settings={{ justify: "center" }}>
+      <FlexBox w={`calc(100vw - ${120 + 210 + 200}px)`} bg="none" style={{ gap: "12px", minWidth: "708px", pointerEvents: "auto" }}>
+        {/* 여행 일정 영역 */}
+        <FlexBox w="300px" settings={{ isVertical: true }}>
+          <TextBox alignW="left" bg="none" style={textboxStyle}>
+            여행 일정
+          </TextBox>
+          <TripDatePicker width="300px" height="48px" isShowConfirm handleSave={(dates) => handleSaveTripDate(dates)} />
+
+        </FlexBox>
+        {/* 검색 지역 영역 */}
+        <FlexBox w="220px" settings={{ isVertical: true }} bg="none">
+          <TextBox alignW="left" bg="none" style={textboxStyle}>
+            검색 지역
+          </TextBox>
+          <TripRegionPicker
+            width="220px" height="48px"
+            value={cascaderValue}
+            allowClear={false}
+            onChange={handleChangeRegion}
+            changeOnSelect={handleChangeRegion}
+          />
+        </FlexBox>
+        {/* 여행명 영역 */}
+        <FlexBox settings={{ isVertical: true }} bg="none">
+          <TextBox alignW="left" bg="none" style={textboxStyle}>
+            여행 이름
+          </TextBox>
+          <FlexBox h="48px" style={{ position: "relative" }}>
+            <DebounceInput showCount maxLength={30} style={{ height: "48px", fontSize: "16px", color: "#565656", padding: "8px 56px 8px 18px" }}
+              placeholder={tripName} defaultValue={displayName} 
+              onChangeEvent={handleChangeTripName} 
+              onFocus={handleFocusTripName}
+              onBlur={() => { handleSaveTripName() }} />
+            <FlexBox w="52px" h="52px" settings={{ justify: "center" }} style={{ fontSize: "20px", right: "0%", position: "absolute", zIndex: 10 }}>
+              {
+                isSaving ?
+                  <SyncOutlined spin /> : <CheckCircleTwoTone twoToneColor="#52c41a" />
+              }
+            </FlexBox>
+          </FlexBox>
+        </FlexBox>
+      </FlexBox>
+    </FlexBox>
+  )
+}
+
+export default PlanHeader;
