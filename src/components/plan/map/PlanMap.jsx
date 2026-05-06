@@ -150,8 +150,6 @@ const PlanMap = () => {
 
     // 전체 마커 제거 (강제 초기화)
     clearMarkers();
-
-    let firstPosition = null;
     
       // 검색 필터링 결과 목록들(""-> 전체 || 키워드 -> 키워드 필터링 or 결과없음 ) 마커 생성
     searchResults.forEach((item, index) => {
@@ -162,11 +160,6 @@ const PlanMap = () => {
       if (!x || !y || !Number.isFinite(x) || !Number.isFinite(y)) return;
 
       const position = new window.kakao.maps.LatLng(y, x);
-
-      if (!firstPosition) {
-        firstPosition = position; // 1번재 마커
-      }
-
       const bookmarkType = getBookmarkType(item.areaId || item.placeId)
 
       const overlay =  new window.kakao.maps.CustomOverlay({
@@ -196,23 +189,50 @@ const PlanMap = () => {
       markerOverlayRefs.current.push(overlay);
     });
 
-
-    // 렌더링 이후 강제 재계산
-    setTimeout(() => {
-      map.relayout();
-
-      if (firstPosition) {
-        map.setCenter(firstPosition);
-        map.panBy(150, -150); // 위치 이동(UI 가운데로)
-      }
-    }, 0);
-
     return () => { // 리스트 또는 컴포넌트 언마운트 시 마커 제거
       clearMarkers();
     };
 
   }, [map, searchResults, isSearched, bookmarks]);
   
+  // 지도 이동(1번째 마커 중심)
+  const prevPositionRef = useRef(null);
+  useEffect(() => {
+    if (!map || !searchResults.length) return;
+
+    let firstPosition = null;
+
+    searchResults.forEach((item, index) => {
+      const x = Number(item?.mapPos?.x);
+      const y = Number(item?.mapPos?.y);
+
+      // 방어 코드
+      if (!x || !y || !Number.isFinite(x) || !Number.isFinite(y)) return;
+
+      // 1번째 좌표
+      const position = new window.kakao.maps.LatLng(y, x);
+      if (!firstPosition) {
+        firstPosition = position; // 1번재 마커
+      }
+    })
+    
+    // 이전 좌표와 비교
+    if (
+      prevPositionRef.current &&
+      prevPositionRef.current.getLat() === firstPosition.getLat() &&
+      prevPositionRef.current.getLng() === firstPosition.getLng()
+    ) {
+      return; // 동일 시, 이동 안함
+    }
+    setTimeout(() => {
+      map.relayout();
+      map.setCenter(firstPosition);
+      map.panBy(150, -150);
+    });
+
+    prevPositionRef.current = firstPosition;
+  }, [map, searchResults]);
+
   // 드래그 on/off
   const toggleDrag = () => {
     if (!map) return;
