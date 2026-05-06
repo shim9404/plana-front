@@ -12,13 +12,14 @@ export const getAreaInitApi = async (regionId) => {
  * @param {Number} page
  * @param {Number} size
  */
-export const getAreaApi = async (regionId, searchType, page = 1, size = 20) => {
+export const getAreaApi = async (regionId, searchType, page = 1, size = 20, keyword = '') => {
   const response = await axiosInstance.get(`/api/areas/page`, {
     params: {
       regionId,
       searchType,
       page,
-      size
+      size,
+      ...(keyword ? { keyword } : {})
     },
   });
   return response.data;

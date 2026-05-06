@@ -221,8 +221,8 @@ const PlanMap = () => {
     // 이전 좌표와 비교
     if (
       prevPositionRef.current &&
-      prevPositionRef.current.getLat() === firstPosition.getLat() &&
-      prevPositionRef.current.getLng() === firstPosition.getLng()
+      prevPositionRef.current?.getLat() === firstPosition?.getLat() &&
+      prevPositionRef.current?.getLng() === firstPosition?.getLng()
     ) {
       return; // 동일 시, 이동 안함
     }
