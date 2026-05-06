@@ -15,6 +15,8 @@ import { usePlanDays } from '../../hooks/trip/PlanDaysContext'
 import { useTripRegion } from '../../hooks/trip/TripRegionContext'
 import { useTripDate } from '../../hooks/trip/TripDateContext'
 import { usePlanBookmark } from '../../hooks/trip/PlanBookmarkContext'
+import { useModal } from "../../hooks/ModalProvider";
+import { oneBtnPreset } from "../../utils/alertModalPreset";
 
 const TripInfoSelector = ({ setHoveredId }) => {
   const { selectedZdo, setSelectedZdo, selectedSigu, setSelectedSigu } = useTripRegion();
@@ -23,6 +25,7 @@ const TripInfoSelector = ({ setHoveredId }) => {
   const { setPlanDays } = usePlanDays();
   const { setBookmarks } = usePlanBookmark();
   const { memberId, username } = useAuth();
+  const { openOneBtnModal } = useModal();
   const protectedNavigate = useProtectedNavigate();
 
   const hoverTimerRef = useRef(null); // 호버 유예 시간
@@ -35,6 +38,12 @@ const TripInfoSelector = ({ setHoveredId }) => {
 
   // plan page로 이동
   const handleStart = () => {
+    // context의 memberId가 없을 경우(로그인 하지 않고 계획 페이지를 들어갈려고 할 경우 발생)
+    if (!memberId) {
+      openOneBtnModal(oneBtnPreset.loginRequire);
+      return;
+    }
+
     handleCreateTrip(() => {
       protectedNavigate(NAV_PRESET.PLAN);
     });
