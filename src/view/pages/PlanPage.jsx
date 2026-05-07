@@ -118,6 +118,7 @@ const PlanPage = () => {
     // Context 초기화
     setIsExpandTable(false);
     setEditingSchedule(null);
+    setIsFoldTable(false);
     setIsSearched(false);
 
     // 브라우저 사이즈에 따른 초기화
