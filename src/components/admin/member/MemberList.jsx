@@ -18,7 +18,6 @@ import { FlexBox } from '../../common/PLA_FlexBox'
 import MemberDetailModal from '../../../view/modals/MemberDetailModal'
 
 
-
 // 소셜 로그인 타입 선택 옵션
 const SOCIAL_OPTIONS = [
   { value: 'EMAIL', label: 'EMAIL' },
@@ -344,22 +343,19 @@ const MemberList = () => {
 
 
   return (
-    <>
-      <Splitter
-        vertical
-        style={{ height: 650, boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)' }}
-      >
-        {/* 상단: 검색 조건 영역 */}
-        <Splitter.Panel defaultSize="23%" min="120px">
-          <MemberSearchPanel onSearch={fetchMembers} loading={searchLoading} />
-        </Splitter.Panel>
+  <>
+    <div style={{ width: '100%', height: '100%', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)', display: 'flex', flexDirection: 'column' }}>
+      {/* 상단: 검색 조건 영역 */}
+      <div style={{ minHeight: 120 }}>
+        <MemberSearchPanel onSearch={fetchMembers} loading={searchLoading} />
+      </div>
 
-        {/* 하단: 회원 목록 테이블 영역 */}
-        <Splitter.Panel>
-          <MemberTablePanel members={members} onUpdate={handleMemberUpdate} />
-        </Splitter.Panel>
-      </Splitter>
-    </>
+      {/* 하단: 회원 목록 테이블 영역 */}
+      <div style={{ flex: 1, overflow: 'hidden' }}>
+        <MemberTablePanel members={members} />
+      </div>
+    </div>
+  </>
   )
 }
 

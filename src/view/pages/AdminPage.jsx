@@ -29,9 +29,10 @@ import {
   Users,
 } from 'lucide-react'
 import { SettingOutlined } from '@ant-design/icons'
-import { FlexBox } from '../../components/common/PLA_FlexBox';
+import { FlexBox, TextBox } from '../../components/common/PLA_FlexBox';
 import { useAuth } from '../../hooks/AuthContext';
 import ProfileMarkerImage from '../../components/mypage/ProfileMarkerImage';
+
 /** localStorage `profile_image`(서버 pds 파일명) 없으면 기본 아바타 */
 function getAdminSidebarProfileSrc(springBaseUrl) {
   const name = localStorage.getItem('profile_image')?.trim()
@@ -131,26 +132,26 @@ function renderAdminMainContent(menuKey, { onNavigate }) {
       return <MemberList />
     case '7':
       return (
-        <div className="admin-placeholder-page">
-          <Typography.Title level={4}>{pageTitleMap['7']}</Typography.Title>
-          <Typography.Paragraph type="secondary">
-            {contentDescriptionMap['7']}
-          </Typography.Paragraph>
-          <Typography.Text type="secondary">
-            장소 목록 화면은 준비 중입니다.
-          </Typography.Text>
+        <div style={{ display:'flex', height:'100%', justifyContent:'flex-start', alignItems:'center', flexDirection:'column'}}>
+          <div style={{ height:'80%', display:'flex', justifyContent:'center', alignItems:'center', flexDirection:'column'}}>
+            <div style={{ weight:500, height:'none', color:"#A8A8A8", padding:'12px' ,fontSize:"48px"}}>{pageTitleMap['7']}</div>
+            <div style={{ weight:500, height:'none',color:"#A8A8A8", fontSize:"30px"}}> {contentDescriptionMap['7']} </div>
+            <div style={{ weight:500, height:'none',color:"#A8A8A8", fontSize:"24px"}}>
+              장소 목록 화면은 준비 중입니다.
+            </div>
+          </div>
         </div>
       )
     case '8':
       return (
-        <div className="admin-placeholder-page">
-          <Typography.Title level={4}>{pageTitleMap['8']}</Typography.Title>
-          <Typography.Paragraph type="secondary">
-            {contentDescriptionMap['8']}
-          </Typography.Paragraph>
-          <Typography.Text type="secondary">
-            CSV 업로드 화면은 준비 중입니다.
-          </Typography.Text>
+        <div style={{ display:'flex', height:'100%', justifyContent:'flex-start', alignItems:'center', flexDirection:'column'}}>
+          <div style={{ height:'80%', display:'flex', justifyContent:'center', alignItems:'center', flexDirection:'column'}}>
+            <div style={{ weight:500, height:'none', color:"#A8A8A8", padding:'12px' ,fontSize:"48px"}}>{pageTitleMap['8']}</div>
+            <div style={{ weight:500, height:'none',color:"#A8A8A8", fontSize:"30px"}}> {contentDescriptionMap['8']} </div>
+            <div style={{ weight:500, height:'none',color:"#A8A8A8", fontSize:"24px"}}>
+              CSV 업로드 화면은 준비 중입니다.
+            </div>
+          </div>
         </div>
       )
     default:

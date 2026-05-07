@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { Alert, Spin } from 'antd'
 import AnalyticsPageFrame from './AnalyticsPageFrame'
-import UsagePeriodFilter from './userStatistics/UsagePeriodFilter'
 import { getApiDateRange } from './userStatistics/usagePeriodRange'
 import RegionRankPeriodTables from './regionStatistics/RegionRankPeriodTables'
 import { fetchAdminUsageRegions } from '../../../services/adminUsageApi'
