@@ -254,14 +254,14 @@ const SortableScheduleItem = ({ id, dayId, scheduleId, index, schedule, isOnly, 
       }
 
       // 선택되어 있던 스케줄과 선택 하려는 스케줄이 동일하지 않음
-      if (editingSchedule.tripScheduleId !== schedule.tripScheduleId) {
-        // 이전 스케줄 저장
-        handleSaveSchedule(() => {
-          // 저장 성공 시 선택 하려는 스케줄의 편집 시작
-          setEditingSchedule({...schedule});
-        });
-        return;
-      }
+      // if (editingSchedule.tripScheduleId !== schedule.tripScheduleId) {
+      //   // 이전 스케줄 저장
+      //   handleSaveSchedule(() => {
+      //     // 저장 성공 시 선택 하려는 스케줄의 편집 시작
+      //     setEditingSchedule({...schedule});
+      //   });
+      //   return;
+      // }
     }, 150);
   };
 
