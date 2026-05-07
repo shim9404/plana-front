@@ -357,7 +357,7 @@ const SortableScheduleItem = ({ id, dayId, scheduleId, index, schedule, isOnly, 
       );
       if (isAntdPopup) return;
       
-      const isOtherScheduleItem = active?.closest("#schedule-item");
+      const isOtherScheduleItem = active?.id?.toString().includes("schedule-item");
       if (isOtherScheduleItem) return;  // 별도로 저장 처리를 하고 있음
         handleSaveSchedule();
         // saveSchedule?.();
@@ -387,7 +387,7 @@ const SortableScheduleItem = ({ id, dayId, scheduleId, index, schedule, isOnly, 
   const requestUpdateSchedule = async(successCallback) => {
     try {
       const { bookmarkId, ...request } = editingSchedule;
-      const isSuccess = await editScheduleApi(tripId, dayId, scheduleId, request);
+      const isSuccess = await editScheduleApi(tripId, dayId, request.tripScheduleId, request);
       if (isSuccess) {
         successCallback?.();
       }
