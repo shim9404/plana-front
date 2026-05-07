@@ -134,8 +134,8 @@ function renderAdminMainContent(menuKey, { onNavigate }) {
       return (
         <div style={{ display:'flex', height:'100%', justifyContent:'flex-start', alignItems:'center', flexDirection:'column'}}>
           <div style={{ height:'80%', display:'flex', justifyContent:'center', alignItems:'center', flexDirection:'column'}}>
-            <div style={{ weight:500, height:'none', color:"#A8A8A8", padding:'12px' ,fontSize:"48px"}}>{pageTitleMap['7']}</div>
-            <div style={{ weight:500, height:'none',color:"#A8A8A8", fontSize:"30px"}}> {contentDescriptionMap['7']} </div>
+        
+            <div style={{ weight:500, height:'none',color:"#A8A8A8", fontSize:"24px"}}> {contentDescriptionMap['7']} </div>
             <div style={{ weight:500, height:'none',color:"#A8A8A8", fontSize:"24px"}}>
               장소 목록 화면은 준비 중입니다.
             </div>
@@ -146,8 +146,7 @@ function renderAdminMainContent(menuKey, { onNavigate }) {
       return (
         <div style={{ display:'flex', height:'100%', justifyContent:'flex-start', alignItems:'center', flexDirection:'column'}}>
           <div style={{ height:'80%', display:'flex', justifyContent:'center', alignItems:'center', flexDirection:'column'}}>
-            <div style={{ weight:500, height:'none', color:"#A8A8A8", padding:'12px' ,fontSize:"48px"}}>{pageTitleMap['8']}</div>
-            <div style={{ weight:500, height:'none',color:"#A8A8A8", fontSize:"30px"}}> {contentDescriptionMap['8']} </div>
+            <div style={{ weight:500, height:'none',color:"#A8A8A8", fontSize:"24px"}}> {contentDescriptionMap['8']} </div>
             <div style={{ weight:500, height:'none',color:"#A8A8A8", fontSize:"24px"}}>
               CSV 업로드 화면은 준비 중입니다.
             </div>

@@ -61,12 +61,14 @@ const LoginModalComponent = ({ open, onClose }) => {
 
   return (
     <Modal
+      top={200}
       transitionName="ant-fade"
       title="로그인"
-      open={open}
+      open={open}      
       onCancel={handleClose}
       footer={null}
       width={300}
+      style={{ top: '200px' }}
       styles={{
         header: { textAlign: 'center', paddingTop: '20px' },
         title: { fontSize: '20px', fontWeight: 400 }
@@ -126,7 +128,8 @@ const LoginModalComponent = ({ open, onClose }) => {
             htmlType="submit"
             loading={submitting}
             disabled={!email || !password}
-            className={!email || !password? styles.submitGrayDisabled : styles.submitGray}
+            type='primary'
+            className={styles.submitGray}
           >
             로그인
           </Button>
@@ -157,7 +160,7 @@ const LoginModalComponent = ({ open, onClose }) => {
           </div>
         </Form.Item>
         <Form.Item style={{ marginTop: '0px', marginBottom: '12px' }}>
-          <Button block htmlType="button" className={styles.submitGray} onClick={handleSignUp}>
+          <Button block htmlType="button" className={styles.submitGray} type='primary' onClick={handleSignUp}>
             이메일로 회원가입
           </Button>
         </Form.Item>
