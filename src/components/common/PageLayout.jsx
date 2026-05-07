@@ -17,7 +17,7 @@ const PageLayout = (props) => {
   }
 
   return (
-    <Layout>
+    <Layout style={{ minHeight: '100vh' }}>
       <Header style={headerStyle} />
       <Content style={contentStyle}>{props.children}</Content>
       {props.isVisiableFooter ? <FooterMain /> : null}
