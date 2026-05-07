@@ -167,7 +167,26 @@ const PlanAreaContainer = () => {
   }, [selectedSigu]);
 
   // DB 장소 목록 호출 - 페이징
-  const loadAreaData = async (type, page = 1) => {
+const loadAreaData = async (type, page = 1, keyword = '') => {
+    // 키워드 검색 시 캐시 안 씀
+    if (keyword) {
+      try {
+        setLoading(true);
+        const response = await withMinDelay(getAreaApi(selectedSigu, type, page, PAGE_SIZE, keyword));
+        const data = response.data.data;
+        setSearchResults(data.areas);
+        setPagination(prev => ({
+          ...prev,
+          [type]: { current: page, total: data.totalCount }
+        }));
+      } catch (error) {
+        console.warn(`장소 데이터 호출 오류`);
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
+
     // 캐시에 있으면 재요청 안 함
     if (areaCache[type]?.pages[page]) {
       const cached = areaCache[type].pages[page];
@@ -179,12 +198,12 @@ const PlanAreaContainer = () => {
       return;
     }
 
+    // 키워드 없이 검색
     try {
       setLoading(true);
       const response = await withMinDelay(getAreaApi(selectedSigu, type, page, PAGE_SIZE));
       const data = response.data.data;
 
-      // 캐시에 저장
       setAreaCache(prev => ({
         ...prev,
         [type]: {
@@ -276,7 +295,7 @@ const PlanAreaContainer = () => {
     if (searchType === "PLACE") {
       loadPlaceData("", 1);
     } else {
-      loadAreaData(searchType, 1);
+      loadAreaData(searchType,1);
     }
   }, [searchType, objRegions]);
 
@@ -285,7 +304,7 @@ const PlanAreaContainer = () => {
     if (searchType === "PLACE") {
       loadPlaceData(searchKeyword, page);
     } else {
-      loadAreaData(searchType, page);
+      loadAreaData(searchType, page, searchKeyword);
     }
     if (listRef.current) listRef.current.scrollTop = 0;
   };
@@ -301,29 +320,24 @@ const PlanAreaContainer = () => {
     if (!finalKeyword) {
       setFilteredLists([]);
       setIsSearched(false);
-      // 캐시에서 현재 페이지 데이터 복원
       const currentPage = pagination[searchType]?.current || 1;
       if (searchType === "PLACE") {
         loadPlaceData("", currentPage);
       } else {
-        loadAreaData(searchType, currentPage);
+        loadAreaData(searchType, currentPage, ''); // keyword 빈 문자열로 캐시 방식 복원
       }
       return;
     }
 
+    setIsSearched(true);
+
     if (searchType === "PLACE") {
-      setIsSearched(true);
       loadPlaceData(finalKeyword);
       return;
     }
 
-    // SPOT, FOOD는 캐시에서 꺼내서 필터링
-    const currentPage = pagination[searchType]?.current || 1;
-    const cachedAreas = areaCache[searchType]?.pages[currentPage] ?? [];
-    const result = cachedAreas.filter((item) => item.name?.includes(finalKeyword));
-    setFilteredLists(result);
-    setSearchResults(result);
-    setIsSearched(true);
+    // SPOT, FOOD는 API로 키워드 검색
+    loadAreaData(searchType, 1, finalKeyword);
   };
 
   // 리스트 스크롤 초기화
@@ -360,8 +374,7 @@ const PlanAreaContainer = () => {
             style={{ 
               borderBottom: "solid 1px #A8A8A8",
               minHeight: "108px",
-
-             }}
+            }}
             bg="none"
           >
             <FlexBox h="40px" bg="none">
@@ -376,7 +389,6 @@ const PlanAreaContainer = () => {
               />
             </FlexBox>
           </FlexBox>
-
           {/* 리스트 */}
           <FlexBox
             h="100%"
@@ -400,29 +412,24 @@ const PlanAreaContainer = () => {
               </FlexBox>
             )}
           </FlexBox>
-
-          {/* 페이지네이션 - 검색 중엔 숨김 */}
-          {!isSearched && (
-            <FlexBox h="40px" bg="none"
-              settings={{justify: "center"}}
-              style={{ minHeight:"40px", padding: "8px 0" }}>
-              <Pagination
-                current={pagination[searchType]?.current || 1}
-                total={pagination[searchType]?.total || 0}
-                pageSize={PAGE_SIZE}
-                onChange={onPageChange}
-                showSizeChanger={false}
-                size="small"
-                itemRender={(page, type, element) => {
-                  if (type === "next" && searchType === "PLACE" && pagination[searchType]?.isEnd) {
-                    return <span style={{ pointerEvents: "none", opacity: 0.3 }}>{element}</span>;
-                  }
-                  return element;
-                }}
-              />
-            </FlexBox>
-          )}
-
+          <FlexBox h="40px" bg="none"
+            settings={{justify: "center"}}
+            style={{ minHeight:"40px", padding: "8px 0" }}>
+            <Pagination
+              current={pagination[searchType]?.current || 1}
+              total={pagination[searchType]?.total || 0}
+              pageSize={PAGE_SIZE}
+              onChange={onPageChange}
+              showSizeChanger={false}
+              size="small"
+              itemRender={(page, type, element) => {
+                if (type === "next" && searchType === "PLACE" && pagination[searchType]?.isEnd) {
+                  return <span style={{ pointerEvents: "none", opacity: 0.3 }}>{element}</span>;
+                }
+                return element;
+              }}
+            />
+          </FlexBox>
           {/* 북마크 팝업 */}
           {((selectedAreaId?.length > 0) || (selectedPlaceId?.length > 0)) && (
             <FlexBox

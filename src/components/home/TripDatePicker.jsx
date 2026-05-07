@@ -93,7 +93,7 @@ const TripDatePicker = ({ width="400px", height="52px", placement, isShowConfirm
       setTempDates(todays);
       setConfirmedDates(todays);
     }
-  }, [])
+  }, [confirmedDates])
 
   return (
     <RangePicker

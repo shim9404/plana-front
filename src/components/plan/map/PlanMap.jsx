@@ -7,7 +7,7 @@ import { usePlaceSearch } from "../../../hooks/trip/PlaceSearchContext";
 import { Button, Flex } from "antd";
 import { Eye, EyeOff, MouseLeft, MouseOff, SearchX, ZoomIn, ZoomOut } from "lucide-react";
 import { usePlanBookmark } from "../../../hooks/trip/PlanBookmarkContext";
-import { getBookmarkColor, getBookmarkSubColor } from "../../../utils/plan/bookmarkUtils";
+import { getBookmarkColor, getBookmarkSubColor, getBookmarkActiveColor } from "../../../utils/plan/bookmarkUtils";
 import { StarTwoTone } from "@ant-design/icons";
 
 /**
@@ -171,10 +171,12 @@ const PlanMap = () => {
             <>
             <IconButton width="25px" height="25px" 
               style={{ 
-                backgroundColor: bookmarkType === "NONE"? "#FFFFFF": getBookmarkColor(bookmarkType),
+                backgroundColor: bookmarkType === "NONE"? "#FFFFFF": getBookmarkSubColor(bookmarkType),
+                // border: "2px solid #000000",
+                border: `2px solid ${getBookmarkActiveColor(bookmarkType)}`,
                 position: "absolute", top: "-14px", right: "-12px"
                 }}>
-              <StarTwoTone twoToneColor={getBookmarkSubColor(bookmarkType)} style={{fontSize: "20px"}}/>
+              <StarTwoTone twoToneColor={getBookmarkActiveColor(bookmarkType)} style={{fontSize: "20px" }}/>
             </IconButton>
             </>
           )}
@@ -219,8 +221,8 @@ const PlanMap = () => {
     // 이전 좌표와 비교
     if (
       prevPositionRef.current &&
-      prevPositionRef.current.getLat() === firstPosition.getLat() &&
-      prevPositionRef.current.getLng() === firstPosition.getLng()
+      prevPositionRef.current?.getLat() === firstPosition?.getLat() &&
+      prevPositionRef.current?.getLng() === firstPosition?.getLng()
     ) {
       return; // 동일 시, 이동 안함
     }
