@@ -102,7 +102,7 @@ const TripInfoSelector = ({ setHoveredId }) => {
       <FlexBox w='26%' h='78%' style={{ position: "relative", minWidth:"390px", maxWidth: "500px", minHeight:"480px", maxHeight: "600px" }} >
         <FloatingContainer settings={{ transform: "translate(0%, -20%)", top: "40%", left: "36%", backgroundColor: "#FFFFFF", justify: "center" }} >
           <FlexBox w="85%" h="90%" settings={{ align: "flex-start", justify: "space-around" }} style={flexStyle} >
-            <FlexBox w="100%" h="20%" bg="none" settings={{isVertical: true, justify: "flex-start"}} style={{ fontSize: "28px" }}>
+            <FlexBox w="100%" h="20%" bg="none" settings={{isVertical: true, justify: "flex-start"}} style={{ fontSize: "25px" }}>
               {username && 
               <FlexBox w="100%">
                 {`${username} 님 :)`}
