@@ -14,6 +14,10 @@ const LoginModalComponent = ({ open, onClose }) => {
   const { openSignupModal } = useModal();
   const { message } = App.useApp();
 
+  // 값 입력 감시용
+  const email = Form.useWatch("email", form);
+  const password = Form.useWatch("password", form);
+
   const handleFinish = async (values) => {
     setSubmitting(true);
     setLoginError('');
@@ -57,12 +61,14 @@ const LoginModalComponent = ({ open, onClose }) => {
 
   return (
     <Modal
+      top={200}
       transitionName="ant-fade"
       title="로그인"
-      open={open}
+      open={open}      
       onCancel={handleClose}
       footer={null}
       width={300}
+      style={{ top: '200px' }}
       styles={{
         header: { textAlign: 'center', paddingTop: '20px' },
         title: { fontSize: '20px', fontWeight: 400 }
@@ -121,12 +127,14 @@ const LoginModalComponent = ({ open, onClose }) => {
             block
             htmlType="submit"
             loading={submitting}
+            disabled={!email || !password}
+            type='primary'
             className={styles.submitGray}
           >
             로그인
           </Button>
         </Form.Item>
-        <Form.Item style={{ marginBottom: '0px' }}>
+        {/* <Form.Item style={{ marginBottom: '0px' }}>
           <div className={styles.snsCaption} style={{ display: 'flex', justifyContent: 'center' }}>
             SNS 계정으로 시작하기
           </div>
@@ -145,14 +153,14 @@ const LoginModalComponent = ({ open, onClose }) => {
           <Button block htmlType="button" className={styles.submitGoogle} onClick={googleLogin}>
             구글 계정으로 시작
           </Button>
-        </Form.Item>
+        </Form.Item> */}
         <Form.Item style={{ marginBottom: '0px' }}>
           <div className={styles.snsCaption} style={{ display: 'flex', justifyContent: 'center' }}>
             아직 계정이 없으신가요?
           </div>
         </Form.Item>
         <Form.Item style={{ marginTop: '0px', marginBottom: '12px' }}>
-          <Button block htmlType="button" className={styles.submitGray} onClick={handleSignUp}>
+          <Button block htmlType="button" className={styles.submitGray} type='primary' onClick={handleSignUp}>
             이메일로 회원가입
           </Button>
         </Form.Item>

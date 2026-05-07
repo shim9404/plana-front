@@ -84,7 +84,6 @@ const KeywordPeriodColumn = ({ periodTitle, periodKey, bucket }) => {
           rowKey={(r) => `${periodKey}-${category}-${r.rowId ?? r.keyword}`}
           columns={columns}
           dataSource={rows}
-          scroll={{ x: 'max-content' }}
         />
       )}
     </Col>
