@@ -267,21 +267,27 @@ const PlanMap = () => {
           zIndex: isHide ? 1 : 0,
         }}
       >
-        <Button 
-          icon={isHide ? <EyeOff size={20}/> : <Eye size={20} /> } 
-          onClick={() => setIsHide(!isHide)}
-          style={{ width:'40px', height: '40px',  borderRadius: '50%', display: 'flex', alignItems: 'center' }}
-        />
-        <Button 
-          icon={isDrag ? <MouseLeft size={20}/> : <MouseOff size={20} /> } 
-          onClick={toggleDrag}
-          style={{ width:'40px', height: '40px',  borderRadius: '50%', display: 'flex', alignItems: 'center' }}
-        />
-        <Button 
-          icon={isZoom ? <ZoomIn size={20}/> : <SearchX size={20} /> } 
-          onClick={toggleZoom}
-          style={{ width:'40px', height: '40px', borderRadius: '50%' , display: 'flex', alignItems: 'center' }}
-        />
+        { map && (
+            <>
+              <Button 
+                icon={isHide ? <EyeOff size={20}/> : <Eye size={20} /> } 
+                onClick={() => setIsHide(!isHide)}
+                style={{ width:'40px', height: '40px',  borderRadius: '50%', display: 'flex', alignItems: 'center' }}
+              />
+              <Button 
+                icon={isDrag ? <MouseLeft size={20}/> : <MouseOff size={20} /> } 
+                onClick={toggleDrag}
+                style={{ width:'40px', height: '40px',  borderRadius: '50%', display: 'flex', alignItems: 'center' }}
+              />
+              <Button 
+                icon={isZoom ? <ZoomIn size={20}/> : <SearchX size={20} /> } 
+                onClick={toggleZoom}
+                style={{ width:'40px', height: '40px', borderRadius: '50%' , display: 'flex', alignItems: 'center' }}
+              />
+            </>
+          )
+        }
+
       </Flex>
     </div>
     </>

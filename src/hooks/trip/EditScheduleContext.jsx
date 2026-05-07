@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useMemo, useRef, useState } from "react";
 import { usePlanDays } from "./PlanDaysContext";
+import { SCHEDULE_CATEGORYS } from "../../constants/scheduleCategory";
 
 /** === 스케줄 편집 ================================
  * EditScheduleContext 구독 컴포넌트 목록
@@ -22,7 +23,7 @@ export const EditScheduleProvider = ({ children }) => {
   // 편집 중인 스케줄
   const [editingSchedule, setEditingSchedule] = useState(null);
   // 스케줄 카테고리(구분)
-  const [scheduleCategorys, setScheduleCategorys] = useState([]);
+  const [scheduleCategorys, setScheduleCategorys] = useState(SCHEDULE_CATEGORYS);
 
   /**
    * 스케줄 추가
