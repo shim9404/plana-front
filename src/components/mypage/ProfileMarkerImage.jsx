@@ -1,5 +1,7 @@
+import profileMarker from '../../assets/images/profileImage/profileMarker.png';
+
 const ProfileMarkerImage = ({ number = 1, active = 1 }) => {
-  const imgUrl = 'url("../../../public/images/profileImage/profileMarker.png")'
+  const imgUrl = `url(${profileMarker})`
 
   const index = number - 1;
   const col = index % 3;             // 가로

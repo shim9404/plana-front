@@ -1,5 +1,9 @@
+import MapMarkersImg from '../../../assets/images/map/MapMarkers.png';
+import MapMarkersOverImg from '../../../assets/images/map/MapMarkersOver.png';
+
+
 const MapMarkerImage = ({ number = 1, active }) => {
-  const imgUrl = `url("../../../../public/images/map/MapMarkers${active?"Over":""}.png")`;
+  const imgUrl = `url(${active ? MapMarkersOverImg : MapMarkersImg})`;
 
   let offsetY = number % 10 - 1;
   let offsetX = Math.floor(number / 10);
