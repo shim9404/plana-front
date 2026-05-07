@@ -4,9 +4,18 @@
   height: 40px;
   padding-block: 10px;
   font-size: 14px;
+  background: var(--color-dark-grey, #565656) !important;
+  border-color: var(--color-dark-grey, #565656) !important;
+  color: var(--color-white, #ffffff) !important;
+}
+
+.submitGrayDisabled {
+  width: 100%;
+  height: 40px;
+  padding-block: 10px;
+  font-size: 14px;
   background: var(--color-grey, #565656) !important;
   border-color: var(--color-grey, #565656) !important;
-  color: var(--color-white, #ffffff) !important;
 }
 
 .submitGray:hover,

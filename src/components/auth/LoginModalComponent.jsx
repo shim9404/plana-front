@@ -14,6 +14,10 @@ const LoginModalComponent = ({ open, onClose }) => {
   const { openSignupModal } = useModal();
   const { message } = App.useApp();
 
+  // 값 입력 감시용
+  const email = Form.useWatch("email", form);
+  const password = Form.useWatch("password", form);
+
   const handleFinish = async (values) => {
     setSubmitting(true);
     setLoginError('');
@@ -121,12 +125,13 @@ const LoginModalComponent = ({ open, onClose }) => {
             block
             htmlType="submit"
             loading={submitting}
-            className={styles.submitGray}
+            disabled={!email || !password}
+            className={!email || !password? styles.submitGrayDisabled : styles.submitGray}
           >
             로그인
           </Button>
         </Form.Item>
-        <Form.Item style={{ marginBottom: '0px' }}>
+        {/* <Form.Item style={{ marginBottom: '0px' }}>
           <div className={styles.snsCaption} style={{ display: 'flex', justifyContent: 'center' }}>
             SNS 계정으로 시작하기
           </div>
@@ -145,7 +150,7 @@ const LoginModalComponent = ({ open, onClose }) => {
           <Button block htmlType="button" className={styles.submitGoogle} onClick={googleLogin}>
             구글 계정으로 시작
           </Button>
-        </Form.Item>
+        </Form.Item> */}
         <Form.Item style={{ marginBottom: '0px' }}>
           <div className={styles.snsCaption} style={{ display: 'flex', justifyContent: 'center' }}>
             아직 계정이 없으신가요?
