@@ -72,9 +72,9 @@ const PlanTableContainer = () => {
             <IconButton width="48px" height="36px" type="default">
               <ShareAltOutlined />
             </IconButton> */}
-            <IconButton width="36px" height="32px" type="default">
+            {/* <IconButton width="36px" height="32px" type="default">
               <DownloadOutlined style={{fontSize: "18px"}}/>
-            </IconButton>
+            </IconButton> */}
           {/* </FlexBox> */}
         </FlexBox>
 
