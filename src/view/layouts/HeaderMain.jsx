@@ -1,5 +1,5 @@
 import { Layout, message } from "antd";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { MenuButton } from "../../components/common/PLA_Buttons";
 import {
   CompassOutlined,
@@ -16,6 +16,9 @@ import { FlexBox } from "../../components/common/PLA_FlexBox";
 import { useEffect, useRef } from "react";
 import useProtectedNavigate from "../../hooks/useProtectedNavigate";
 import { NAV_PRESET } from "../../utils/protectedNavPreset";
+
+import PlanALogo from '../../assets/images/svg/logos/plana-logo.svg?react';
+
 const { Header } = Layout;
 
 const headerStyle = {
@@ -111,8 +114,7 @@ const HeaderMain = () => {
           {/* 로고 */}
           <FlexBox w="200px" bg="none">
             <Link to="/" className="header-trip__brand">
-              <img src="../../../public/images/svg/logos/plana-logo.svg"
-                alt="logo" width="137px" height="52px" />
+              <PlanALogo width="137" height="52" />
             </Link>
           </FlexBox>
           {/* 계획 페이지 헤더 영역 */}
