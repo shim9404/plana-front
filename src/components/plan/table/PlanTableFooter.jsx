@@ -4,13 +4,15 @@ import { useEffect, useState } from "react";
 import { useTripInfo } from "../../../hooks/trip/TripInfoContext";
 import { editTripInfoApi } from "../../../services/tripApi";
 import dayjs from 'dayjs';
-import { usePlanDays } from "../../../hooks/trip/PlanDaysContext";
+// import { usePlanDays } from "../../../hooks/trip/PlanDaysContext";
+import usePlanDaysStore from '../../../hooks/trip/usePlanDaysStore.js';
 import { useTripDate } from "../../../hooks/trip/TripDateContext";
 
 const PlanTableFooter = ({ styles }) => {
   const { entryCount, setEntryCount, tripId } = useTripInfo();
   const { confirmedDates } = useTripDate();
-  const { planDays } = usePlanDays();
+  // const { planDays } = usePlanDays();
+  const planDays = usePlanDaysStore((state) => state.planDays);
   const [totalPrice, setTotalPrice] = useState(0);
   const [memberPrice, setMemberPrice] = useState(0);
   const onChangeEntryCount = (value) => {

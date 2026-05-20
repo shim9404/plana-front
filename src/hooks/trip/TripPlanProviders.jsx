@@ -4,8 +4,8 @@ import { TripDateProvider } from "./TripDateContext";
 import { PlanUIProvider } from "./PlanUIContext";
 import { PlaceSearchProvider } from "./PlaceSearchContext";
 import { PlanBookmarkProvider } from "./PlanBookmarkContext";
-import { PlanDaysProvider } from "./PlanDaysContext";
-import { EditScheduleProvider } from "./EditScheduleContext";
+// import { PlanDaysProvider } from "./PlanDaysContext";
+// import { EditScheduleProvider } from "./EditScheduleContext";
 
 const TripPlanProviders = ({ children }) => {
   return (
@@ -15,11 +15,11 @@ const TripPlanProviders = ({ children }) => {
           <PlanUIProvider>
             <PlaceSearchProvider>
               <PlanBookmarkProvider>
-                <PlanDaysProvider>
-                  <EditScheduleProvider>
+                {/* <PlanDaysProvider> */}
+                  {/* <EditScheduleProvider> */}
                     {children}
-                  </EditScheduleProvider>
-                </PlanDaysProvider>
+                  {/* </EditScheduleProvider> */}
+                {/* </PlanDaysProvider> */}
               </PlanBookmarkProvider>
             </PlaceSearchProvider>
           </PlanUIProvider>

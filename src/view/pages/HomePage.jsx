@@ -3,7 +3,8 @@ import PageLayout from "../../components/common/PageLayout";
 import Map from "../../components/home/Map";
 import TripInfoSelector from "../../components/home/TripInfoSelector";
 import { useCallback, useEffect, useRef } from "react";
-import { useRegion } from "../../hooks/home/RegionContext";
+// import { useRegion } from "../../hooks/home/RegionContext";
+import useRegionStore from '../../hooks/home/useRegionStore.js';
 import { getRegionDataForCascader } from "../../services/regionDataParser";
 import { getRegionApi } from "../../services/regionApi";
 import { fetchWithRetry } from "../../utils/apiUtil.js";
@@ -17,7 +18,10 @@ const HomePage = () => {
   const { setTripId } = useTripInfo();
   const { setConfirmedDates, setActiveDayCount } = useTripDate();
   const { setSelectedZdo, setSelectedSigu } = useTripRegion();
-  const { regionData, updateRegionData } = useRegion();
+  // const { regionData, updateRegionData } = useRegion();
+  const regionData = useRegionStore((state) => state.regionData);
+  const updateRegionData = useRegionStore((state) => state.updateRegionData);
+
   const { openOneBtnModal } = useModal();
   const hoveredIdRef = useRef(null);
 

@@ -11,7 +11,8 @@ import { NAV_PRESET } from '../../utils/protectedNavPreset'
 import useProtectedNavigate from '../../hooks/useProtectedNavigate'
 import { addTripApi } from '../../services/tripApi'
 import { useAuth } from '../../hooks/AuthContext'
-import { usePlanDays } from '../../hooks/trip/PlanDaysContext'
+// import { usePlanDays } from '../../hooks/trip/PlanDaysContext'
+import usePlanDaysStore from '../../hooks/trip/usePlanDaysStore.js';
 import { useTripRegion } from '../../hooks/trip/TripRegionContext'
 import { useTripDate } from '../../hooks/trip/TripDateContext'
 import { usePlanBookmark } from '../../hooks/trip/PlanBookmarkContext'
@@ -21,7 +22,8 @@ const TripInfoSelector = ({ setHoveredId }) => {
   const { selectedZdo, setSelectedZdo, selectedSigu, setSelectedSigu } = useTripRegion();
   const { confirmedDates, setConfirmedDates, setActiveDayCount } = useTripDate();
   const { setTripName, setTripId } = useTripInfo();
-  const { setPlanDays } = usePlanDays();
+  // const { setPlanDays } = usePlanDays();
+  const setPlanDays = usePlanDaysStore((state) => state.setPlanDays);
   const { setBookmarks } = usePlanBookmark();
   const { memberId, username } = useAuth();
   const { openLoginModal } = useModal();

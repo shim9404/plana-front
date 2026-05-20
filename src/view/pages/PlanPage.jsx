@@ -2,7 +2,8 @@ import { Button, Layout, message } from "antd";
 import { useEffect, useRef, useState } from "react";
 import { FlexBox } from "../../components/common/PLA_FlexBox";
 import { getRegionDataForCascader } from "../../services/regionDataParser";
-import { useRegion } from "../../hooks/home/RegionContext";
+// import { useRegion } from "../../hooks/home/RegionContext";
+import useRegionStore from '../../hooks/home/useRegionStore.js';
 import PageLayout from "../../components/common/PageLayout";
 import PlanTableContainer from "../../components/plan/PlanTableContainer";
 import PlanAreaContainer from "../../components/plan/PlanAreaContainer";
@@ -18,8 +19,10 @@ import { useTripInfo } from "../../hooks/trip/TripInfoContext";
 import { editScheduleApi, getTripApi, reorderDaysApi, reorderSchedulesApi } from "../../services/tripApi";
 import { usePlanBookmark } from "../../hooks/trip/PlanBookmarkContext";
 import { usePlanUI } from "../../hooks/trip/PlanUIContext";
-import { useEditSchedule } from "../../hooks/trip/EditScheduleContext";
-import { usePlanDays } from "../../hooks/trip/PlanDaysContext";
+// import { useEditSchedule } from "../../hooks/trip/EditScheduleContext";
+import useEditScheduleStore from '../../hooks/trip/useEditScheduleStore.js';
+// import { usePlanDays } from "../../hooks/trip/PlanDaysContext";
+import usePlanDaysStore from '../../hooks/trip/usePlanDaysStore.js';
 import BookmarkItem from "../../components/bookmark/BookmarkItem";
 import { usePlaceSearch } from "../../hooks/trip/PlaceSearchContext";
 import { NAV_PRESET } from "../../utils/protectedNavPreset";
@@ -73,14 +76,21 @@ const mapStyle = {
 //#endregion
 
 const PlanPage = () => {
-  const { setEditingSchedule, setBookmarkInSchedule, setScheduleCategorys } = useEditSchedule();
-  const { setPlanDays, getScheduleDayId } = usePlanDays();
+  // const { setEditingSchedule, setBookmarkInSchedule, setScheduleCategorys } = useEditSchedule();
+  const setEditingSchedule = useEditScheduleStore((state) => state.setEditingSchedule);
+  const setBookmarkInSchedule = useEditScheduleStore((state) => state.setBookmarkInSchedule);
+  const setScheduleCategorys = useEditScheduleStore((state) => state.setScheduleCategorys);
+  // const { setPlanDays, getScheduleDayId } = usePlanDays();
+  const setPlanDays = usePlanDaysStore((state) => state.setPlanDays);
+  const getScheduleDayId = usePlanDaysStore((state) => state.getScheduleDayId);
   const { setConfirmedDates, setActiveDayCount } = useTripDate();
   const { isExpandTable, setIsExpandTable, setCanExpandTable, isExpandBookmark, setIsExpandBookmark, setCanExpandBookmark, isFoldTable, setIsFoldTable } = usePlanUI();
   const { setBookmarks, getBookmark, setLinkedCountBookmark } = usePlanBookmark();
   const { tripId, setTripId, setTripName, setEntryCount } = useTripInfo();
   const { setSelectedSigu } = useTripRegion();
-  const { regionData, updateRegionData } = useRegion();
+  //const { regionData, updateRegionData } = useRegion();
+  const regionData = useRegionStore((state) => state.regionData);
+  const updateRegionData = useRegionStore((state) => state.updateRegionData);
   const { setIsSearched } = usePlaceSearch();
   const { cascaderOptions } = regionData;
   const { openOneBtnModal } = useModal();

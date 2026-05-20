@@ -9,7 +9,8 @@ import { BookmarkPopup } from "./area/BookmarkPopup";
 import { ScrollStyle } from "../../styles/planStyles";
 import { getAreaApi, getPlaceApi } from "../../services/areaApi";
 import { useTripInfo } from "../../hooks/trip/TripInfoContext";
-import { useRegion } from "../../hooks/home/RegionContext";
+// import { useRegion } from "../../hooks/home/RegionContext";
+import useRegionStore from '../../hooks/home/useRegionStore.js';
 import { getRegionByIdApi } from "../../services/regionApi";
 import { addBookmarkApi } from "../../services/tripApi";
 import { usePlaceSearch } from "../../hooks/trip/PlaceSearchContext";
@@ -51,8 +52,9 @@ const PlanAreaContainer = () => {
   const { selectedSigu } = useTripRegion();
   const { setBookmarks } = usePlanBookmark();
   const { isSearched, setIsSearched, searchResults, setSearchResults } = usePlaceSearch();
-  const { objRegions, setObjRegions } = useRegion();
-
+  //const { objRegions, setObjRegions } = useRegion();
+  const objRegions = useRegionStore((state) => state.objRegions);
+  const setObjRegions = useRegionStore((state) => state.setObjRegions);
 
   // 장소 데이터(DB)
   const [areaCache, setAreaCache] = useState({

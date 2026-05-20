@@ -19,8 +19,10 @@ import { oneBtnPreset } from "../../utils/alertModalPreset";
 import dayjs from "dayjs";
 import { usePlanBookmark } from "../../hooks/trip/PlanBookmarkContext";
 import { useTripDate } from "../../hooks/trip/TripDateContext";
-import { usePlanDays } from "../../hooks/trip/PlanDaysContext";
-import { useEditSchedule } from "../../hooks/trip/EditScheduleContext";
+// import { usePlanDays } from "../../hooks/trip/PlanDaysContext";
+import usePlanDaysStore from '../../hooks/trip/usePlanDaysStore.js';
+// import { useEditSchedule } from "../../hooks/trip/EditScheduleContext";
+import useEditScheduleStore from '../../hooks/trip/useEditScheduleStore.js';
 import { SCHEDULE_CATEGORYS } from "../../constants/scheduleCategory";
 import { useTripRegion } from "../../hooks/trip/TripRegionContext";
 import { hideLoader, showLoader } from "../../utils/uiUtil";
@@ -54,13 +56,15 @@ const MyTripPage = () => {
   // 북마크 전역 변수
   const { setBookmarks } = usePlanBookmark();
   // 여행 계획표 전역 변수
-  const { setPlanDays } = usePlanDays();
+  // const { setPlanDays } = usePlanDays();
+  const setPlanDays = usePlanDaysStore((state) => state.setPlanDays);
   // 여행 ID + 여행명 + 참여 인원 전역 변수
   const { setTripId, setTripName, setEntryCount } = useTripInfo();
   // 여행일자 + 여행 기간(활성화 된 일자 수) 전역 변수
   const { setConfirmedDates, setActiveDayCount } = useTripDate();
   // 여행 계획 카테고리
-  const { setScheduleCategorys } = useEditSchedule();
+  // const { setScheduleCategorys } = useEditSchedule();
+  const setScheduleCategorys = useEditScheduleStore((state) => state.setScheduleCategorys);
   // 지역 전역 변수
   const { setSelectedSigu } = useTripRegion();
 

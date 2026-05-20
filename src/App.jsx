@@ -3,7 +3,7 @@ import LoginModalComponent from "./components/auth/LoginModalComponent";
 import SignUpModalComponent from "./components/auth/SignUpModalComponent";
 import AppRouter from "./router/AppRouter";
 import HeaderMain from "./view/layouts/HeaderMain";
-import { RegionProvider } from "./hooks/home/RegionContext.jsx";
+// import { RegionProvider } from "./hooks/home/RegionContext.jsx";
 import { useModal } from "./hooks/ModalProvider.jsx";
 import { OneBtnModal } from "../src/view/modals/OneBtnModal.jsx";
 import { TwoBtnModal } from "./view/modals/TwoBtnModal.jsx";
@@ -42,7 +42,7 @@ useEffect(() => {
   if (isMobile && window.innerWidth < 768) return <MobileGuard />;
 
   return (
-    <RegionProvider>
+    // <RegionProvider>
       <TripPlanProviders>
         <LoginModalComponent
           open={isLoginOpen}
@@ -67,7 +67,7 @@ useEffect(() => {
         <HeaderMain />
         <AppRouter />
       </TripPlanProviders>
-    </RegionProvider>
+    // </RegionProvider>
   );
 }
 

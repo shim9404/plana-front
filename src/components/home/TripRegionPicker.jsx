@@ -3,10 +3,12 @@ import styles from "../../styles/TripInfoSelector.module.css";
 import { useEffect, useState } from "react";
 import { FlexBox, TextBox } from "../common/PLA_FlexBox";
 import { LoadingOutlined } from "@ant-design/icons";
-import { useRegion } from "../../hooks/home/RegionContext";
+// import { useRegion } from "../../hooks/home/RegionContext";
+import useRegionStore from '../../hooks/home/useRegionStore.js';
 
 const TripRegionPicker = ({ width = "400px", height = "52px", ...rest }) => {
-  const { regionData } = useRegion();
+  // const { regionData } = useRegion();
+  const regionData = useRegionStore((state) => state.regionData);
   const { cascaderOptions } = regionData;
 
   const [existData, setExistData] = useState(cascaderOptions && cascaderOptions !== undefined && cascaderOptions?.length > 0);

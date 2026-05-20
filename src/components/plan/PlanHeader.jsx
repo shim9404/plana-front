@@ -5,7 +5,8 @@ import TripRegionPicker from "../home/TripRegionPicker";
 import { CheckCircleTwoTone, SyncOutlined } from "@ant-design/icons";
 import { useEffect, useRef, useState } from "react";
 import { editTripDateApi, editTripInfoApi } from "../../services/tripApi";
-import { usePlanDays } from "../../hooks/trip/PlanDaysContext";
+// import { usePlanDays } from "../../hooks/trip/PlanDaysContext";
+import usePlanDaysStore from '../../hooks/trip/usePlanDaysStore.js';
 import { useTripRegion } from "../../hooks/trip/TripRegionContext";
 import { useTripDate } from "../../hooks/trip/TripDateContext";
 import { DebounceInput } from "../common/PLA_Input";
@@ -14,7 +15,8 @@ const PlanHeader = () => {
   const { setSelectedZdo, selectedSigu, setSelectedSigu } = useTripRegion();
   const { tripName, setTripName, tripId } = useTripInfo();
   const { setActiveDayCount } = useTripDate();
-  const { addPlanDays } = usePlanDays();
+  // const { addPlanDays } = usePlanDays();
+  const addPlanDays = usePlanDaysStore((state) => state.addPlanDays);
   const [isSaving, setIsSaving] = useState(false);
   const [ cascaderValue, setCascaderValue ] = useState([])
   const [changedName, setChangedName] = useState("");         // Input 변동 값 (API 요청 용도)

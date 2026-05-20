@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { useRegion } from "../../../hooks/home/RegionContext";
+// import { useRegion } from "../../../hooks/home/RegionContext";
+import useRegionStore from '../../../hooks/home/useRegionStore.js';
 import MapMarkerImage from "../area/MapMarkerImage";
 import { renderToString } from "react-dom/server";
 import { IconButton, TextButton } from "../../common/PLA_Buttons";
@@ -83,7 +84,8 @@ const PlanMap = () => {
   const { bookmarks, getBookmarkType } = usePlanBookmark();
 
   //  지역(이름 + 좌표) 데이터
-  const { objRegions } = useRegion();
+  // const { objRegions } = useRegion();
+  const objRegions = useRegionStore((state) => state.objRegions);
 
 
   // 기존 마커 전체 제거 함수

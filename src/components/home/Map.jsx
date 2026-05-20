@@ -22,7 +22,8 @@ import Jeonnam from '../../assets/images/svg/regions/Jeonnam.svg?react';
 import Gyeongbuk from '../../assets/images/svg/regions/Gyeongbuk.svg?react';
 import Gyeongnam from '../../assets/images/svg/regions/Gyeongnam.svg?react';
 import Jeju from '../../assets/images/svg/regions/Jeju.svg?react';
-import { useRegion } from '../../hooks/home/RegionContext.jsx';
+// import { useRegion } from '../../hooks/home/RegionContext.jsx';
+import useRegionStore from '../../hooks/home/useRegionStore.js';
 import { useTripRegion } from '../../hooks/trip/TripRegionContext.jsx';
 //#endregion
 
@@ -51,7 +52,9 @@ function Map() {
   const [tooltip, setTooltip] = useState({ visible: false, x: 0, y: 0, name: '' }); // 툴팁 정보
 
   const { selectedZdo, setSelectedZdo, selectedSigu, setSelectedSigu } = useTripRegion();
-  const { regionData } = useRegion();
+  //const { regionData } = useRegion();
+  const regionData = useRegionStore((state) => state.regionData);
+
   const { regionMap } = regionData;
 
   const ActiveMap = SIGU_MAPS[selectedZdo] || Total;  // svg파일
