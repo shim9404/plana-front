@@ -5,6 +5,7 @@ import { IconButton } from '../common/PLA_Buttons';
 import { message, Modal } from 'antd';
 import axiosInstance from '../../services/axiosInstance';
 
+{/* 내 휴지통 */}
 const TripTrashComponent = ({getTripbyMemberId, tripList, getTrashPlan, trashList}) => {
   // 복구 버튼 선택
   const [isRestoreModalOpen, setIsRestoreModalOpen] = useState(false); // 경고창 모달
