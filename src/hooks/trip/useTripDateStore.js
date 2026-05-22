@@ -1,0 +1,26 @@
+import { create } from "zustand";
+
+/** === 여행 일정 ==================================
+ * useTripDateStore 구독 컴포넌트 목록
+ * - TripDatePicker
+ * - TripInfoSelector
+ * - PlanTableFooter
+ =============================================== */
+
+const useTripDateStore = create((set) => ({
+  // 현재 선택된 여행일자
+  confirmedDates: null,
+  setConfirmedDates: (newData) =>
+    set({
+      confirmedDates: newData
+    }),
+
+  // 여행 기간(활성화 된 일자 수)
+  activeDayCount: 0,
+  setActiveDayCount: (newData) =>
+    set({
+      activeDayCount: newData
+    })
+}));
+
+export default useTripDateStore;
