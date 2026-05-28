@@ -3,10 +3,15 @@ import { Input, message } from 'antd';
 import { KeyOutlined } from '@ant-design/icons';
 import '../../styles/mypage.css';
 import { TextButton } from '../common/PLA_Buttons';
-import axiosInstance from '../../services/axiosInstance';
+import { changePasswordApi } from '../../services/memberApi';
+import { oneBtnPreset } from '../../utils/alertModalPreset'
+import { useModal } from '../../hooks/ModalProvider';
 
 {/* == 비밀번호 수정 콘텐츠 == */}
 const PasswordChangeComponent = ({memberId, setSelectedMenu}) => {
+  // 모달창
+  const { openOneBtnModal } = useModal();
+
   // 현재 비밀번호 초기값
   const [currentPassword, setCurrentPassword] = useState("");
   // 새 비밀번호 초기값
@@ -38,18 +43,17 @@ const PasswordChangeComponent = ({memberId, setSelectedMenu}) => {
         return;
       }
 
-      const uri = `/api/members/${memberId}/password`;
       const body = {
         currentPassword: currentPassword,
         newPassword: newPassword
       };
       
-      await axiosInstance.patch(uri, body);
-      message.success("비밀번호가 변경되었습니다.")
+      await changePasswordApi(memberId, body);
+      openOneBtnModal(oneBtnPreset.changeSuccess);
       setSelectedMenu('1')
     } catch (error) {
       console.log(error);
-      message.error("현재 비밀번호가 일치하지 않습니다. 다시 입력해주세요.")
+      openOneBtnModal(oneBtnPreset.changeFail);
     }
   }
 

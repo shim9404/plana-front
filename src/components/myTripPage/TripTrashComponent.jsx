@@ -2,66 +2,53 @@ import React, { useState } from 'react'
 import { Archive, RefreshCw, X } from 'lucide-react';
 import '../../styles/myTripPage.css';
 import { IconButton } from '../common/PLA_Buttons';
-import { message, Modal } from 'antd';
-import axiosInstance from '../../services/axiosInstance';
+import { message } from 'antd';
+import { oneBtnPreset } from '../../utils/alertModalPreset'
+import { useModal } from '../../hooks/ModalProvider';
+import { changeTripStatusApi, deleteTripApi } from '../../services/tripApi';
 
 const TripTrashComponent = ({getTripbyMemberId, tripList, getTrashPlan, trashList}) => {
-  // 복구 버튼 선택
-  const [isRestoreModalOpen, setIsRestoreModalOpen] = useState(false); // 경고창 모달
-  const [selectedRestoreTripId, setSelectedRestoreTripId] = useState(""); // 복구할 여행 목록 id
+  // 모달 창
+  const { openTwoBtnModal } = useModal();
 
-  const restoreshowModal = (tripId) => { // 모달 open
+  // 여행 복구
+  const restoreTrip = (tripId) => {
     /* if (tripList.length >= 5) {
       message.warning("여행 목록이 가득 찼습니다. (5 / 5)")
       return;
     } */
-    setSelectedRestoreTripId(tripId);
-    setIsRestoreModalOpen(true);
-  }; 
+    openTwoBtnModal({
+      ...oneBtnPreset.restoreCheck,
+      onOk: async() => {
+        // 여행 계획 + 북마크 status: 활성화(ACTIVE)
+        try {
+          await changeTripStatusApi(tripId, { status: "ACTIVE" })
+          } catch (error) {
+            console.log(error);
+        }
+        getTrashPlan();
+        getTripbyMemberId();
+      }
+    })
+  }
 
-  const restorehandleOk = async() => { // 확인
-    // 여행 계획 + 북마크 status: 활성화(ACTIVE)
-    try {
-      const uri = `/api/trips/${selectedRestoreTripId}/status`;
-      await axiosInstance.patch(uri, { status: "ACTIVE" });
+  // 여행 삭제
+  const deleteTrip = (tripId) => {
+    openTwoBtnModal({
+      ...oneBtnPreset.deleteCheck,
+      onOk: async() => {
+      // 여행 계획 + 북마크 영구삭제
+      try {
+        await deleteTripApi(tripId);
       } catch (error) {
         console.log(error);
       }
-    getTrashPlan();
-    getTripbyMemberId();
-    setIsRestoreModalOpen(false);
-  }; 
-
-  const restorehandleCancel = () => { // 취소
-    setIsRestoreModalOpen(false);
-  }; 
-
- // 삭제 버튼 선택
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // 경고창 모달
-  const [selectedDeleteTripId, setSelectedDeleteTripId] = useState(""); // 완전 삭제할 여행 목록 id
-
-  const deleteshowModal = (tripId) => { // 모달 open
-    setSelectedDeleteTripId(tripId);
-    setIsDeleteModalOpen(true);
-  }; 
-
-  const deletehandleOk = async() => { // 확인
-    // 여행 계획 + 북마크 영구삭제
-    try {
-      const uri = `/api/trips/${selectedDeleteTripId}`;
-      await axiosInstance.delete(uri, null);
-      } catch (error) {
-        console.log(error);
+      getTrashPlan();
+      getTripbyMemberId();
       }
-    getTrashPlan();
-    getTripbyMemberId();
-
-    setIsDeleteModalOpen(false);
-  }; 
-
-  const deletehandleCancel = () => { // 취소
-    setIsDeleteModalOpen(false);
-  };   
+    })
+  }
+  // --- 
 
 
   return (
@@ -110,12 +97,12 @@ const TripTrashComponent = ({getTripbyMemberId, tripList, getTrashPlan, trashLis
                   {trash.remainDate} 일
                 </div>
                 <div>
-                  <IconButton type="primary" width="50px" height="40px" onClickEvent={()=>restoreshowModal(trash.tripId)}>
+                  <IconButton type="primary" width="50px" height="40px" onClickEvent={()=>restoreTrip(trash.tripId)}>
                     <RefreshCw size={25} />
                   </IconButton>
                 </div>
                 <div>
-                  <IconButton type="primary" danger width="50px" height="40px" onClickEvent={()=>deleteshowModal(trash.tripId)}>
+                  <IconButton type="primary" danger width="50px" height="40px" onClickEvent={()=>deleteTrip(trash.tripId)}>
                     <X size={25} />
                   </IconButton>
                 </div>
@@ -124,34 +111,7 @@ const TripTrashComponent = ({getTripbyMemberId, tripList, getTrashPlan, trashLis
             }
           </div>
         </div>
-      </div>
-
-      <Modal
-        title="알림창"
-        closable={{ 'aria-label': 'Custom Close Button' }}
-        open={isRestoreModalOpen}
-        onOk={restorehandleOk}
-        onCancel={restorehandleCancel}
-        okText="확인"
-        cancelText="취소"
-        okButtonProps={{ danger: true }}
-      >
-        <p>이 여행 목록을 다시 불러오시겠습니까?</p>
-      </Modal>
-
-      <Modal
-        title="알림창"
-        closable={{ 'aria-label': 'Custom Close Button' }}
-        open={isDeleteModalOpen}
-        onOk={deletehandleOk}
-        onCancel={deletehandleCancel}
-        okText="확인"
-        cancelText="취소"
-        okButtonProps={{ danger: true }}
-      >
-        <p>삭제 후 복구가 불가능합니다. 이 여행 목록을 영구 삭제하시겠습니까? </p>
-      </Modal>
-      
+      </div>     
     </>
   )
 }

@@ -33,7 +33,7 @@ const modalStyle = {
 
 const messageContainerStyle = { display: "flex", flexDirection: "column", alignItems: "center", gap: 16, padding: "24px 0 8px" }
 
-const messageTextStyle = { fontSize: 15, color: "#666", textAlign: "center", lineHeight: 1.7, margin: 0 }
+const messageTextStyle = { fontSize: 15, color: "#666", textAlign: "center", lineHeight: 1.7, margin: 0, whiteSpace: "pre-line"}
 
 export const TwoBtnModal = ({ onClose, onOk, title, message, type }) => {
   const { icon: IconComponent, color } = ICON_MAP[type] ?? ICON_MAP.info;
@@ -54,7 +54,7 @@ export const TwoBtnModal = ({ onClose, onOk, title, message, type }) => {
           <button
             onClick={onClose}
             style={modalButtonStyle}>
-            닫기
+            취소
           </button>
           <button 
             onClick={onOk}

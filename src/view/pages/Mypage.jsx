@@ -3,12 +3,12 @@ import { Layout, Menu } from "antd";
 import { KeyOutlined, ProfileOutlined, SmileOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import { useAuth } from "../../hooks/AuthContext";
-import axiosInstance from "../../services/axiosInstance";
 import '../../styles/mypage.css';
 import MemberChangeComponent from "../../components/mypage/MemberChangeComponent";
 import PasswordChangeComponent from "../../components/mypage/PasswordChangeComponent";
 import MemberWithdrawComponent from "../../components/mypage/MemberWithdrawComponent";
 import ProfileMarkerImage from "../../components/mypage/ProfileMarkerImage";
+import { getMemberApi } from "../../services/memberApi";
 
 const { Sider, Content } = Layout;
 
@@ -36,29 +36,20 @@ const Mypage = () => {
   // 회원 정보 초기값
   const [objectMemberItem, setObjectMemberItem] = useState({})
   const getMember = async () => {
+    if (!memberId) return;
+
     try {
-      const uri = `/api/members/${memberId}`;
-      const result = await axiosInstance.get(uri, null);
-      const member = result.data.data.member;
+      const result = await getMemberApi(memberId);
+      const member = result.data;
 
       setObjectMemberItem(member);
     } catch (error) {
       console.log(error);
     }
   }
+  
   useEffect(() => {
-    const getMember = async () => {
-      try {
-        const uri = `/api/members/${memberId}`;
-        const result = await axiosInstance.get(uri, null);
-        const member = result.data.data.member;
-
-        setObjectMemberItem(member);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-
+  if (!memberId) return;
     getMember();
   }, [memberId])
 
