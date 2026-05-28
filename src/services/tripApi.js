@@ -161,3 +161,24 @@ export const deleteBookmarkApi = async (tripId, bookmarkId) => {
   return result.success;
 }
 //#endregion
+
+/**
+ * 여행 상태 수정
+ * @param {string|number} tripId
+ * @param {{ status: string }} payload
+ */
+export const changeTripStatusApi = async (tripId, payload) => {
+  const response = await axiosInstance.patch(`/api/trips/${tripId}/status`, payload);
+  const reulst = response.data ?? {};
+  return reulst.success;
+};
+
+/**
+ * 여행 전체 삭제
+ * @param {string|number} tripId
+ */
+export const deleteTripApi = async (tripId) => {
+  const response = await axiosInstance.delete(`/api/trips/${tripId}`);
+  const reulst = response.data ?? {};
+  return reulst.success;
+};

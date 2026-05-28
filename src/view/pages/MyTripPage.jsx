@@ -3,7 +3,7 @@ import { IconButton, TextButton } from "../../components/common/PLA_Buttons";
 import { Empty, Layout, message, Spin } from "antd";
 import { CompassOutlined } from "@ant-design/icons";
 import { Download, FilePenLine, MapPinned, Trash2 } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
@@ -13,7 +13,6 @@ import TripPlanComponent from "../../components/myTripPage/TripPlanComponent";
 import TripTrashComponent from "../../components/myTripPage/TripTrashComponent";
 import { useAuth } from "../../hooks/AuthContext";
 import { useTripInfo } from "../../hooks/trip/TripInfoContext";
-import axiosInstance from "../../services/axiosInstance";
 import { useModal } from "../../hooks/ModalProvider";
 import { oneBtnPreset } from "../../utils/alertModalPreset";
 import dayjs from "dayjs";
@@ -24,6 +23,8 @@ import { useEditSchedule } from "../../hooks/trip/EditScheduleContext";
 import { SCHEDULE_CATEGORYS } from "../../constants/scheduleCategory";
 import { useTripRegion } from "../../hooks/trip/TripRegionContext";
 import { hideLoader, showLoader } from "../../utils/uiUtil";
+import { getTrashPlanApi, getTripbyMemberIdApi } from "../../services/memberApi";
+import { changeTripStatusApi, getTripApi } from "../../services/tripApi";
 
 const { Sider, Content } = Layout;
 
@@ -67,24 +68,23 @@ const MyTripPage = () => {
   // 여행 목록(간단)초기값
   const [trips, setTrips] = useState([]);
   const [myTripName, setMyTripName] = useState("");
-  const getTripbyMemberId = useCallback( async () => {
+  const getTripbyMemberId = async () => {
     if (!memberId) return;
 
     try {
-      const uri = `/api/members/${memberId}/trips`;
-      const result = await axiosInstance.get(uri, null);
-      const trip = result?.data?.data?.member?.trips || [];
+      const result = await getTripbyMemberIdApi(memberId);
+      const trip = result.data.trips || [];
 
       setTrips(trip);
     } catch (error) {
       console.log(error);
     }
-  }, [memberId]);
+  };
 
   useEffect(() => {
-
+  if (!memberId) return;
     getTripbyMemberId();
-  }, [getTripbyMemberId]);
+  }, [memberId]);
   // 여행 목록(간단) - ACTIVE(활성) 초기값
   const tripList = trips.filter((item) => item.status === "ACTIVE");
   // 여행 목록(간단) - INACTIVE(비활성-휴지통) 초기값
@@ -113,31 +113,30 @@ const MyTripPage = () => {
   // 북마크 색상 (색 버튼 클릭) 
   const [selectedColor, setSelectedColor] = useState("");
 
-  const getTripByTripId = useCallback(async () => {
+  const getTripByTripId = async () => {
     if (!selectedMenu) return;
     showLoader();
     try {
-      const uri = `/api/trips/${selectedMenu}`;
-      const result = await axiosInstance.get(uri, null);
+      const result = await getTripApi(selectedMenu);
 
       // 1) trip ID + region ID
       setTripId(selectedMenu)
-      setSelectedSigu(result.data.data.regionId)
+      setSelectedSigu(result.data.regionId)
 
       // 2) 여행 일자
-      const startDate = result.data.data.startDate;
-      const endDate = result.data.data.endDate;
+      const startDate = result.data.startDate;
+      const endDate = result.data.endDate;
       setMyPlanDates({startDate: startDate, endDate: endDate});
       // 2-1) 여행 기간(활성화 된 일자 수)
-      const activeDay = result.data.data.activeDayCount;
+      const activeDay = result.data.activeDayCount;
       setMyActiveDay(activeDay);
 
       // 3) 스케줄 목록
-      const schedule = result.data.data.days;
+      const schedule = result.data.days;
       setMySchedules(schedule);
 
       // 4) 북마크 목록
-      const bookmark = result.data.data.bookmarks;
+      const bookmark = result.data.bookmarks;
       // 4-1) 북마크 - 여행 계획 목록 연결 개수 추가
       const countMap = {};      
       schedule.forEach(day => {
@@ -156,37 +155,37 @@ const MyTripPage = () => {
       setSelectedColor("");
 
       // 5) 참여 인원
-      setMyEntryCount(result.data.data.entryCount);
+      setMyEntryCount(result.data.entryCount);
       
     } catch (error) {
       console.log(error);
     } finally {
       hideLoader(250);
     }
-  }, [selectedMenu])
+  };
 
   useEffect(() => {
-
+    if (!selectedMenu) return;
     getTripByTripId();
-  }, [getTripByTripId])
+  }, [selectedMenu])
   
 
   // 휴지통 목록 내 여행 정보 초기값
   const[trashPlans, setTrashPlans] = useState([])
 
-  const getTrashPlan = useCallback(async () => {
+  const getTrashPlan = async () => {
     if (!memberId) return;
     try {
-      const uri = `/api/members/${memberId}/trips/trashs`;
-      const result = await axiosInstance.get(uri, null);
-      const trashPlan = result.data.data.member.trips;
+      const result = await getTrashPlanApi(memberId);
+      const trashPlan = result.data.trips;
       setTrashPlans(trashPlan);
     } catch (error) {
       console.log(error);
     } 
-  }, [memberId])
+  };
 
   useEffect(() => {
+    if (!memberId) return;
     getTrashPlan();
   }, [memberId])
 
@@ -209,8 +208,7 @@ const MyTripPage = () => {
       onOk: async () => { 
         // 여행 계획 + 북마크 status: 비활성화(INACTIVE)
         try {
-          const uri = `/api/trips/${selectedMenu}/status`;
-          await axiosInstance.patch(uri, { status: "INACTIVE" });
+          await changeTripStatusApi(selectedMenu, { status: "INACTIVE" });
         } catch (error) {
           console.log(error);
         }

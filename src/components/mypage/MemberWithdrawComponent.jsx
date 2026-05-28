@@ -3,14 +3,17 @@ import { ConfigProvider, Input, message, Select, Typography } from 'antd';
 import { ProfileOutlined } from '@ant-design/icons';
 import '../../styles/mypage.css';
 import { TextButton } from '../common/PLA_Buttons';
-import axiosInstance from '../../services/axiosInstance';
 import { logoutApi } from '../../services/authApi';
-import { useNavigate } from 'react-router-dom';
 import useProtectedNavigate from '../../hooks/useProtectedNavigate';
 import { NAV_PRESET } from '../../utils/protectedNavPreset';
+import { withdrawMemberApi } from '../../services/memberApi';
+import { oneBtnPreset } from '../../utils/alertModalPreset'
+import { useModal } from '../../hooks/ModalProvider';
 
 const MemberWithdrawComponent = ({ memberId, email, accessToken, logout, setSelectedMenu }) => {
-  const navigate = useNavigate();
+  // 모달창
+  const { openOneBtnModal } = useModal();
+  // 페이지 이동
   const protectedNavigate = useProtectedNavigate();
 
   // 탈퇴 사유 초기 값
@@ -38,20 +41,18 @@ const MemberWithdrawComponent = ({ memberId, email, accessToken, logout, setSele
 
   const handleWithdrawMember = async () => { // 회원 탈퇴
     try {
-      const uri = `/api/members/${memberId}/withdraw`;
       const body = {
         email: objectWithdrawMember.email,
         name: objectWithdrawMember.name,
         password: objectWithdrawMember.password
       };
 
-      console.log(body)
-      await axiosInstance.patch(uri, body);
-      message.success("정상적으로 탈퇴되었습니다.")
+      await withdrawMemberApi(memberId, body);
+      openOneBtnModal(oneBtnPreset.withdrawSuccess);
       handleLogout();
     } catch (error) {
       console.log(error);
-      message.error("회원 정보가 일치하지 않습니다. 다시 입력해주세요.")
+      openOneBtnModal(oneBtnPreset.withdrawFail);
     }
   }
 
