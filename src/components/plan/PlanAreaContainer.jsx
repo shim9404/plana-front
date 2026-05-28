@@ -149,7 +149,7 @@ const PlanAreaContainer = () => {
         // 이전 좌표 먼저 초기화해야 두번 렌더링 막음
         setObjRegions(null);
         const response = await getRegionByIdApi(selectedSigu);
-        const data = response.data.regions;
+        const data = response.data;
         setObjRegions(data);
 
       } catch (error) {
