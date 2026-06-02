@@ -8,13 +8,13 @@ import SearchInput from "./area/SearchInput";
 import { BookmarkPopup } from "./area/BookmarkPopup";
 import { ScrollStyle } from "../../styles/planStyles";
 import { getAreaApi, getPlaceApi } from "../../services/areaApi";
-import { useTripInfo } from "../../hooks/trip/TripInfoContext";
-import { useRegion } from "../../hooks/home/RegionContext";
+import tripInfoStore from "../../store/trip/tripInfoStore";
+import regionStore from "../../store/home/regionStore";
 import { getRegionByIdApi } from "../../services/regionApi";
 import { addBookmarkApi } from "../../services/tripApi";
-import { usePlaceSearch } from "../../hooks/trip/PlaceSearchContext";
-import { usePlanBookmark } from "../../hooks/trip/PlanBookmarkContext";
-import { useTripRegion } from "../../hooks/trip/TripRegionContext";
+import placeSearchStore from "../../store/trip/placeSearchStore";
+import planBookmarkStore from "../../store/trip/planBookmarkStore";
+import tripRegionStore from "../../store/trip/tripRegionStore";
 import LoadingOverlay from "../common/LoadingOverlay";
 import { withMinDelay } from "../../utils/apiUtil";
 
@@ -47,11 +47,18 @@ const FILTER_TOGGLES = [
 ]
 
 const PlanAreaContainer = () => {
-  const { tripId } = useTripInfo();
-  const { selectedSigu } = useTripRegion();
-  const { setBookmarks } = usePlanBookmark();
-  const { isSearched, setIsSearched, searchResults, setSearchResults } = usePlaceSearch();
-  const { objRegions, setObjRegions } = useRegion();
+  const tripId = tripInfoStore((state) => state.tripId);
+
+  const selectedSigu = tripRegionStore((state) => state.selectedSigu);
+  
+  const objRegions = regionStore((state) => state.objRegions);
+  const setObjRegions = regionStore((state) => state.setObjRegions);
+
+  const setBookmarks = planBookmarkStore((state) => state.setBookmarks);
+
+  const setIsSearched = placeSearchStore((state) => state.setIsSearched);
+  const searchResults = placeSearchStore((state) => state.searchResults);
+  const setSearchResults = placeSearchStore((state) => state.setSearchResults);
 
 
   // 장소 데이터(DB)

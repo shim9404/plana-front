@@ -5,8 +5,6 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute.jsx";
 import "./styles/global.css";
 import { GLOBAL_TOKEN } from "./styles/antdDesignTokens.js";
-import { AuthProvider } from "./hooks/AuthContext.jsx";
-import { ModalProvider } from "./hooks/ModalProvider.jsx";
 
 
 /**
@@ -18,20 +16,16 @@ createRoot(document.getElementById("root")).render(
     <BrowserRouter>
       <ConfigProvider theme={GLOBAL_TOKEN}>
         <AntdApp>
-          <AuthProvider>
-            <ModalProvider>
-              <Routes>
-                <Route
-                  path="/*"
-                  element={
-                    <ProtectedRoute>
-                      <App />
-                    </ProtectedRoute>
-                  }
-                />
-              </Routes>
-            </ModalProvider>
-          </AuthProvider>
+          <Routes>
+            <Route
+              path="/*"
+              element={
+                <ProtectedRoute>
+                  <App />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
         </AntdApp>
       </ConfigProvider>
     </BrowserRouter>

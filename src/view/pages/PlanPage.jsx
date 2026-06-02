@@ -2,30 +2,29 @@ import { Button, Layout, message } from "antd";
 import { useEffect, useRef, useState } from "react";
 import { FlexBox } from "../../components/common/PLA_FlexBox";
 import { getRegionDataForCascader } from "../../services/regionDataParser";
-import { useRegion } from "../../hooks/home/RegionContext";
+import regionStore from "../../store/home/regionStore";
 import PageLayout from "../../components/common/PageLayout";
 import PlanTableContainer from "../../components/plan/PlanTableContainer";
 import PlanAreaContainer from "../../components/plan/PlanAreaContainer";
 import PlanBookmarkContainer from "../../components/plan/PlanBookmarkContainer";
 import PlanHeader from "../../components/plan/PlanHeader";
 import PlanMap from "../../components/plan/map/PlanMap";
-import { useModal } from "../../hooks/ModalProvider";
+import modalStore from "../../store/modalStore";
 import { oneBtnPreset } from "../../utils/alertModalPreset";
 import { getRegionApi } from "../../services/regionApi";
 import { DragDropProvider, DragOverlay  } from "@dnd-kit/react";
 import { arrayMove } from "@dnd-kit/helpers";
-import { useTripInfo } from "../../hooks/trip/TripInfoContext";
+import tripInfoStore from "../../store/trip/tripInfoStore";
 import { editScheduleApi, getTripApi, reorderDaysApi, reorderSchedulesApi } from "../../services/tripApi";
-import { usePlanBookmark } from "../../hooks/trip/PlanBookmarkContext";
-import { usePlanUI } from "../../hooks/trip/PlanUIContext";
-import { useEditSchedule } from "../../hooks/trip/EditScheduleContext";
-import { usePlanDays } from "../../hooks/trip/PlanDaysContext";
+import planBookmarkStore from "../../store/trip/planBookmarkStore";
+import planUIStore from "../../store/trip/planUIStore";
+import editScheduleStore from "../../store/trip/editScheduleStore";
+import planDaysStore from "../../store/trip/planDaysStore";
 import BookmarkItem from "../../components/bookmark/BookmarkItem";
-import { usePlaceSearch } from "../../hooks/trip/PlaceSearchContext";
+import placeSearchStore from "../../store/trip/placeSearchStore";
 import { NAV_PRESET } from "../../utils/protectedNavPreset";
 import useProtectedNavigate from "../../hooks/useProtectedNavigate";
-import { useTripDate } from "../../hooks/trip/TripDateContext";
-import { useTripRegion } from "../../hooks/trip/TripRegionContext";
+import tripDateStore from "../../store/trip/tripDateStore";
 import dayjs from "dayjs";
 import { SCHEDULE_CATEGORYS } from "../../constants/scheduleCategory";
 import { hideLoader, showLoader } from "../../utils/uiUtil";
@@ -73,17 +72,40 @@ const mapStyle = {
 //#endregion
 
 const PlanPage = () => {
-  const { setEditingSchedule, setBookmarkInSchedule, setScheduleCategorys } = useEditSchedule();
-  const { setPlanDays, getScheduleDayId } = usePlanDays();
-  const { setConfirmedDates, setActiveDayCount } = useTripDate();
-  const { isExpandTable, setIsExpandTable, setCanExpandTable, isExpandBookmark, setIsExpandBookmark, setCanExpandBookmark, isFoldTable, setIsFoldTable } = usePlanUI();
-  const { setBookmarks, getBookmark, setLinkedCountBookmark } = usePlanBookmark();
-  const { tripId, setTripId, setTripName, setEntryCount } = useTripInfo();
-  const { setSelectedSigu } = useTripRegion();
-  const { regionData, updateRegionData } = useRegion();
-  const { setIsSearched } = usePlaceSearch();
-  const { cascaderOptions } = regionData;
-  const { openOneBtnModal } = useModal();
+  const setEditingSchedule = editScheduleStore((state) => state.setEditingSchedule);
+  const setBookmarkInSchedule = editScheduleStore((state) => state.setBookmarkInSchedule);
+  const setScheduleCategorys = editScheduleStore((state) => state.setScheduleCategorys);
+  
+  const setPlanDays = planDaysStore((state) => state.setPlanDays);
+  const getScheduleDayId = planDaysStore((state) => state.getScheduleDayId);
+
+  const setConfirmedDates = tripDateStore((state) => state.setConfirmedDates);
+  const setActiveDayCount = tripDateStore((state) => state.setActiveDayCount);
+
+  const isExpandTable = planUIStore((state) => state.isExpandTable);
+  const setIsExpandTable = planUIStore((state) => state.setIsExpandTable);
+  const setCanExpandTable = planUIStore((state) => state.setCanExpandTable);
+  const isExpandBookmark = planUIStore((state) => state.isExpandBookmark);
+  const setIsExpandBookmark = planUIStore((state) => state.setIsExpandBookmark);
+  const setCanExpandBookmark = planUIStore((state) => state.setCanExpandBookmark);
+  const isFoldTable = planUIStore((state) => state.isFoldTable);
+  const setIsFoldTable = planUIStore((state) => state.setIsFoldTable);
+
+  const setBookmarks = planBookmarkStore((state) => state.setBookmarks);
+  const getBookmark = planBookmarkStore((state) => state.getBookmark);
+  const setLinkedCountBookmark = planBookmarkStore((state) => state.setLinkedCountBookmark);
+
+  const tripId = tripInfoStore((state) => state.tripId);
+  const setTripId = tripInfoStore((state) => state.setTripId);
+  const setTripName = tripInfoStore((state) => state.setTripName);
+  const setEntryCount = tripInfoStore((state) => state.setEntryCount);
+
+  const regionData = regionStore((state) => state.regionData);
+  const updateRegionData = regionStore((state) => state.updateRegionData);
+  const setIsSearched = placeSearchStore((state) => state.setIsSearched);
+  const cascaderOptions = regionStore((state) => state.regionData.cascaderOptions);
+  
+  const openOneBtnModal = modalStore((state) => state.openOneBtnModal);
 
   const [isDraggingBookmark, setIsDraggingBookmark] = useState(false); // 북마크 드래그 오버레이 표시 여부
   const draggingBookmarkRef = useRef(null); // 표시되는 북마크 오버레이 아이템
@@ -98,7 +120,7 @@ const PlanPage = () => {
 
   // 컴포넌트 마운트
   useEffect(() => {
-    // context의 tripId가 없을 경우(다른 페이지를 통해 넘어오지 않은 경우 발생) 
+    // zustand의 tripId가 없을 경우(다른 페이지를 통해 넘어오지 않은 경우 발생) 
     if (!tripId) {
       // local storage에 저장된 tripId 확인
       const savedTripId = window.localStorage.getItem("tripId");
@@ -115,7 +137,7 @@ const PlanPage = () => {
       hideLoader();
     }
 
-    // Context 초기화
+    // zustand 초기화
     setIsExpandTable(false);
     setEditingSchedule(null);
     setIsFoldTable(false);

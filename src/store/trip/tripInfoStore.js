@@ -1,10 +1,10 @@
 import { create } from "zustand";
 
 /** === 여행 정보 ==================================
- * useTripInfoStore 구독 컴포넌트 목록
+ * tripInfoStore 구독 컴포넌트 목록
  =============================================== */
 
-const useTripInfoStore = create((set) => ({
+const tripInfoStore = create((set) => ({
   // 여행명
   tripName: "",
   setTripName: (newData) =>
@@ -27,4 +27,4 @@ const useTripInfoStore = create((set) => ({
     })
 }));
 
-export default useTripInfoStore;
+export default tripInfoStore;

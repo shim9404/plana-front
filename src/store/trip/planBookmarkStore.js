@@ -1,13 +1,13 @@
 import { create } from "zustand";
 
 /** === 북마크 ==================================== 
- * usePlanBookmarkStore 구독 컴포넌트 목록
+ * planBookmarkStore 구독 컴포넌트 목록
  * - PlanBookmarkContainer
  * - AreaBookmarkButton
  * - ScheduleDroppableItem
  =============================================== */
 
-const usePlanBookmarkStore = create((set, get) => ({
+const planBookmarkStore = create((set, get) => ({
   // 북마크 데이터
   bookmarks: [],
   setBookmarks: (value) => {
@@ -48,4 +48,4 @@ const usePlanBookmarkStore = create((set, get) => ({
   }
 }));
 
-export default usePlanBookmarkStore;
+export default planBookmarkStore;

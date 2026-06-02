@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-const useModalStore = create((set, get) => ({
+const modalStore = create((set, get) => ({
   // 로그인 모달
   isLoginOpen: false,
   openLoginModal: () =>
@@ -68,4 +68,4 @@ const useModalStore = create((set, get) => ({
   }
 }));
 
-export default useModalStore;
+export default modalStore;

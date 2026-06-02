@@ -8,11 +8,12 @@ import useProtectedNavigate from '../../hooks/useProtectedNavigate';
 import { NAV_PRESET } from '../../utils/protectedNavPreset';
 import { withdrawMemberApi } from '../../services/memberApi';
 import { oneBtnPreset } from '../../utils/alertModalPreset'
-import { useModal } from '../../hooks/ModalProvider';
+import modalStore from '../../store/modalStore';
 
 const MemberWithdrawComponent = ({ memberId, email, accessToken, logout, setSelectedMenu }) => {
   // 모달창
-  const { openOneBtnModal } = useModal();
+  const openOneBtnModal = modalStore((state) => state.openOneBtnModal);
+
   // 페이지 이동
   const protectedNavigate = useProtectedNavigate();
 

@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 
 /** === 여행 일자 테이블 =============================
- * usePlanDaysStore 구독 컴포넌트 목록
+ * planDaysStore 구독 컴포넌트 목록
  * - PlanTableContent
  * - PlanTableFooter
  * SET
@@ -11,10 +11,10 @@ import { create } from 'zustand';
  * - MyTripPage
  * - PlanPage
  * Store
- * - useEditScheduleStore
+ * - editScheduleStore
  =============================================== */
 
-const usePlanDaysStore = create((set, get) => ({
+const planDaysStore = create((set, get) => ({
   // 여행 계획 데이터
   planDays: [],
   setPlanDays: (value) => {
@@ -57,4 +57,4 @@ const usePlanDaysStore = create((set, get) => ({
   }
 }));
 
-export default usePlanDaysStore;
+export default planDaysStore;

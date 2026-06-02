@@ -3,26 +3,28 @@ import LoginModalComponent from "./components/auth/LoginModalComponent";
 import SignUpModalComponent from "./components/auth/SignUpModalComponent";
 import AppRouter from "./router/AppRouter";
 import HeaderMain from "./view/layouts/HeaderMain";
-import { RegionProvider } from "./hooks/home/RegionContext.jsx";
-import { useModal } from "./hooks/ModalProvider.jsx";
+import modalStore from "./store/modalStore.js";
 import { OneBtnModal } from "../src/view/modals/OneBtnModal.jsx";
 import { TwoBtnModal } from "./view/modals/TwoBtnModal.jsx";
 import { oneBtnPreset } from "./utils/alertModalPreset.js";
 import { SESSION_EXPIRED_NOTICE_KEY } from "./services/axiosInstance.js";
-import TripPlanProviders from "./hooks/trip/TripPlanProviders.jsx";
 import { isMobile } from "react-device-detect";
 import MobileGuard from "./view/layouts/MobileGuard.jsx";
 
 
 function App() {
-
-  const {
-    isLoginOpen, openLoginModal, closeLoginModal,
-    isSignupOpen, closeSignupModal,
-    oneBtnModal, openOneBtnModal, closeOneBtnModal,
-    twoBtnModal, openTwoBtnModal, closeTwoBtnModal,
-    confirmTwoBtnModal,
-  } = useModal();
+  const isLoginOpen = modalStore((state) => state.isLoginOpen);
+  const openLoginModal = modalStore((state) => state.openLoginModal);
+  const closeLoginModal = modalStore((state) => state.closeLoginModal);
+  const isSignupOpen = modalStore((state) => state.isSignupOpen);
+  const closeSignupModal = modalStore((state) => state.closeSignupModal);
+  const oneBtnModal = modalStore((state) => state.oneBtnModal);
+  const openOneBtnModal = modalStore((state) => state.openOneBtnModal);
+  const closeOneBtnModal = modalStore((state) => state.closeOneBtnModal);
+  const twoBtnModal = modalStore((state) => state.twoBtnModal);
+  const openTwoBtnModal = modalStore((state) => state.openTwoBtnModal);
+  const closeTwoBtnModal = modalStore((state) => state.closeTwoBtnModal);
+  const confirmTwoBtnModal = modalStore((state) => state.confirmTwoBtnModal);
 
 useEffect(() => {
   const checkExpired = () => {
@@ -42,32 +44,30 @@ useEffect(() => {
   if (isMobile && window.innerWidth < 768) return <MobileGuard />;
 
   return (
-    <RegionProvider>
-      <TripPlanProviders>
-        <LoginModalComponent
-          open={isLoginOpen}
-          onClose={closeLoginModal}
+    <>
+      <LoginModalComponent
+        open={isLoginOpen}
+        onClose={closeLoginModal}
+      />
+      <SignUpModalComponent
+        open={isSignupOpen}
+        onClose={closeSignupModal}
+      />
+      {oneBtnModal.isOpen && (
+        <OneBtnModal
+          {...oneBtnModal.props}
+          onClose={closeOneBtnModal}
+        />)}
+      {twoBtnModal.isOpen && (
+        <TwoBtnModal
+          {...twoBtnModal.props}
+          onClose={closeTwoBtnModal}
+          onOk={confirmTwoBtnModal}
         />
-        <SignUpModalComponent
-          open={isSignupOpen}
-          onClose={closeSignupModal}
-        />
-        {oneBtnModal.isOpen && (
-          <OneBtnModal
-            {...oneBtnModal.props}
-            onClose={closeOneBtnModal}
-          />)}
-        {twoBtnModal.isOpen && (
-          <TwoBtnModal
-            {...twoBtnModal.props}
-            onClose={closeTwoBtnModal}
-            onOk={confirmTwoBtnModal}
-          />
-        )}
-        <HeaderMain />
-        <AppRouter />
-      </TripPlanProviders>
-    </RegionProvider>
+      )}
+      <HeaderMain />
+      <AppRouter />
+    </>
   );
 }
 

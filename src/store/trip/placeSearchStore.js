@@ -1,12 +1,12 @@
 import { create } from "zustand";
 
 /** === 근처 장소 검색 ==============================
- * usePlaceSearchStore 구독 컴포넌트 목록
+ * placeSearchStore 구독 컴포넌트 목록
  * - PlanAreaContainer
  * - PlanMap
  =============================================== */
 
-const usePlaceSearchStore = create((set) => ({
+const placeSearchStore = create((set) => ({
   // 검색 버튼 상태
   isSearched: false,
   setIsSearched: (newData) =>
@@ -22,4 +22,4 @@ const usePlaceSearchStore = create((set) => ({
     })
 }));
 
-export default usePlaceSearchStore;
+export default placeSearchStore;

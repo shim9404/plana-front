@@ -2,14 +2,13 @@ import React, { useState } from 'react'
 import { Archive, RefreshCw, X } from 'lucide-react';
 import '../../styles/myTripPage.css';
 import { IconButton } from '../common/PLA_Buttons';
-import { message } from 'antd';
 import { oneBtnPreset } from '../../utils/alertModalPreset'
-import { useModal } from '../../hooks/ModalProvider';
+import modalStore from '../../store/modalStore';
 import { changeTripStatusApi, deleteTripApi } from '../../services/tripApi';
 
 const TripTrashComponent = ({getTripbyMemberId, tripList, getTrashPlan, trashList}) => {
   // 모달 창
-  const { openTwoBtnModal } = useModal();
+  const openTwoBtnModal = modalStore((state) => state.openTwoBtnModal);
 
   // 여행 복구
   const restoreTrip = (tripId) => {

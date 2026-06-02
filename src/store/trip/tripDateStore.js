@@ -1,13 +1,13 @@
 import { create } from "zustand";
 
 /** === 여행 일정 ==================================
- * useTripDateStore 구독 컴포넌트 목록
+ * tripDateStore 구독 컴포넌트 목록
  * - TripDatePicker
  * - TripInfoSelector
  * - PlanTableFooter
  =============================================== */
 
-const useTripDateStore = create((set) => ({
+const tripDateStore = create((set) => ({
   // 현재 선택된 여행일자
   confirmedDates: null,
   setConfirmedDates: (newData) =>
@@ -23,4 +23,4 @@ const useTripDateStore = create((set) => ({
     })
 }));
 
-export default useTripDateStore;
+export default tripDateStore;

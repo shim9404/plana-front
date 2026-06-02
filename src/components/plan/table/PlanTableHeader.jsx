@@ -1,6 +1,6 @@
 import { FlexBox } from "../../common/PLA_FlexBox";
 import { DeleteFilled } from "@ant-design/icons";
-import { usePlanUI } from "../../../hooks/trip/PlanUIContext";
+import planUIStore from "../../../store/trip/planUIStore";
 
 const DefaultHeaderContents = ({ styles }) => {
   return (
@@ -51,7 +51,7 @@ const ExpandedHeaderContents = ({ styles }) => {
 };
 
 const PlanTableHeader = ({ styles }) => {
-  const { isExpandTable } = usePlanUI();
+  const isExpandTable = planUIStore((state) => state.isExpandTable);
 
   return (
     <FlexBox h="30px" style={styles.headerStyle}>

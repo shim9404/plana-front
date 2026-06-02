@@ -3,22 +3,27 @@ import PageLayout from "../../components/common/PageLayout";
 import Map from "../../components/home/Map";
 import TripInfoSelector from "../../components/home/TripInfoSelector";
 import { useCallback, useEffect, useRef } from "react";
-import { useRegion } from "../../hooks/home/RegionContext";
+import regionStore from "../../store/home/regionStore.js";
 import { getRegionDataForCascader } from "../../services/regionDataParser";
 import { getRegionApi } from "../../services/regionApi";
 import { fetchWithRetry } from "../../utils/apiUtil.js";
 import { oneBtnPreset } from "../../utils/alertModalPreset.js";
-import { useModal } from "../../hooks/ModalProvider.jsx";
-import { useTripDate } from "../../hooks/trip/TripDateContext.jsx";
-import { useTripInfo } from "../../hooks/trip/TripInfoContext.jsx";
-import { useTripRegion } from "../../hooks/trip/TripRegionContext.jsx";
+import modalStore from "../../store/modalStore.js";
+import tripDateStore from "../../store/trip/tripDateStore.js";
+import tripInfoStore from "../../store/trip/tripInfoStore.js";
+import tripRegionStore from "../../store/trip/tripRegionStore.js";
 
 const HomePage = () => {
-  const { setTripId } = useTripInfo();
-  const { setConfirmedDates, setActiveDayCount } = useTripDate();
-  const { setSelectedZdo, setSelectedSigu } = useTripRegion();
-  const { regionData, updateRegionData } = useRegion();
-  const { openOneBtnModal } = useModal();
+  const setTripId = tripInfoStore((state) => state.setTripId);
+  const setActiveDayCount = tripDateStore((state) => state.setActiveDayCount);
+
+  const setSelectedZdo = tripRegionStore((state) => state.setSelectedZdo);
+  const setSelectedSigu = tripRegionStore((state) => state.setSelectedSigu);
+  const regionData = regionStore((state) => state.regionData);
+  const updateRegionData = regionStore((state) => state.updateRegionData);
+
+  const openOneBtnModal = modalStore((state) => state.openOneBtnModal);
+  
   const hoveredIdRef = useRef(null);
 
   const layoutStyle = {
@@ -44,7 +49,7 @@ const HomePage = () => {
   }, []);
 
 
-  // 컴포넌트 마운트 시 DB 데이터 불러오기 및 context 초기화
+  // 컴포넌트 마운트 시 DB 데이터 불러오기 및 zustand 초기화
   useEffect(() => {
     setTripId(null);
     setActiveDayCount(null);
