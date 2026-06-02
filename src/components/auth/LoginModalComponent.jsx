@@ -1,7 +1,7 @@
 import { App, Button, Form, Input, Modal, Alert } from 'antd';
 import { useState } from 'react';
-import useAuthStore from '../../store/useAuthStore';
-import useModalStore from '../../store/useModalStore';
+import authStore from '../../store/authStore';
+import modalStore from '../../store/modalStore';
 import { loginApi } from '../../services/authApi';
 import styles from '../../styles/login.module.css';
 
@@ -10,8 +10,8 @@ const LoginModalComponent = ({ open, onClose }) => {
   const [submitting, setSubmitting] = useState(false);
   const [loginError, setLoginError] = useState('');
 
-  const login = useAuthStore((state) => state.login);
-  const openSignupModal = useModalStore((state) => state.openSignupModal);
+  const login = authStore((state) => state.login);
+  const openSignupModal = modalStore((state) => state.openSignupModal);
   const { message } = App.useApp();
 
   // 값 입력 감시용

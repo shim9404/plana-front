@@ -1,14 +1,14 @@
 import { Button } from 'antd';
-import useTripInfoStore from '../../../store/trip/useTripInfoStore';
+import tripInfoStore from '../../../store/trip/tripInfoStore';
 import { FlexBox, TextBox } from '../../common/PLA_FlexBox';
 import { addScheduleApi } from '../../../services/tripApi'
-import useEditScheduleStore from '../../../store/trip/useEditScheduleStore';
+import editScheduleStore from '../../../store/trip/editScheduleStore';
 import { PlusOutlined } from '@ant-design/icons';
 
 const AddScheduleButton = ({ dayId }) => {
-  const editingSchedule = useEditScheduleStore((state) => state.editingSchedule);
-  const addSchedule = useEditScheduleStore((state) => state.addSchedule);
-  const tripId = useTripInfoStore((state) => state.tripId);
+  const editingSchedule = editScheduleStore((state) => state.editingSchedule);
+  const addSchedule = editScheduleStore((state) => state.addSchedule);
+  const tripId = tripInfoStore((state) => state.tripId);
 
 
   const handleAddSchedule = () => {

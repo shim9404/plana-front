@@ -11,17 +11,17 @@ import '../../styles/myTripPage.css';
 import BookmarkComponent from "../../components/myTripPage/BookmarkComponent";
 import TripPlanComponent from "../../components/myTripPage/TripPlanComponent";
 import TripTrashComponent from "../../components/myTripPage/TripTrashComponent";
-import useAuthStore from "../../store/useAuthStore";
-import useTripInfoStore from "../../store/trip/useTripInfoStore";
-import useModalStore from "../../store/useModalStore";
+import authStore from "../../store/authStore";
+import tripInfoStore from "../../store/trip/tripInfoStore";
+import modalStore from "../../store/modalStore";
 import { oneBtnPreset } from "../../utils/alertModalPreset";
 import dayjs from "dayjs";
-import usePlanBookmarkStore from "../../store/trip/usePlanBookmarkStore";
-import useTripDateStore from "../../store/trip/useTripDateStore";
-import usePlanDaysStore from "../../store/trip/usePlanDaysStore";
-import useEditScheduleStore from "../../store/trip/useEditScheduleStore";
+import planBookmarkStore from "../../store/trip/planBookmarkStore";
+import tripDateStore from "../../store/trip/tripDateStore";
+import planDaysStore from "../../store/trip/planDaysStore";
+import editScheduleStore from "../../store/trip/editScheduleStore";
 import { SCHEDULE_CATEGORYS } from "../../constants/scheduleCategory";
-import useTripRegionStore from "../../store/trip/useTripRegionStore";
+import tripRegionStore from "../../store/trip/tripRegionStore";
 import { hideLoader, showLoader } from "../../utils/uiUtil";
 import { getTrashPlanApi, getTripbyMemberIdApi } from "../../services/memberApi";
 import { changeTripStatusApi, getTripApi } from "../../services/tripApi";
@@ -49,24 +49,24 @@ const MyTripPage = () => {
   // 경로 설정
   const navigate = useNavigate();
   // 모달 창
-  const openTwoBtnModal = useModalStore((state) => state.openTwoBtnModal);
+  const openTwoBtnModal = modalStore((state) => state.openTwoBtnModal);
   // 회원 전역 변수
-  const memberId = useAuthStore((state) => state.memberId);
+  const memberId = authStore((state) => state.memberId);
   // 북마크 전역 변수
-  const setBookmarks = usePlanBookmarkStore((state) => state.setBookmarks);
+  const setBookmarks = planBookmarkStore((state) => state.setBookmarks);
   // 여행 계획표 전역 변수
-  const setPlanDays = usePlanDaysStore((state) => state.setPlanDays);
+  const setPlanDays = planDaysStore((state) => state.setPlanDays);
   // 여행 ID + 여행명 + 참여 인원 전역 변수
-  const setTripId = useTripInfoStore((state) => state.setTripId);
-  const setTripName = useTripInfoStore((state) => state.setTripName);
-  const setEntryCount = useTripInfoStore((state) => state.setEntryCount);
+  const setTripId = tripInfoStore((state) => state.setTripId);
+  const setTripName = tripInfoStore((state) => state.setTripName);
+  const setEntryCount = tripInfoStore((state) => state.setEntryCount);
   // 여행일자 + 여행 기간(활성화 된 일자 수) 전역 변수
-  const setConfirmedDates = useTripDateStore((state) => state.setConfirmedDates);
-  const setActiveDayCount = useTripDateStore((state) => state.setActiveDayCount);
+  const setConfirmedDates = tripDateStore((state) => state.setConfirmedDates);
+  const setActiveDayCount = tripDateStore((state) => state.setActiveDayCount);
   // 여행 계획 카테고리
-  const setScheduleCategorys = useEditScheduleStore((state) => state.setScheduleCategorys);
+  const setScheduleCategorys = editScheduleStore((state) => state.setScheduleCategorys);
   // 지역 전역 변수
-  const setSelectedSigu = useTripRegionStore((state) => state.setSelectedSigu);
+  const setSelectedSigu = tripRegionStore((state) => state.setSelectedSigu);
 
   // 여행 목록(간단)초기값
   const [trips, setTrips] = useState([]);

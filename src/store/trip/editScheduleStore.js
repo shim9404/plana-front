@@ -1,8 +1,8 @@
 import { create } from 'zustand';
-import usePlanDaysStore from "./usePlanDaysStore";
+import planDaysStore from "./planDaysStore";
 import { SCHEDULE_CATEGORYS } from "../../constants/scheduleCategory";
 
-const useEditScheduleStore = create((set, get) => ({
+const editScheduleStore = create((set, get) => ({
   // 스케줄 삭제
   isDeleteRef: { current: false },
   // 북마크 삭제
@@ -44,7 +44,7 @@ const useEditScheduleStore = create((set, get) => ({
    * @param {{  }} addData 스케줄 추가 API 호출 후 반환된 데이터
    */
   addSchedule: (dayId, addData) => {
-    const setPlanDays = usePlanDaysStore.getState().setPlanDays;
+    const setPlanDays = planDaysStore.getState().setPlanDays;
 
     setPlanDays((prev) =>
       prev.map((day) =>
@@ -66,7 +66,7 @@ const useEditScheduleStore = create((set, get) => ({
    */
   deleteSchedule: (scheduleId) => {
     const setPlanDays =
-      usePlanDaysStore.getState().setPlanDays;
+      planDaysStore.getState().setPlanDays;
 
     setPlanDays((prev) =>
       prev.map((day) => ({
@@ -91,7 +91,7 @@ const useEditScheduleStore = create((set, get) => ({
    */
   saveSchedule: () => {
     const setPlanDays =
-      usePlanDaysStore.getState().setPlanDays;
+      planDaysStore.getState().setPlanDays;
 
     const { editingSchedule, focusRef } = get();
     setPlanDays((prev) =>
@@ -120,7 +120,7 @@ const useEditScheduleStore = create((set, get) => ({
    */
   setBookmarkInSchedule: (scheduleId, bookmarkId, context, link) => {
     const setPlanDays =
-      usePlanDaysStore.getState().setPlanDays;
+      planDaysStore.getState().setPlanDays;
 
     setPlanDays((prev) =>
       prev.map((day) => ({
@@ -136,4 +136,4 @@ const useEditScheduleStore = create((set, get) => ({
 
 }));
 
-export default useEditScheduleStore;
+export default editScheduleStore;

@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import useAuthStore from "./useAuthStore";
-import useModalStore from "./useModalStore";
+import authStore from "../store/authStore";
+import modalStore from "../store/modalStore";
 import { isTokenExpired } from "../utils/auth/jwtUtil";
 import { oneBtnPreset } from "../utils/alertModalPreset";
 import { NAV_PRESET } from "../utils/protectedNavPreset";
@@ -8,10 +8,10 @@ import { NAV_PRESET } from "../utils/protectedNavPreset";
 // 버튼으로 다른 경로로 이동할 때 사용하는 navigate hook
 const useProtectedNavigate = () => {
   const navigate = useNavigate();
-  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
-  const logout = useAuthStore((state) => state.logout);
-  const openLoginModal = useModalStore((state) => state.openLoginModal);
-  const openOneBtnModal = useModalStore((state) => state.openOneBtnModal);
+  const isLoggedIn = authStore((state) => state.isLoggedIn);
+  const logout = authStore((state) => state.logout);
+  const openLoginModal = modalStore((state) => state.openLoginModal);
+  const openOneBtnModal = modalStore((state) => state.openOneBtnModal);
 
   // nav: protectedNavPreset 
   const protectedNavigate = (nav, state = null) => {

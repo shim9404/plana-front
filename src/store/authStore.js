@@ -5,7 +5,7 @@ import { SESSION_EXPIRED_NOTICE_KEY } from "../services/axiosInstance";
 const readFromStorage = (key, fallback = "") =>
   localStorage.getItem(key) ?? fallback;
 
-const useAuthStore = create((set) => ({
+const authStore = create((set) => ({
   // 로그인 상태
   isLoggedIn: !!readFromStorage("accessToken"),
   setIsLoggedIn: (newData) =>
@@ -119,7 +119,7 @@ const useAuthStore = create((set) => ({
 // logout 콜백 등록
 // -> 토큰 만료 시 실행할 로그아웃 함수 등록
 tokenStore.setOnLogout(() => {
-  useAuthStore.getState().logout(true); // getState() : 현재 store 상태/함수 직접 접근
+  authStore.getState().logout(true); // getState() : 현재 store 상태/함수 직접 접근
 });
 
-export default useAuthStore;
+export default authStore;

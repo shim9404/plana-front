@@ -2,7 +2,7 @@ import PageLayout from "../../components/common/PageLayout";
 import { Layout, Menu } from "antd";
 import { KeyOutlined, ProfileOutlined, SmileOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
-import useAuthStore from "../../store/useAuthStore";
+import authStore from "../../store/authStore";
 import '../../styles/mypage.css';
 import MemberChangeComponent from "../../components/mypage/MemberChangeComponent";
 import PasswordChangeComponent from "../../components/mypage/PasswordChangeComponent";
@@ -31,10 +31,10 @@ const contentStyle = {
 
 const Mypage = () => {
   // 회원 전역 변수
-  const memberId = useAuthStore((state) => state.memberId);
-  const email = useAuthStore((state) => state.email);
-  const accessToken = useAuthStore((state) => state.accessToken);
-  const logout = useAuthStore((state) => state.logout);
+  const memberId = authStore((state) => state.memberId);
+  const email = authStore((state) => state.email);
+  const accessToken = authStore((state) => state.accessToken);
+  const logout = authStore((state) => state.logout);
   
   // 회원 정보 초기값
   const [objectMemberItem, setObjectMemberItem] = useState({})

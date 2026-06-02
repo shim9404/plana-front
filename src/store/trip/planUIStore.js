@@ -1,14 +1,14 @@
 import { create } from "zustand";
 
 /** === UI 조작 =================================== 
- * usePlanUIStore 구독 컴포넌트 목록
+ * planUIStore 구독 컴포넌트 목록
  * - PlanPage
  * - PlanTableContainer
  * - PlanTableHeader
  * - SortableSchedule
  =============================================== */
 
-const usePlanUIStore = create((set) => ({
+const planUIStore = create((set) => ({
   // 여행 계획표 확장 및 접기
   isExpandTable: false,
   setIsExpandTable: (value) => {
@@ -77,4 +77,4 @@ const usePlanUIStore = create((set) => ({
   }
 }));
 
-export default usePlanUIStore;
+export default planUIStore;

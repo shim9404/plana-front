@@ -6,14 +6,14 @@ import { useEffect, useState } from "react";
 import { Button, Empty } from "antd";
 import { getBookmarkColor } from "../../utils/plan/bookmarkUtils";
 import DraggableBookmarkItem from "../bookmark/DraggableBookmarkItem";
-import usePlanBookmarkStore from "../../store/trip/usePlanBookmarkStore";
-import usePlanUIStore from "../../store/trip/usePlanUIStore";
+import planBookmarkStore from "../../store/trip/planBookmarkStore";
+import planUIStore from "../../store/trip/planUIStore";
 
 const PlanBookmarkContainer = () => {
-  const bookmarks = usePlanBookmarkStore((state) => state.bookmarks);
-  const isExpandBookmark = usePlanUIStore((state) => state.isExpandBookmark);
-  const setIsExpandBookmark = usePlanUIStore((state) => state.setIsExpandBookmark);
-  const canExpandBookmark = usePlanUIStore((state) => state.canExpandBookmark);
+  const bookmarks = planBookmarkStore((state) => state.bookmarks);
+  const isExpandBookmark = planUIStore((state) => state.isExpandBookmark);
+  const setIsExpandBookmark = planUIStore((state) => state.setIsExpandBookmark);
+  const canExpandBookmark = planUIStore((state) => state.canExpandBookmark);
   
   const [isExpandHover, setIsExpandHover] = useState(false);
   const [filterBookmarks, setFilterBookmarks] = useState([]);

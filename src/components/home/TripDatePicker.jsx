@@ -3,14 +3,14 @@ import { DatePicker } from 'antd';
 import styles from "../../styles/TripInfoSelector.module.css"
 import { TextButton } from '../common/PLA_Buttons';
 import dayjs from 'dayjs';
-import useTripDateStore from '../../store/trip/useTripDateStore';
+import tripDateStore from '../../store/trip/tripDateStore';
 
 const { RangePicker } = DatePicker;
 
 const TripDatePicker = ({ width="400px", height="52px", placement, isShowConfirm, handleSave }) => {
   // 최종 확정 날짜 ["YYYY-MM-DD","YYYY-MM-DD"] (확인 버튼 클릭 시에만 업데이트)
-  const confirmedDates = useTripDateStore((state) => state.confirmedDates);
-  const setConfirmedDates = useTripDateStore((state) => state.setConfirmedDates);
+  const confirmedDates = tripDateStore((state) => state.confirmedDates);
+  const setConfirmedDates = tripDateStore((state) => state.setConfirmedDates);
   
   // 임시 선택 날짜 ["YYYY-MM-DD","YYYY-MM-DD"] (달력에서 클릭할 때마다 변함)
   const [tempDates, setTempDates] = useState([]);

@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-const useRegionStore = create((set) => ({
+const regionStore = create((set) => ({
   regionData: {
     regionMap: {},
     cascaderOptions: []
@@ -24,4 +24,4 @@ const useRegionStore = create((set) => ({
     })
 }));
 
-export default useRegionStore;
+export default regionStore;

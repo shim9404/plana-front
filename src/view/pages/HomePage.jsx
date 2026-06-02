@@ -3,26 +3,26 @@ import PageLayout from "../../components/common/PageLayout";
 import Map from "../../components/home/Map";
 import TripInfoSelector from "../../components/home/TripInfoSelector";
 import { useCallback, useEffect, useRef } from "react";
-import useRegionStore from "../../store/home/useRegionStore.js";
+import regionStore from "../../store/home/regionStore.js";
 import { getRegionDataForCascader } from "../../services/regionDataParser";
 import { getRegionApi } from "../../services/regionApi";
 import { fetchWithRetry } from "../../utils/apiUtil.js";
 import { oneBtnPreset } from "../../utils/alertModalPreset.js";
-import useModalStore from "../../store/useModalStore.js";
-import useTripDateStore from "../../store/trip/useTripDateStore.js";
-import useTripInfoStore from "../../store/trip/useTripInfoStore.js";
-import useTripRegionStore from "../../store/trip/useTripRegionStore.js";
+import modalStore from "../../store/modalStore.js";
+import tripDateStore from "../../store/trip/tripDateStore.js";
+import tripInfoStore from "../../store/trip/tripInfoStore.js";
+import tripRegionStore from "../../store/trip/tripRegionStore.js";
 
 const HomePage = () => {
-  const setTripId = useTripInfoStore((state) => state.setTripId);
-  const setActiveDayCount = useTripDateStore((state) => state.setActiveDayCount);
+  const setTripId = tripInfoStore((state) => state.setTripId);
+  const setActiveDayCount = tripDateStore((state) => state.setActiveDayCount);
 
-  const setSelectedZdo = useTripRegionStore((state) => state.setSelectedZdo);
-  const setSelectedSigu = useTripRegionStore((state) => state.setSelectedSigu);
-  const regionData = useRegionStore((state) => state.regionData);
-  const updateRegionData = useRegionStore((state) => state.updateRegionData);
+  const setSelectedZdo = tripRegionStore((state) => state.setSelectedZdo);
+  const setSelectedSigu = tripRegionStore((state) => state.setSelectedSigu);
+  const regionData = regionStore((state) => state.regionData);
+  const updateRegionData = regionStore((state) => state.updateRegionData);
 
-  const openOneBtnModal = useModalStore((state) => state.openOneBtnModal);
+  const openOneBtnModal = modalStore((state) => state.openOneBtnModal);
   
   const hoveredIdRef = useRef(null);
 

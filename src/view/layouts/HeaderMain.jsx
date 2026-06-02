@@ -9,12 +9,12 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 
-import useAuthStore from "../../store/useAuthStore";
-import useModalStore from "../../store/useModalStore";
+import authStore from "../../store/authStore";
+import modalStore from "../../store/modalStore";
 import { logoutApi } from "../../services/authApi";
 import { FlexBox } from "../../components/common/PLA_FlexBox";
 import { useEffect, useRef } from "react";
-import useProtectedNavigate from "../../store/useProtectedNavigate";
+import useProtectedNavigate from "../../hooks/useProtectedNavigate";
 import { NAV_PRESET } from "../../utils/protectedNavPreset";
 
 import PlanALogo from '../../assets/images/svg/logos/plana-logo.svg?react';
@@ -36,13 +36,13 @@ const headerStyle = {
 
 const HeaderMain = () => {
   const loaction = useLocation();
-  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
-  const logout = useAuthStore((state) => state.logout);
-  const email = useAuthStore((state) => state.email);
-  const accessToken = useAuthStore((state) => state.accessToken);
-  const userRole = useAuthStore((state) => state.userRole);
+  const isLoggedIn = authStore((state) => state.isLoggedIn);
+  const logout = authStore((state) => state.logout);
+  const email = authStore((state) => state.email);
+  const accessToken = authStore((state) => state.accessToken);
+  const userRole = authStore((state) => state.userRole);
 
-  const openLoginModal = useModalStore((state) => state.openLoginModal);
+  const openLoginModal = modalStore((state) => state.openLoginModal);
 
   const protectedNavigate = useProtectedNavigate();
 

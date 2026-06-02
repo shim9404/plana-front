@@ -4,15 +4,15 @@ import { ProfileOutlined } from '@ant-design/icons';
 import '../../styles/mypage.css';
 import { TextButton } from '../common/PLA_Buttons';
 import { logoutApi } from '../../services/authApi';
-import useProtectedNavigate from '../../store/useProtectedNavigate';
+import useProtectedNavigate from '../../hooks/useProtectedNavigate';
 import { NAV_PRESET } from '../../utils/protectedNavPreset';
 import { withdrawMemberApi } from '../../services/memberApi';
 import { oneBtnPreset } from '../../utils/alertModalPreset'
-import useModalStore from '../../store/useModalStore';
+import modalStore from '../../store/modalStore';
 
 const MemberWithdrawComponent = ({ memberId, email, accessToken, logout, setSelectedMenu }) => {
   // 모달창
-  const openOneBtnModal = useModalStore((state) => state.openOneBtnModal);
+  const openOneBtnModal = modalStore((state) => state.openOneBtnModal);
 
   // 페이지 이동
   const protectedNavigate = useProtectedNavigate();

@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 /** === 여행 지역 ==================================
- * useTripRegionStore 구독 컴포넌트 목록
+ * tripRegionStore 구독 컴포넌트 목록
  * - TripPlanComponent
  * - PlanTableFooter
  * SET
@@ -10,7 +10,7 @@ import { create } from "zustand";
  * - PlanHeader
  =============================================== */
 
-const useTripRegionStore = create((set) => ({
+const tripRegionStore = create((set) => ({
   // 현재 선택된 시도 (예: "32")
   selectedZdo: null,
   setSelectedZdo: (newData) =>
@@ -26,4 +26,4 @@ const useTripRegionStore = create((set) => ({
     })
 }));
 
-export default useTripRegionStore;
+export default tripRegionStore;

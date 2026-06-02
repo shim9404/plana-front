@@ -5,37 +5,37 @@ import { flexStyle } from '../../styles/homeStyles'
 import { useEffect, useRef, useState } from 'react'
 import styles from "../../styles/TripInfoSelector.module.css"
 import TripDatePicker from './TripDatePicker'
-import useTripInfoStore from '../../store/trip/useTripInfoStore'
+import tripInfoStore from '../../store/trip/tripInfoStore'
 import TripRegionPicker from './TripRegionPicker'
 import { NAV_PRESET } from '../../utils/protectedNavPreset'
-import useProtectedNavigate from '../../store/useProtectedNavigate'
+import useProtectedNavigate from '../../hooks/useProtectedNavigate'
 import { addTripApi } from '../../services/tripApi'
-import useAuthStore from '../../store/useAuthStore'
-import usePlanDaysStore from '../../store/trip/usePlanDaysStore'
-import useTripRegionStore from '../../store/trip/useTripRegionStore'
-import useTripDateStore from '../../store/trip/useTripDateStore'
-import usePlanBookmarkStore from '../../store/trip/usePlanBookmarkStore'
-import useModalStore from '../../store/useModalStore'
+import authStore from '../../store/authStore'
+import planDaysStore from '../../store/trip/planDaysStore'
+import tripRegionStore from '../../store/trip/tripRegionStore'
+import tripDateStore from '../../store/trip/tripDateStore'
+import planBookmarkStore from '../../store/trip/planBookmarkStore'
+import modalStore from '../../store/modalStore'
 
 const TripInfoSelector = ({ setHoveredId }) => {
-  const selectedZdo = useTripRegionStore((state) => state.selectedZdo);
-  const setSelectedZdo = useTripRegionStore((state) => state.setSelectedZdo);
-  const selectedSigu = useTripRegionStore((state) => state.selectedSigu);
-  const setSelectedSigu = useTripRegionStore((state) => state.setSelectedSigu);
+  const selectedZdo = tripRegionStore((state) => state.selectedZdo);
+  const setSelectedZdo = tripRegionStore((state) => state.setSelectedZdo);
+  const selectedSigu = tripRegionStore((state) => state.selectedSigu);
+  const setSelectedSigu = tripRegionStore((state) => state.setSelectedSigu);
 
-  const confirmedDates = useTripDateStore((state) => state.confirmedDates);
-  const setActiveDayCount = useTripDateStore((state) => state.setActiveDayCount);
+  const confirmedDates = tripDateStore((state) => state.confirmedDates);
+  const setActiveDayCount = tripDateStore((state) => state.setActiveDayCount);
 
-  const setTripName = useTripInfoStore((state) => state.setTripName);
-  const setTripId = useTripInfoStore((state) => state.setTripId);
+  const setTripName = tripInfoStore((state) => state.setTripName);
+  const setTripId = tripInfoStore((state) => state.setTripId);
 
-  const setPlanDays = usePlanDaysStore((state) => state.setPlanDays);
-  const setBookmarks = usePlanBookmarkStore((state) => state.setBookmarks);
+  const setPlanDays = planDaysStore((state) => state.setPlanDays);
+  const setBookmarks = planBookmarkStore((state) => state.setBookmarks);
   
-  const memberId = useAuthStore((state) => state.memberId);
-  const username = useAuthStore((state) => state.username);
+  const memberId = authStore((state) => state.memberId);
+  const username = authStore((state) => state.username);
 
-  const openLoginModal = useModalStore((state) => state.openLoginModal);
+  const openLoginModal = modalStore((state) => state.openLoginModal);
 
   const protectedNavigate = useProtectedNavigate();
 

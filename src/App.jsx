@@ -3,7 +3,7 @@ import LoginModalComponent from "./components/auth/LoginModalComponent";
 import SignUpModalComponent from "./components/auth/SignUpModalComponent";
 import AppRouter from "./router/AppRouter";
 import HeaderMain from "./view/layouts/HeaderMain";
-import useModalStore from "./store/useModalStore.js";
+import modalStore from "./store/modalStore.js";
 import { OneBtnModal } from "../src/view/modals/OneBtnModal.jsx";
 import { TwoBtnModal } from "./view/modals/TwoBtnModal.jsx";
 import { oneBtnPreset } from "./utils/alertModalPreset.js";
@@ -13,18 +13,18 @@ import MobileGuard from "./view/layouts/MobileGuard.jsx";
 
 
 function App() {
-  const isLoginOpen = useModalStore((state) => state.isLoginOpen);
-  const openLoginModal = useModalStore((state) => state.openLoginModal);
-  const closeLoginModal = useModalStore((state) => state.closeLoginModal);
-  const isSignupOpen = useModalStore((state) => state.isSignupOpen);
-  const closeSignupModal = useModalStore((state) => state.closeSignupModal);
-  const oneBtnModal = useModalStore((state) => state.oneBtnModal);
-  const openOneBtnModal = useModalStore((state) => state.openOneBtnModal);
-  const closeOneBtnModal = useModalStore((state) => state.closeOneBtnModal);
-  const twoBtnModal = useModalStore((state) => state.twoBtnModal);
-  const openTwoBtnModal = useModalStore((state) => state.openTwoBtnModal);
-  const closeTwoBtnModal = useModalStore((state) => state.closeTwoBtnModal);
-  const confirmTwoBtnModal = useModalStore((state) => state.confirmTwoBtnModal);
+  const isLoginOpen = modalStore((state) => state.isLoginOpen);
+  const openLoginModal = modalStore((state) => state.openLoginModal);
+  const closeLoginModal = modalStore((state) => state.closeLoginModal);
+  const isSignupOpen = modalStore((state) => state.isSignupOpen);
+  const closeSignupModal = modalStore((state) => state.closeSignupModal);
+  const oneBtnModal = modalStore((state) => state.oneBtnModal);
+  const openOneBtnModal = modalStore((state) => state.openOneBtnModal);
+  const closeOneBtnModal = modalStore((state) => state.closeOneBtnModal);
+  const twoBtnModal = modalStore((state) => state.twoBtnModal);
+  const openTwoBtnModal = modalStore((state) => state.openTwoBtnModal);
+  const closeTwoBtnModal = modalStore((state) => state.closeTwoBtnModal);
+  const confirmTwoBtnModal = modalStore((state) => state.confirmTwoBtnModal);
 
 useEffect(() => {
   const checkExpired = () => {

@@ -8,15 +8,15 @@ import { CloseCircleFilled, CloseSquareOutlined, HolderOutlined, LinkOutlined, P
 import dayjs from "dayjs";
 import { getBookmarkActiveColor, getBookmarkColor } from "../../../utils/plan/bookmarkUtils";
 import { deleteScheduleApi, editScheduleApi } from "../../../services/tripApi";
-import usePlanBookmarkStore from "../../../store/trip/usePlanBookmarkStore";
-import useEditScheduleStore from "../../../store/trip/useEditScheduleStore";
-import usePlanUIStore from "../../../store/trip/usePlanUIStore";
-import useTripInfoStore from "../../../store/trip/useTripInfoStore";
+import planBookmarkStore from "../../../store/trip/planBookmarkStore";
+import editScheduleStore from "../../../store/trip/editScheduleStore";
+import planUIStore from "../../../store/trip/planUIStore";
+import tripInfoStore from "../../../store/trip/tripInfoStore";
 import { DebounceInput, DebounceInputNumber } from "../../common/PLA_Input";
 
 const ScheduleDroppableItem = ({ scheduleId, bookmarkId, value, isEditing, onChange, onClick, deleteBookmarkEvent }) => {
   const { isDropTarget, ref } = useDroppable({id: scheduleId, accept: ["bookmark"]});
-  const bookmarks = usePlanBookmarkStore((state) => state.bookmarks);
+  const bookmarks = planBookmarkStore((state) => state.bookmarks);
   const [defaultValue, setDefaultValue] = useState(value);
   const [isHover, setIsHover] = useState(false);
 
@@ -85,8 +85,8 @@ const ScheduleTimePicker = ({ prevValue, onChange, containerRef }) => {
 };
 
 const ScheduleCategorySelector = ({ prevValue, onChange, containerRef }) => {
-  const scheduleCategorys = useEditScheduleStore((state) => state.scheduleCategorys);
-  const setScheduleCategorys = useEditScheduleStore((state) => state.setScheduleCategorys);
+  const scheduleCategorys = editScheduleStore((state) => state.scheduleCategorys);
+  const setScheduleCategorys = editScheduleStore((state) => state.setScheduleCategorys);
   const [selectValue, setSelectValue] = useState(prevValue);
   const [inputValue, setInputValue] = useState("");
   const [isOpen, setIsOpen] = useState(false); 
@@ -214,19 +214,19 @@ const ScheduleEditableItem = ({ columnId, value, isEditing, onClick, onChange, .
 const SortableScheduleItem = ({ id, dayId, scheduleId, index, schedule, isOnly, }) => {
   const { ref: sortableRef, handleRef, isDragging } = useSortable({ id: scheduleId, index, type: "item" });
   const itemRef = useRef(null);
-  const tripId = useTripInfoStore((state) => state.tripId);
+  const tripId = tripInfoStore((state) => state.tripId);
   
-  const isExpandTable = usePlanUIStore((state) => state.isExpandTable);
+  const isExpandTable = planUIStore((state) => state.isExpandTable);
 
-  const isDeleteRef = useEditScheduleStore((state) => state.isDeleteRef);
-  const isDeleteBookmarkRef = useEditScheduleStore((state) => state.isDeleteBookmarkRef);
-  const editingSchedule = useEditScheduleStore((state) => state.editingSchedule);
-  const setEditingSchedule = useEditScheduleStore((state) => state.setEditingSchedule);
-  const focusRef = useEditScheduleStore((state) => state.focusRef);
-  const saveSchedule = useEditScheduleStore((state) => state.saveSchedule);
-  const deleteSchedule = useEditScheduleStore((state) => state.deleteSchedule);
-  const setBookmarkInSchedule = useEditScheduleStore((state) => state.setBookmarkInSchedule);
-  const setLinkedCountBookmark = usePlanBookmarkStore((state) => state.setLinkedCountBookmark);
+  const isDeleteRef = editScheduleStore((state) => state.isDeleteRef);
+  const isDeleteBookmarkRef = editScheduleStore((state) => state.isDeleteBookmarkRef);
+  const editingSchedule = editScheduleStore((state) => state.editingSchedule);
+  const setEditingSchedule = editScheduleStore((state) => state.setEditingSchedule);
+  const focusRef = editScheduleStore((state) => state.focusRef);
+  const saveSchedule = editScheduleStore((state) => state.saveSchedule);
+  const deleteSchedule = editScheduleStore((state) => state.deleteSchedule);
+  const setBookmarkInSchedule = editScheduleStore((state) => state.setBookmarkInSchedule);
+  const setLinkedCountBookmark = planBookmarkStore((state) => state.setLinkedCountBookmark);
 
   const [isHover, setIsHover] = useState(false);
   const [isEditing, setIsEditing] = useState(false);

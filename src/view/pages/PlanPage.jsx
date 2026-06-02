@@ -2,29 +2,29 @@ import { Button, Layout, message } from "antd";
 import { useEffect, useRef, useState } from "react";
 import { FlexBox } from "../../components/common/PLA_FlexBox";
 import { getRegionDataForCascader } from "../../services/regionDataParser";
-import useRegionStore from "../../store/home/useRegionStore";
+import regionStore from "../../store/home/regionStore";
 import PageLayout from "../../components/common/PageLayout";
 import PlanTableContainer from "../../components/plan/PlanTableContainer";
 import PlanAreaContainer from "../../components/plan/PlanAreaContainer";
 import PlanBookmarkContainer from "../../components/plan/PlanBookmarkContainer";
 import PlanHeader from "../../components/plan/PlanHeader";
 import PlanMap from "../../components/plan/map/PlanMap";
-import useModalStore from "../../store/useModalStore";
+import modalStore from "../../store/modalStore";
 import { oneBtnPreset } from "../../utils/alertModalPreset";
 import { getRegionApi } from "../../services/regionApi";
 import { DragDropProvider, DragOverlay  } from "@dnd-kit/react";
 import { arrayMove } from "@dnd-kit/helpers";
-import useTripInfoStore from "../../store/trip/useTripInfoStore";
+import tripInfoStore from "../../store/trip/tripInfoStore";
 import { editScheduleApi, getTripApi, reorderDaysApi, reorderSchedulesApi } from "../../services/tripApi";
-import usePlanBookmarkStore from "../../store/trip/usePlanBookmarkStore";
-import usePlanUIStore from "../../store/trip/usePlanUIStore";
-import useEditScheduleStore from "../../store/trip/useEditScheduleStore";
-import usePlanDaysStore from "../../store/trip/usePlanDaysStore";
+import planBookmarkStore from "../../store/trip/planBookmarkStore";
+import planUIStore from "../../store/trip/planUIStore";
+import editScheduleStore from "../../store/trip/editScheduleStore";
+import planDaysStore from "../../store/trip/planDaysStore";
 import BookmarkItem from "../../components/bookmark/BookmarkItem";
-import usePlaceSearchStore from "../../store/trip/usePlaceSearchStore";
+import placeSearchStore from "../../store/trip/placeSearchStore";
 import { NAV_PRESET } from "../../utils/protectedNavPreset";
-import useProtectedNavigate from "../../store/useProtectedNavigate";
-import useTripDateStore from "../../store/trip/useTripDateStore";
+import useProtectedNavigate from "../../hooks/useProtectedNavigate";
+import tripDateStore from "../../store/trip/tripDateStore";
 import dayjs from "dayjs";
 import { SCHEDULE_CATEGORYS } from "../../constants/scheduleCategory";
 import { hideLoader, showLoader } from "../../utils/uiUtil";
@@ -72,40 +72,40 @@ const mapStyle = {
 //#endregion
 
 const PlanPage = () => {
-  const setEditingSchedule = useEditScheduleStore((state) => state.setEditingSchedule);
-  const setBookmarkInSchedule = useEditScheduleStore((state) => state.setBookmarkInSchedule);
-  const setScheduleCategorys = useEditScheduleStore((state) => state.setScheduleCategorys);
+  const setEditingSchedule = editScheduleStore((state) => state.setEditingSchedule);
+  const setBookmarkInSchedule = editScheduleStore((state) => state.setBookmarkInSchedule);
+  const setScheduleCategorys = editScheduleStore((state) => state.setScheduleCategorys);
   
-  const setPlanDays = usePlanDaysStore((state) => state.setPlanDays);
-  const getScheduleDayId = usePlanDaysStore((state) => state.getScheduleDayId);
+  const setPlanDays = planDaysStore((state) => state.setPlanDays);
+  const getScheduleDayId = planDaysStore((state) => state.getScheduleDayId);
 
-  const setConfirmedDates = useTripDateStore((state) => state.setConfirmedDates);
-  const setActiveDayCount = useTripDateStore((state) => state.setActiveDayCount);
+  const setConfirmedDates = tripDateStore((state) => state.setConfirmedDates);
+  const setActiveDayCount = tripDateStore((state) => state.setActiveDayCount);
 
-  const isExpandTable = usePlanUIStore((state) => state.isExpandTable);
-  const setIsExpandTable = usePlanUIStore((state) => state.setIsExpandTable);
-  const setCanExpandTable = usePlanUIStore((state) => state.setCanExpandTable);
-  const isExpandBookmark = usePlanUIStore((state) => state.isExpandBookmark);
-  const setIsExpandBookmark = usePlanUIStore((state) => state.setIsExpandBookmark);
-  const setCanExpandBookmark = usePlanUIStore((state) => state.setCanExpandBookmark);
-  const isFoldTable = usePlanUIStore((state) => state.isFoldTable);
-  const setIsFoldTable = usePlanUIStore((state) => state.setIsFoldTable);
+  const isExpandTable = planUIStore((state) => state.isExpandTable);
+  const setIsExpandTable = planUIStore((state) => state.setIsExpandTable);
+  const setCanExpandTable = planUIStore((state) => state.setCanExpandTable);
+  const isExpandBookmark = planUIStore((state) => state.isExpandBookmark);
+  const setIsExpandBookmark = planUIStore((state) => state.setIsExpandBookmark);
+  const setCanExpandBookmark = planUIStore((state) => state.setCanExpandBookmark);
+  const isFoldTable = planUIStore((state) => state.isFoldTable);
+  const setIsFoldTable = planUIStore((state) => state.setIsFoldTable);
 
-  const setBookmarks = usePlanBookmarkStore((state) => state.setBookmarks);
-  const getBookmark = usePlanBookmarkStore((state) => state.getBookmark);
-  const setLinkedCountBookmark = usePlanBookmarkStore((state) => state.setLinkedCountBookmark);
+  const setBookmarks = planBookmarkStore((state) => state.setBookmarks);
+  const getBookmark = planBookmarkStore((state) => state.getBookmark);
+  const setLinkedCountBookmark = planBookmarkStore((state) => state.setLinkedCountBookmark);
 
-  const tripId = useTripInfoStore((state) => state.tripId);
-  const setTripId = useTripInfoStore((state) => state.setTripId);
-  const setTripName = useTripInfoStore((state) => state.setTripName);
-  const setEntryCount = useTripInfoStore((state) => state.setEntryCount);
+  const tripId = tripInfoStore((state) => state.tripId);
+  const setTripId = tripInfoStore((state) => state.setTripId);
+  const setTripName = tripInfoStore((state) => state.setTripName);
+  const setEntryCount = tripInfoStore((state) => state.setEntryCount);
 
-  const regionData = useRegionStore((state) => state.regionData);
-  const updateRegionData = useRegionStore((state) => state.updateRegionData);
-  const setIsSearched = usePlaceSearchStore((state) => state.setIsSearched);
-  const cascaderOptions = useRegionStore((state) => state.regionData.cascaderOptions);
+  const regionData = regionStore((state) => state.regionData);
+  const updateRegionData = regionStore((state) => state.updateRegionData);
+  const setIsSearched = placeSearchStore((state) => state.setIsSearched);
+  const cascaderOptions = regionStore((state) => state.regionData.cascaderOptions);
   
-  const openOneBtnModal = useModalStore((state) => state.openOneBtnModal);
+  const openOneBtnModal = modalStore((state) => state.openOneBtnModal);
 
   const [isDraggingBookmark, setIsDraggingBookmark] = useState(false); // 북마크 드래그 오버레이 표시 여부
   const draggingBookmarkRef = useRef(null); // 표시되는 북마크 오버레이 아이템

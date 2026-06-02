@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Button, Flex, Form, Input, message, Modal } from 'antd';
-import useModalStore from '../../store/useModalStore';
+import modalStore from '../../store/modalStore';
 import styles from '../../styles/signup.module.css';
 import { existsEmailApi, sendEmailApi, signupApi, verifyEmailApi } from '../../services/authApi';
 import { existsNicknameApi } from '../../services/memberApi';
@@ -15,8 +15,8 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const SignUpModalComponent = ({ open, onClose }) => {
   const [form] = Form.useForm();
   const [submitting, setSubmitting] = useState(false);
-  const openLoginModal = useModalStore((state) => state.openLoginModal);
-  const openOneBtnModal = useModalStore((state) => state.openOneBtnModal);
+  const openLoginModal = modalStore((state) => state.openLoginModal);
+  const openOneBtnModal = modalStore((state) => state.openOneBtnModal);
 
   // 이메일 인증
   const [isEmailSent, setIsEmailSent] = useState(false);        // 전송 성공 여부 + 인증 번호 입력창 표시

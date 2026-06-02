@@ -1,10 +1,10 @@
 import { Navigate, useLocation } from "react-router-dom";
-import useAuthStore from "../store/useAuthStore";
+import authStore from "../store/authStore";
 
 //  role 체크 (권한 여부) 
 const PrivateRouter = ({ children, allowedRoles }) => {
-  const userRole = useAuthStore((state) => state.userRole);  
-  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
+  const userRole = authStore((state) => state.userRole);  
+  const isLoggedIn = authStore((state) => state.isLoggedIn);
   const location = useLocation();
 
   // 권한 있음

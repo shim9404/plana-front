@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import useRegionStore from "../../../store/home/useRegionStore";
+import regionStore from "../../../store/home/regionStore";
 import MapMarkerImage from "../area/MapMarkerImage";
 import { renderToString } from "react-dom/server";
 import { IconButton, TextButton } from "../../common/PLA_Buttons";
-import usePlaceSearchStore from "../../../store/trip/usePlaceSearchStore";
+import placeSearchStore from "../../../store/trip/placeSearchStore";
 import { Button, Flex } from "antd";
 import { Eye, EyeOff, MouseLeft, MouseOff, SearchX, ZoomIn, ZoomOut } from "lucide-react";
-import usePlanBookmarkStore from "../../../store/trip/usePlanBookmarkStore";
+import planBookmarkStore from "../../../store/trip/planBookmarkStore";
 import { getBookmarkColor, getBookmarkSubColor, getBookmarkActiveColor } from "../../../utils/plan/bookmarkUtils";
 import { StarTwoTone } from "@ant-design/icons";
 
@@ -77,15 +77,15 @@ const PlanMap = () => {
   const [isHide, setIsHide] = useState(false); // UI on/off
   
   // 검색 결과 + 클릭 여부 데이터
-  const isSearched = usePlaceSearchStore((state) => state.isSearched);
-  const searchResults = usePlaceSearchStore((state) => state.searchResults);
+  const isSearched = placeSearchStore((state) => state.isSearched);
+  const searchResults = placeSearchStore((state) => state.searchResults);
 
   // 북마크 + 북마크 타입 데이터
-  const bookmarks = usePlanBookmarkStore((state) => state.bookmarks);
-  const getBookmarkType = usePlanBookmarkStore((state) => state.getBookmarkType);
+  const bookmarks = planBookmarkStore((state) => state.bookmarks);
+  const getBookmarkType = planBookmarkStore((state) => state.getBookmarkType);
 
   //  지역(이름 + 좌표) 데이터
-  const objRegions = useRegionStore((state) => state.objRegions);
+  const objRegions = regionStore((state) => state.objRegions);
 
 
   // 기존 마커 전체 제거 함수

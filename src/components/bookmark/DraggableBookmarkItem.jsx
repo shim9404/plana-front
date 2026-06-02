@@ -4,14 +4,14 @@ import { useDraggable } from "@dnd-kit/react";
 import { IconButton } from "../common/PLA_Buttons";
 import { CloseCircleFilled, PushpinFilled } from "@ant-design/icons";
 import { FlexBox } from "../common/PLA_FlexBox";
-import usePlanBookmarkStore from "../../store/trip/usePlanBookmarkStore";
+import planBookmarkStore from "../../store/trip/planBookmarkStore";
 import { deleteBookmarkApi } from "../../services/tripApi";
-import useTripInfoStore from "../../store/trip/useTripInfoStore";
+import tripInfoStore from "../../store/trip/tripInfoStore";
 
 const DraggableBookmarkItem = ({ bookmark }) => {
   const { ref, isDragging } = useDraggable({ id: bookmark.bookmarkId, type: "bookmark" });
-  const deleteBookmark = usePlanBookmarkStore((state) => state.deleteBookmark);
-  const tripId = useTripInfoStore((state) => state.tripId);
+  const deleteBookmark = planBookmarkStore((state) => state.deleteBookmark);
+  const tripId = tripInfoStore((state) => state.tripId);
   const [isHover, setIsHover] = useState(false);
 
   const handleDeleteBookmark = ()  => {
