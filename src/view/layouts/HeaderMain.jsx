@@ -9,12 +9,12 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 
-import { useAuth } from "../../hooks/AuthContext";
-import { useModal } from "../../hooks/ModalProvider";
+import useAuthStore from "../../store/useAuthStore";
+import useModalStore from "../../store/useModalStore";
 import { logoutApi } from "../../services/authApi";
 import { FlexBox } from "../../components/common/PLA_FlexBox";
 import { useEffect, useRef } from "react";
-import useProtectedNavigate from "../../hooks/useProtectedNavigate";
+import useProtectedNavigate from "../../store/useProtectedNavigate";
 import { NAV_PRESET } from "../../utils/protectedNavPreset";
 
 import PlanALogo from '../../assets/images/svg/logos/plana-logo.svg?react';
@@ -36,8 +36,14 @@ const headerStyle = {
 
 const HeaderMain = () => {
   const loaction = useLocation();
-  const { isLoggedIn, logout, email, accessToken, userRole } = useAuth();
-  const { openLoginModal } = useModal();
+  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
+  const logout = useAuthStore((state) => state.logout);
+  const email = useAuthStore((state) => state.email);
+  const accessToken = useAuthStore((state) => state.accessToken);
+  const userRole = useAuthStore((state) => state.userRole);
+
+  const openLoginModal = useModalStore((state) => state.openLoginModal);
+
   const protectedNavigate = useProtectedNavigate();
 
   const isAdmin = isLoggedIn && userRole === 'ADMIN';

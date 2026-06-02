@@ -3,22 +3,27 @@ import PageLayout from "../../components/common/PageLayout";
 import Map from "../../components/home/Map";
 import TripInfoSelector from "../../components/home/TripInfoSelector";
 import { useCallback, useEffect, useRef } from "react";
-import { useRegion } from "../../hooks/home/RegionContext";
+import useRegionStore from "../../store/home/useRegionStore.js";
 import { getRegionDataForCascader } from "../../services/regionDataParser";
 import { getRegionApi } from "../../services/regionApi";
 import { fetchWithRetry } from "../../utils/apiUtil.js";
 import { oneBtnPreset } from "../../utils/alertModalPreset.js";
-import { useModal } from "../../hooks/ModalProvider.jsx";
-import { useTripDate } from "../../hooks/trip/TripDateContext.jsx";
-import { useTripInfo } from "../../hooks/trip/TripInfoContext.jsx";
-import { useTripRegion } from "../../hooks/trip/TripRegionContext.jsx";
+import useModalStore from "../../store/useModalStore.js";
+import useTripDateStore from "../../store/trip/useTripDateStore.js";
+import useTripInfoStore from "../../store/trip/useTripInfoStore.js";
+import useTripRegionStore from "../../store/trip/useTripRegionStore.js";
 
 const HomePage = () => {
-  const { setTripId } = useTripInfo();
-  const { setConfirmedDates, setActiveDayCount } = useTripDate();
-  const { setSelectedZdo, setSelectedSigu } = useTripRegion();
-  const { regionData, updateRegionData } = useRegion();
-  const { openOneBtnModal } = useModal();
+  const setTripId = useTripInfoStore((state) => state.setTripId);
+  const setActiveDayCount = useTripDateStore((state) => state.setActiveDayCount);
+
+  const setSelectedZdo = useTripRegionStore((state) => state.setSelectedZdo);
+  const setSelectedSigu = useTripRegionStore((state) => state.setSelectedSigu);
+  const regionData = useRegionStore((state) => state.regionData);
+  const updateRegionData = useRegionStore((state) => state.updateRegionData);
+
+  const openOneBtnModal = useModalStore((state) => state.openOneBtnModal);
+  
   const hoveredIdRef = useRef(null);
 
   const layoutStyle = {
@@ -44,7 +49,7 @@ const HomePage = () => {
   }, []);
 
 
-  // 컴포넌트 마운트 시 DB 데이터 불러오기 및 context 초기화
+  // 컴포넌트 마운트 시 DB 데이터 불러오기 및 zustand 초기화
   useEffect(() => {
     setTripId(null);
     setActiveDayCount(null);

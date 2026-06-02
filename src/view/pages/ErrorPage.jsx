@@ -1,6 +1,6 @@
 import { useLocation } from "react-router-dom";
 import PageLayout from "../../components/common/PageLayout";
-import useProtectedNavigate from "../../hooks/useProtectedNavigate";
+import useProtectedNavigate from "../../store/useProtectedNavigate";
 import { NAV_PRESET } from "../../utils/protectedNavPreset";
 import { ERROR_CONFIG } from "../../utils/errorPagePreset";
 import { FlexBox, TextBox } from "../../components/common/PLA_FlexBox";

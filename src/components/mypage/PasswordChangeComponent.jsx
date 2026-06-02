@@ -5,12 +5,12 @@ import '../../styles/mypage.css';
 import { TextButton } from '../common/PLA_Buttons';
 import { changePasswordApi } from '../../services/memberApi';
 import { oneBtnPreset } from '../../utils/alertModalPreset'
-import { useModal } from '../../hooks/ModalProvider';
+import useModalStore from '../../store/useModalStore';
 
 {/* == 비밀번호 수정 콘텐츠 == */}
 const PasswordChangeComponent = ({memberId, setSelectedMenu}) => {
   // 모달창
-  const { openOneBtnModal } = useModal();
+  const openOneBtnModal = useModalStore((state) => state.openOneBtnModal);
 
   // 현재 비밀번호 초기값
   const [currentPassword, setCurrentPassword] = useState("");

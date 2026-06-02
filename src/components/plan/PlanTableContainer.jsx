@@ -14,7 +14,7 @@ import PlanTableContent from "./table/PlanTableContent";
 import PlanTableFooter from "./table/PlanTableFooter";
 import { Button } from "antd";
 import { useState } from "react";
-import { usePlanUI } from "../../hooks/trip/PlanUIContext";
+import usePlanUIStore from "../../store/trip/usePlanUIStore";
 
 const containerSetting = {
   isVertical: true,
@@ -30,7 +30,10 @@ const containerSetting = {
  * @returns
  */
 const PlanTableContainer = () => {
-  const { isExpandTable, setIsExpandTable, canExpandTable } = usePlanUI();
+  const isExpandTable = usePlanUIStore((state) => state.isExpandTable);
+  const setIsExpandTable = usePlanUIStore((state) => state.setIsExpandTable);
+  const canExpandTable = usePlanUIStore((state) => state.canExpandTable);
+  
   const [isExpandHover, setIsExpandHover] = useState(false);
 
   return (

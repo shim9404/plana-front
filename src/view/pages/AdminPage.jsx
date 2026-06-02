@@ -30,7 +30,7 @@ import {
 } from 'lucide-react'
 import { SettingOutlined } from '@ant-design/icons'
 import { FlexBox, TextBox } from '../../components/common/PLA_FlexBox';
-import { useAuth } from '../../hooks/AuthContext';
+import useAuthStore from '../../store/useAuthStore';
 import ProfileMarkerImage from '../../components/mypage/ProfileMarkerImage';
 
 /** localStorage `profile_image`(서버 pds 파일명) 없으면 기본 아바타 */
@@ -179,7 +179,9 @@ const AdminPage = () => {
   const [selectedKeys, setSelectedKeys] = useState([DEFAULT_MENU_KEY])
   const [openSubKeys, setOpenSubKeys] = useState(() => ['sub1', 'sub2', 'sub3'])
   const { token } = theme.useToken()
-  const { username, email, profileImage } = useAuth();
+  const username = useAuthStore((state) => state.username);
+  const email = useAuthStore((state) => state.email);
+  const profileImage = useAuthStore((state) => state.profileImage);
   const { colorText, colorTextSecondary } = token
 
   const key = selectedKeys[0]

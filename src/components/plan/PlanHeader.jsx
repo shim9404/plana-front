@@ -1,20 +1,27 @@
-import { useTripInfo } from "../../hooks/trip/TripInfoContext";
+import useTripInfoStore from "../../store/trip/useTripInfoStore";
 import { FlexBox, TextBox } from "../common/PLA_FlexBox";
 import TripDatePicker from "../home/TripDatePicker";
 import TripRegionPicker from "../home/TripRegionPicker";
 import { CheckCircleTwoTone, SyncOutlined } from "@ant-design/icons";
 import { useEffect, useRef, useState } from "react";
 import { editTripDateApi, editTripInfoApi } from "../../services/tripApi";
-import { usePlanDays } from "../../hooks/trip/PlanDaysContext";
-import { useTripRegion } from "../../hooks/trip/TripRegionContext";
-import { useTripDate } from "../../hooks/trip/TripDateContext";
+import usePlanDaysStore from "../../store/trip/usePlanDaysStore";
+import useTripRegionStore from "../../store/trip/useTripRegionStore";
+import useTripDateStore from "../../store/trip/useTripDateStore";
 import { DebounceInput } from "../common/PLA_Input";
 
 const PlanHeader = () => {
-  const { setSelectedZdo, selectedSigu, setSelectedSigu } = useTripRegion();
-  const { tripName, setTripName, tripId } = useTripInfo();
-  const { setActiveDayCount } = useTripDate();
-  const { addPlanDays } = usePlanDays();
+  const setSelectedZdo = useTripRegionStore((state) => state.setSelectedZdo);
+  const selectedSigu = useTripRegionStore((state) => state.selectedSigu);
+  const setSelectedSigu = useTripRegionStore((state) => state.setSelectedSigu);
+
+  const tripName = useTripInfoStore((state) => state.tripName);
+  const setTripName = useTripInfoStore((state) => state.setTripName);
+  const tripId = useTripInfoStore((state) => state.tripId);
+  
+  const setActiveDayCount = useTripDateStore((state) => state.setActiveDayCount);
+  const addPlanDays = usePlanDaysStore((state) => state.addPlanDays);
+
   const [isSaving, setIsSaving] = useState(false);
   const [ cascaderValue, setCascaderValue ] = useState([])
   const [changedName, setChangedName] = useState("");         // Input 변동 값 (API 요청 용도)

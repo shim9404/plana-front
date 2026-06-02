@@ -5,26 +5,38 @@ import { flexStyle } from '../../styles/homeStyles'
 import { useEffect, useRef, useState } from 'react'
 import styles from "../../styles/TripInfoSelector.module.css"
 import TripDatePicker from './TripDatePicker'
-import { useTripInfo } from '../../hooks/trip/TripInfoContext'
+import useTripInfoStore from '../../store/trip/useTripInfoStore'
 import TripRegionPicker from './TripRegionPicker'
 import { NAV_PRESET } from '../../utils/protectedNavPreset'
-import useProtectedNavigate from '../../hooks/useProtectedNavigate'
+import useProtectedNavigate from '../../store/useProtectedNavigate'
 import { addTripApi } from '../../services/tripApi'
-import { useAuth } from '../../hooks/AuthContext'
-import { usePlanDays } from '../../hooks/trip/PlanDaysContext'
-import { useTripRegion } from '../../hooks/trip/TripRegionContext'
-import { useTripDate } from '../../hooks/trip/TripDateContext'
-import { usePlanBookmark } from '../../hooks/trip/PlanBookmarkContext'
-import { useModal } from '../../hooks/ModalProvider'
+import useAuthStore from '../../store/useAuthStore'
+import usePlanDaysStore from '../../store/trip/usePlanDaysStore'
+import useTripRegionStore from '../../store/trip/useTripRegionStore'
+import useTripDateStore from '../../store/trip/useTripDateStore'
+import usePlanBookmarkStore from '../../store/trip/usePlanBookmarkStore'
+import useModalStore from '../../store/useModalStore'
 
 const TripInfoSelector = ({ setHoveredId }) => {
-  const { selectedZdo, setSelectedZdo, selectedSigu, setSelectedSigu } = useTripRegion();
-  const { confirmedDates, setConfirmedDates, setActiveDayCount } = useTripDate();
-  const { setTripName, setTripId } = useTripInfo();
-  const { setPlanDays } = usePlanDays();
-  const { setBookmarks } = usePlanBookmark();
-  const { memberId, username } = useAuth();
-  const { openLoginModal } = useModal();
+  const selectedZdo = useTripRegionStore((state) => state.selectedZdo);
+  const setSelectedZdo = useTripRegionStore((state) => state.setSelectedZdo);
+  const selectedSigu = useTripRegionStore((state) => state.selectedSigu);
+  const setSelectedSigu = useTripRegionStore((state) => state.setSelectedSigu);
+
+  const confirmedDates = useTripDateStore((state) => state.confirmedDates);
+  const setActiveDayCount = useTripDateStore((state) => state.setActiveDayCount);
+
+  const setTripName = useTripInfoStore((state) => state.setTripName);
+  const setTripId = useTripInfoStore((state) => state.setTripId);
+
+  const setPlanDays = usePlanDaysStore((state) => state.setPlanDays);
+  const setBookmarks = usePlanBookmarkStore((state) => state.setBookmarks);
+  
+  const memberId = useAuthStore((state) => state.memberId);
+  const username = useAuthStore((state) => state.username);
+
+  const openLoginModal = useModalStore((state) => state.openLoginModal);
+
   const protectedNavigate = useProtectedNavigate();
 
   const hoverTimerRef = useRef(null); // 호버 유예 시간
@@ -37,7 +49,7 @@ const TripInfoSelector = ({ setHoveredId }) => {
 
   // plan page로 이동
   const handleStart = () => {
-    // context의 memberId가 없을 경우(로그인 하지 않고 계획 페이지를 들어갈려고 할 경우 발생)
+    // zustand의 memberId가 없을 경우(로그인 하지 않고 계획 페이지를 들어갈려고 할 경우 발생)
     if (!memberId) {
       openLoginModal();
       return;

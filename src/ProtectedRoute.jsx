@@ -1,9 +1,6 @@
 import PropTypes from "prop-types";
 import { Navigate, useLocation } from "react-router-dom";
-import { useAuth } from "./hooks/AuthContext";
-import { useModal } from "./hooks/ModalProvider";
-import { oneBtnPreset } from "./utils/alertModalPreset";
-import { isTokenExpired } from "./utils/auth/jwtUtil";
+import useAuthStore from "./store/useAuthStore";
 
 
 /**
@@ -18,7 +15,7 @@ const PUBLIC_PATHS_WITHOUT_AUTH = new Set(["/", "/error"]);
 // 인증이 필요한 라우트를 보호하는 컴포넌트 url다이렉트로 들어올때 검증 위주
 const ProtectedRoute = ({ children }) => {
   const location = useLocation();
-  const { isLoggedIn } = useAuth();
+  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
 
   const allowWithoutToken = PUBLIC_PATHS_WITHOUT_AUTH.has(location.pathname);
 

@@ -8,15 +8,15 @@ import { CloseCircleFilled, CloseSquareOutlined, HolderOutlined, LinkOutlined, P
 import dayjs from "dayjs";
 import { getBookmarkActiveColor, getBookmarkColor } from "../../../utils/plan/bookmarkUtils";
 import { deleteScheduleApi, editScheduleApi } from "../../../services/tripApi";
-import { usePlanBookmark } from "../../../hooks/trip/PlanBookmarkContext";
-import { useEditSchedule } from "../../../hooks/trip/EditScheduleContext";
-import { usePlanUI } from "../../../hooks/trip/PlanUIContext";
-import { useTripInfo } from "../../../hooks/trip/TripInfoContext";
+import usePlanBookmarkStore from "../../../store/trip/usePlanBookmarkStore";
+import useEditScheduleStore from "../../../store/trip/useEditScheduleStore";
+import usePlanUIStore from "../../../store/trip/usePlanUIStore";
+import useTripInfoStore from "../../../store/trip/useTripInfoStore";
 import { DebounceInput, DebounceInputNumber } from "../../common/PLA_Input";
 
 const ScheduleDroppableItem = ({ scheduleId, bookmarkId, value, isEditing, onChange, onClick, deleteBookmarkEvent }) => {
   const { isDropTarget, ref } = useDroppable({id: scheduleId, accept: ["bookmark"]});
-  const { bookmarks } = usePlanBookmark();
+  const bookmarks = usePlanBookmarkStore((state) => state.bookmarks);
   const [defaultValue, setDefaultValue] = useState(value);
   const [isHover, setIsHover] = useState(false);
 
@@ -85,7 +85,8 @@ const ScheduleTimePicker = ({ prevValue, onChange, containerRef }) => {
 };
 
 const ScheduleCategorySelector = ({ prevValue, onChange, containerRef }) => {
-  const { scheduleCategorys, setScheduleCategorys } = useEditSchedule();
+  const scheduleCategorys = useEditScheduleStore((state) => state.scheduleCategorys);
+  const setScheduleCategorys = useEditScheduleStore((state) => state.setScheduleCategorys);
   const [selectValue, setSelectValue] = useState(prevValue);
   const [inputValue, setInputValue] = useState("");
   const [isOpen, setIsOpen] = useState(false); 
@@ -213,10 +214,20 @@ const ScheduleEditableItem = ({ columnId, value, isEditing, onClick, onChange, .
 const SortableScheduleItem = ({ id, dayId, scheduleId, index, schedule, isOnly, }) => {
   const { ref: sortableRef, handleRef, isDragging } = useSortable({ id: scheduleId, index, type: "item" });
   const itemRef = useRef(null);
-  const { tripId } = useTripInfo();
-  const { isExpandTable } = usePlanUI();
-  const { isDeleteRef, isDeleteBookmarkRef, editingSchedule, setEditingSchedule, focusRef, saveSchedule, deleteSchedule, setBookmarkInSchedule } = useEditSchedule();
-  const { setLinkedCountBookmark } = usePlanBookmark();
+  const tripId = useTripInfoStore((state) => state.tripId);
+  
+  const isExpandTable = usePlanUIStore((state) => state.isExpandTable);
+
+  const isDeleteRef = useEditScheduleStore((state) => state.isDeleteRef);
+  const isDeleteBookmarkRef = useEditScheduleStore((state) => state.isDeleteBookmarkRef);
+  const editingSchedule = useEditScheduleStore((state) => state.editingSchedule);
+  const setEditingSchedule = useEditScheduleStore((state) => state.setEditingSchedule);
+  const focusRef = useEditScheduleStore((state) => state.focusRef);
+  const saveSchedule = useEditScheduleStore((state) => state.saveSchedule);
+  const deleteSchedule = useEditScheduleStore((state) => state.deleteSchedule);
+  const setBookmarkInSchedule = useEditScheduleStore((state) => state.setBookmarkInSchedule);
+  const setLinkedCountBookmark = usePlanBookmarkStore((state) => state.setLinkedCountBookmark);
+
   const [isHover, setIsHover] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 

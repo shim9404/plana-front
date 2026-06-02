@@ -2,30 +2,29 @@ import { Button, Layout, message } from "antd";
 import { useEffect, useRef, useState } from "react";
 import { FlexBox } from "../../components/common/PLA_FlexBox";
 import { getRegionDataForCascader } from "../../services/regionDataParser";
-import { useRegion } from "../../hooks/home/RegionContext";
+import useRegionStore from "../../store/home/useRegionStore";
 import PageLayout from "../../components/common/PageLayout";
 import PlanTableContainer from "../../components/plan/PlanTableContainer";
 import PlanAreaContainer from "../../components/plan/PlanAreaContainer";
 import PlanBookmarkContainer from "../../components/plan/PlanBookmarkContainer";
 import PlanHeader from "../../components/plan/PlanHeader";
 import PlanMap from "../../components/plan/map/PlanMap";
-import { useModal } from "../../hooks/ModalProvider";
+import useModalStore from "../../store/useModalStore";
 import { oneBtnPreset } from "../../utils/alertModalPreset";
 import { getRegionApi } from "../../services/regionApi";
 import { DragDropProvider, DragOverlay  } from "@dnd-kit/react";
 import { arrayMove } from "@dnd-kit/helpers";
-import { useTripInfo } from "../../hooks/trip/TripInfoContext";
+import useTripInfoStore from "../../store/trip/useTripInfoStore";
 import { editScheduleApi, getTripApi, reorderDaysApi, reorderSchedulesApi } from "../../services/tripApi";
-import { usePlanBookmark } from "../../hooks/trip/PlanBookmarkContext";
-import { usePlanUI } from "../../hooks/trip/PlanUIContext";
-import { useEditSchedule } from "../../hooks/trip/EditScheduleContext";
-import { usePlanDays } from "../../hooks/trip/PlanDaysContext";
+import usePlanBookmarkStore from "../../store/trip/usePlanBookmarkStore";
+import usePlanUIStore from "../../store/trip/usePlanUIStore";
+import useEditScheduleStore from "../../store/trip/useEditScheduleStore";
+import usePlanDaysStore from "../../store/trip/usePlanDaysStore";
 import BookmarkItem from "../../components/bookmark/BookmarkItem";
-import { usePlaceSearch } from "../../hooks/trip/PlaceSearchContext";
+import usePlaceSearchStore from "../../store/trip/usePlaceSearchStore";
 import { NAV_PRESET } from "../../utils/protectedNavPreset";
-import useProtectedNavigate from "../../hooks/useProtectedNavigate";
-import { useTripDate } from "../../hooks/trip/TripDateContext";
-import { useTripRegion } from "../../hooks/trip/TripRegionContext";
+import useProtectedNavigate from "../../store/useProtectedNavigate";
+import useTripDateStore from "../../store/trip/useTripDateStore";
 import dayjs from "dayjs";
 import { SCHEDULE_CATEGORYS } from "../../constants/scheduleCategory";
 import { hideLoader, showLoader } from "../../utils/uiUtil";
@@ -73,17 +72,40 @@ const mapStyle = {
 //#endregion
 
 const PlanPage = () => {
-  const { setEditingSchedule, setBookmarkInSchedule, setScheduleCategorys } = useEditSchedule();
-  const { setPlanDays, getScheduleDayId } = usePlanDays();
-  const { setConfirmedDates, setActiveDayCount } = useTripDate();
-  const { isExpandTable, setIsExpandTable, setCanExpandTable, isExpandBookmark, setIsExpandBookmark, setCanExpandBookmark, isFoldTable, setIsFoldTable } = usePlanUI();
-  const { setBookmarks, getBookmark, setLinkedCountBookmark } = usePlanBookmark();
-  const { tripId, setTripId, setTripName, setEntryCount } = useTripInfo();
-  const { setSelectedSigu } = useTripRegion();
-  const { regionData, updateRegionData } = useRegion();
-  const { setIsSearched } = usePlaceSearch();
-  const { cascaderOptions } = regionData;
-  const { openOneBtnModal } = useModal();
+  const setEditingSchedule = useEditScheduleStore((state) => state.setEditingSchedule);
+  const setBookmarkInSchedule = useEditScheduleStore((state) => state.setBookmarkInSchedule);
+  const setScheduleCategorys = useEditScheduleStore((state) => state.setScheduleCategorys);
+  
+  const setPlanDays = usePlanDaysStore((state) => state.setPlanDays);
+  const getScheduleDayId = usePlanDaysStore((state) => state.getScheduleDayId);
+
+  const setConfirmedDates = useTripDateStore((state) => state.setConfirmedDates);
+  const setActiveDayCount = useTripDateStore((state) => state.setActiveDayCount);
+
+  const isExpandTable = usePlanUIStore((state) => state.isExpandTable);
+  const setIsExpandTable = usePlanUIStore((state) => state.setIsExpandTable);
+  const setCanExpandTable = usePlanUIStore((state) => state.setCanExpandTable);
+  const isExpandBookmark = usePlanUIStore((state) => state.isExpandBookmark);
+  const setIsExpandBookmark = usePlanUIStore((state) => state.setIsExpandBookmark);
+  const setCanExpandBookmark = usePlanUIStore((state) => state.setCanExpandBookmark);
+  const isFoldTable = usePlanUIStore((state) => state.isFoldTable);
+  const setIsFoldTable = usePlanUIStore((state) => state.setIsFoldTable);
+
+  const setBookmarks = usePlanBookmarkStore((state) => state.setBookmarks);
+  const getBookmark = usePlanBookmarkStore((state) => state.getBookmark);
+  const setLinkedCountBookmark = usePlanBookmarkStore((state) => state.setLinkedCountBookmark);
+
+  const tripId = useTripInfoStore((state) => state.tripId);
+  const setTripId = useTripInfoStore((state) => state.setTripId);
+  const setTripName = useTripInfoStore((state) => state.setTripName);
+  const setEntryCount = useTripInfoStore((state) => state.setEntryCount);
+
+  const regionData = useRegionStore((state) => state.regionData);
+  const updateRegionData = useRegionStore((state) => state.updateRegionData);
+  const setIsSearched = usePlaceSearchStore((state) => state.setIsSearched);
+  const cascaderOptions = useRegionStore((state) => state.regionData.cascaderOptions);
+  
+  const openOneBtnModal = useModalStore((state) => state.openOneBtnModal);
 
   const [isDraggingBookmark, setIsDraggingBookmark] = useState(false); // 북마크 드래그 오버레이 표시 여부
   const draggingBookmarkRef = useRef(null); // 표시되는 북마크 오버레이 아이템
@@ -98,7 +120,7 @@ const PlanPage = () => {
 
   // 컴포넌트 마운트
   useEffect(() => {
-    // context의 tripId가 없을 경우(다른 페이지를 통해 넘어오지 않은 경우 발생) 
+    // zustand의 tripId가 없을 경우(다른 페이지를 통해 넘어오지 않은 경우 발생) 
     if (!tripId) {
       // local storage에 저장된 tripId 확인
       const savedTripId = window.localStorage.getItem("tripId");
@@ -115,7 +137,7 @@ const PlanPage = () => {
       hideLoader();
     }
 
-    // Context 초기화
+    // zustand 초기화
     setIsExpandTable(false);
     setEditingSchedule(null);
     setIsFoldTable(false);

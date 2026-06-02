@@ -1,16 +1,20 @@
 import { Input, InputNumber } from "antd";
 import { FlexBox, TextBox } from "../../common/PLA_FlexBox";
 import { useEffect, useState } from "react";
-import { useTripInfo } from "../../../hooks/trip/TripInfoContext";
+import useTripInfoStore from "../../../store/trip/useTripInfoStore";
 import { editTripInfoApi } from "../../../services/tripApi";
 import dayjs from 'dayjs';
-import { usePlanDays } from "../../../hooks/trip/PlanDaysContext";
-import { useTripDate } from "../../../hooks/trip/TripDateContext";
+import usePlanDaysStore from "../../../store/trip/usePlanDaysStore";
+import useTripDateStore from "../../../store/trip/useTripDateStore";
 
 const PlanTableFooter = ({ styles }) => {
-  const { entryCount, setEntryCount, tripId } = useTripInfo();
-  const { confirmedDates } = useTripDate();
-  const { planDays } = usePlanDays();
+  const entryCount = useTripInfoStore((state) => state.entryCount);
+  const setEntryCount = useTripInfoStore((state) => state.setEntryCount);
+  const tripId = useTripInfoStore((state) => state.tripId);
+
+  const confirmedDates = useTripDateStore((state) => state.confirmedDates);
+  const planDays = usePlanDaysStore((state) => state.planDays);
+  
   const [totalPrice, setTotalPrice] = useState(0);
   const [memberPrice, setMemberPrice] = useState(0);
   const onChangeEntryCount = (value) => {

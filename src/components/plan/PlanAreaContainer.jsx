@@ -8,13 +8,13 @@ import SearchInput from "./area/SearchInput";
 import { BookmarkPopup } from "./area/BookmarkPopup";
 import { ScrollStyle } from "../../styles/planStyles";
 import { getAreaApi, getPlaceApi } from "../../services/areaApi";
-import { useTripInfo } from "../../hooks/trip/TripInfoContext";
-import { useRegion } from "../../hooks/home/RegionContext";
+import useTripInfoStore from "../../store/trip/useTripInfoStore";
+import useRegionStore from "../../store/home/useRegionStore";
 import { getRegionByIdApi } from "../../services/regionApi";
 import { addBookmarkApi } from "../../services/tripApi";
-import { usePlaceSearch } from "../../hooks/trip/PlaceSearchContext";
-import { usePlanBookmark } from "../../hooks/trip/PlanBookmarkContext";
-import { useTripRegion } from "../../hooks/trip/TripRegionContext";
+import usePlaceSearchStore from "../../store/trip/usePlaceSearchStore";
+import usePlanBookmarkStore from "../../store/trip/usePlanBookmarkStore";
+import useTripRegionStore from "../../store/trip/useTripRegionStore";
 import LoadingOverlay from "../common/LoadingOverlay";
 import { withMinDelay } from "../../utils/apiUtil";
 
@@ -47,11 +47,18 @@ const FILTER_TOGGLES = [
 ]
 
 const PlanAreaContainer = () => {
-  const { tripId } = useTripInfo();
-  const { selectedSigu } = useTripRegion();
-  const { setBookmarks } = usePlanBookmark();
-  const { isSearched, setIsSearched, searchResults, setSearchResults } = usePlaceSearch();
-  const { objRegions, setObjRegions } = useRegion();
+  const tripId = useTripInfoStore((state) => state.tripId);
+
+  const selectedSigu = useTripRegionStore((state) => state.selectedSigu);
+  
+  const objRegions = useRegionStore((state) => state.objRegions);
+  const setObjRegions = useRegionStore((state) => state.setObjRegions);
+
+  const setBookmarks = usePlanBookmarkStore((state) => state.setBookmarks);
+
+  const setIsSearched = usePlaceSearchStore((state) => state.setIsSearched);
+  const searchResults = usePlaceSearchStore((state) => state.searchResults);
+  const setSearchResults = usePlaceSearchStore((state) => state.setSearchResults);
 
 
   // 장소 데이터(DB)

@@ -6,12 +6,12 @@ import { TextButton } from '../common/PLA_Buttons';
 import ProfileMarkerImage from "../../components/mypage/ProfileMarkerImage";
 import { changeMemberApi, existsNicknameApi } from '../../services/memberApi';
 import { oneBtnPreset } from '../../utils/alertModalPreset'
-import { useModal } from '../../hooks/ModalProvider';
+import useModalStore from '../../store/useModalStore';
 
 {/* == 회원 정보 수정 콘텐츠 == */}
 const MemberChangeComponent = ({memberId, objectMemberItem, getMember, setSelectedMenu}) => {
   // 모달창
-  const { openOneBtnModal } = useModal();
+  const openOneBtnModal = useModalStore((state) => state.openOneBtnModal);
 
   // 프로필 이미지 초기값
   const [profileImage, setProfileImage] = useState("")

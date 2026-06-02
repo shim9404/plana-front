@@ -7,11 +7,11 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { getBookmarkColor, getBookmarkSubColor } from '../../../utils/plan/bookmarkUtils';
 import { BOOKMARK_COLOR } from '../../../Constants/bookmarkColor';
 import { CATEGORY_NAME } from '../../../constants/categoryName';
-import { usePlanBookmark } from '../../../hooks/trip/PlanBookmarkContext';
+import usePlanBookmarkStore from '../../../store/trip/usePlanBookmarkStore';
 
 const AreaBookmarkButton = ({ findId, onClickEvent }) => {
   const [bookmarkType, setBookmarkType] = useState("");
-  const { getBookmarkType } = usePlanBookmark();
+  const getBookmarkType = usePlanBookmarkStore((state) => state.getBookmarkType);
 
   useEffect(() => {
     setBookmarkType(getBookmarkType(findId));
