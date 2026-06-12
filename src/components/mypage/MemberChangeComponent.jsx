@@ -1,13 +1,18 @@
 import React, { useEffect, useState } from 'react'
 import { Button, Input, message, Modal } from 'antd';
-import { ProfileOutlined, SmileOutlined } from '@ant-design/icons';
+import { ProfileOutlined } from '@ant-design/icons';
 import '../../styles/mypage.css';
 import { TextButton } from '../common/PLA_Buttons';
-import axiosInstance from '../../services/axiosInstance';
 import ProfileMarkerImage from "../../components/mypage/ProfileMarkerImage";
+import { changeMemberApi, existsNicknameApi } from '../../services/memberApi';
+import { oneBtnPreset } from '../../utils/alertModalPreset'
+import modalStore from '../../store/modalStore';
 
 {/* == 회원 정보 수정 콘텐츠 == */}
 const MemberChangeComponent = ({memberId, objectMemberItem, getMember, setSelectedMenu}) => {
+  // 모달창
+  const openOneBtnModal = modalStore((state) => state.openOneBtnModal);
+
   // 프로필 이미지 초기값
   const [profileImage, setProfileImage] = useState("")
   useEffect(() => {
@@ -39,11 +44,9 @@ const MemberChangeComponent = ({memberId, objectMemberItem, getMember, setSelect
     }
 
     try {
-      const uri = `/api/members/nickname/check?nickname=${changheNickname}`;
-      const result = await axiosInstance.get(uri, null);
-      const newNickname = result.data.data.newNickname;
+      const result = await existsNicknameApi(changheNickname);
 
-      if (newNickname) { // 새닉네임 사용 가능 확인
+      if (result) { // 새닉네임 사용 가능 확인
         message.success("사용 가능합니다.");
         setIsNicknameDupli(false);
       } 
@@ -65,18 +68,17 @@ const MemberChangeComponent = ({memberId, objectMemberItem, getMember, setSelect
         return;
       }
 
-      const uri = `/api/members/${memberId}`;
       const body = {
         nickname: nickname,
         profileImage: profileImage
       };
       
-      await axiosInstance.patch(uri, body);
-      message.success("변경되었습니다.")
+      await changeMemberApi(memberId, body);
+      openOneBtnModal(oneBtnPreset.changeSuccess);
       getMember();
     } catch (error) {
       console.log(error);
-      message.error("변경이 불가능합니다.")
+      openOneBtnModal(oneBtnPreset.changeFail);
     }
   }
 

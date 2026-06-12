@@ -15,6 +15,26 @@ export const oneBtnPreset = {
     message: "PlanA에 오신 것을 환영합니다!",
     type: "info"
   },
+  "changeSuccess": {
+    title: "성공",
+    message: "변경되었습니다.",
+    type: "success"
+  },
+  "changeFail": {
+    title: "오류",
+    message: "변경이 불가능합니다. 잠시 후 다시 시도해주세요",
+    type: "error"
+  },
+  "withdrawSuccess": {
+    title: "성공",
+    message: "정상적으로 탈퇴되었습니다.",
+    type: "success"
+  },  
+  "withdrawFail": {
+    title: "오류",
+    message: "회원 정보가 일치하지 않습니다. 다시 입력해주세요.",
+    type: "error"
+  },
   "trashCheck": {
     title: "경고",
     message: "이 여행 목록을 휴지통에 버리겠습니까?",
@@ -29,6 +49,16 @@ export const oneBtnPreset = {
     title: "확인",
     message: "이 여행 목록을 다운로드 하시겠습니까?",
     type: "info"
+  },
+  "restoreCheck": {
+    title: "확인",
+    message: "이 여행 목록을 다시 불러오시겠습니까?",
+    type: "info"
+  },  
+  "deleteCheck": {
+    title: "경고",
+    message: "삭제 후 복구가 불가능합니다.\n이 여행 목록을 영구 삭제하시겠습니까? ",
+    type: "warning"
   },
   default: {
     title: "오류",

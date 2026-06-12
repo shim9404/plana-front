@@ -9,8 +9,8 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 
-import { useAuth } from "../../hooks/AuthContext";
-import { useModal } from "../../hooks/ModalProvider";
+import authStore from "../../store/authStore";
+import modalStore from "../../store/modalStore";
 import { logoutApi } from "../../services/authApi";
 import { FlexBox } from "../../components/common/PLA_FlexBox";
 import { useEffect, useRef } from "react";
@@ -36,8 +36,14 @@ const headerStyle = {
 
 const HeaderMain = () => {
   const loaction = useLocation();
-  const { isLoggedIn, logout, email, accessToken, userRole } = useAuth();
-  const { openLoginModal } = useModal();
+  const isLoggedIn = authStore((state) => state.isLoggedIn);
+  const logout = authStore((state) => state.logout);
+  const email = authStore((state) => state.email);
+  const accessToken = authStore((state) => state.accessToken);
+  const userRole = authStore((state) => state.userRole);
+
+  const openLoginModal = modalStore((state) => state.openLoginModal);
+
   const protectedNavigate = useProtectedNavigate();
 
   const isAdmin = isLoggedIn && userRole === 'ADMIN';

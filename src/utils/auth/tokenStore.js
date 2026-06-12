@@ -23,7 +23,7 @@ export const tokenStore = {
     localStorage.removeItem('refreshToken');
   },
 
-  // logout 콜백 등록 (AuthContext에서 등록)
+  // logout 콜백 등록 (AuthStore에서 등록)
   setOnLogout: (cb) => {
     onLogout = cb;
   },
