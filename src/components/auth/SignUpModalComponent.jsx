@@ -20,7 +20,7 @@ const SignUpModalComponent = ({ open, onClose }) => {
 
   // 이메일 인증
   const [isEmailSent, setIsEmailSent] = useState(false);        // 전송 성공 여부 + 인증 번호 입력창 표시
-  const [isVerified, setIsVerified] = useState(true);
+  const [isVerified, setIsVerified] = useState(false);
 
   const [emailLoading, setEmailLoading] = useState(false);      // 이메일 전송 & 중복 체크 로딩
   const [emailVerifyLoading, setEmailVerifyLoading] = useState(false); // 검증 로딩
