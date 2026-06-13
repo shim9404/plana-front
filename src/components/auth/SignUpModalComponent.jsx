@@ -20,7 +20,7 @@ const SignUpModalComponent = ({ open, onClose }) => {
 
   // 이메일 인증
   const [isEmailSent, setIsEmailSent] = useState(false);        // 전송 성공 여부 + 인증 번호 입력창 표시
-  const [isVerified, setIsVerified] = useState(false);
+  const [isVerified, setIsVerified] = useState(true);
 
   const [emailLoading, setEmailLoading] = useState(false);      // 이메일 전송 & 중복 체크 로딩
   const [emailVerifyLoading, setEmailVerifyLoading] = useState(false); // 검증 로딩
@@ -103,22 +103,32 @@ const SignUpModalComponent = ({ open, onClose }) => {
     const email = form.getFieldValue('email');
 
     setEmailLoading(true);
+    // 가입 여부 판단
     try {
       await existsEmailApi(email);
       setEmailStatus({ status: 'success', help: '사용 가능한 이메일입니다.' });
+      // TODO : 개발용 - 이메일 인증 들어갈 시 제거 필요
+      setIsVerified(true);
     } catch {
       setEmailLoading(false);
       setEmailStatus({ status: 'error', help: '이미 가입된 이메일입니다.' });
       return;
-    }
-    try {
-      await sendEmailApi(email);
-      setIsEmailSent(true);
-    } catch {
-      setEmailStatus({ status: 'error', help: '잠시 후 다시 시도해 주세요.' });
-    } finally {
+    } 
+    // TODO : 개발용 - 이메일 인증 들어갈 시 제거 필요
+    finally {
       setEmailLoading(false);
     }
+    
+    // TODO : 개발용 - 이메일 인증 들어갈 시 활성화 필요
+    // 이메일 전송
+    // try {
+    //   await sendEmailApi(email);
+    //   setIsEmailSent(true);
+    // } catch {
+    //   setEmailStatus({ status: 'error', help: '잠시 후 다시 시도해 주세요.' });
+    // } finally {
+    //   setEmailLoading(false);
+    // }
   }; // end of handleEmailSend
 
   // 이메일 인증번호 검증 
