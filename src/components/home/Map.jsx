@@ -29,22 +29,22 @@ import tripRegionStore from '../../store/trip/tripRegionStore.js';
 // svg파일과 regionId 매칭
 const SIGU_MAPS = {
   '11': Seoul,
-  '21': Busan,
-  '22': Daegu,
-  '23': Incheon,
-  '24': Gwangju,
-  '25': Daejeon,
-  '26': Ulsan,
-  '29': Sejong,
-  '31': Gyeonggi,
-  '32': Gangwon,
-  '33': Chungbuk,
-  '34': Chungnam,
-  '35': Jeonbuk,
-  '36': Jeonnam,
-  '37': Gyeongbuk,
-  '38': Gyeongnam,
-  '39': Jeju
+  '26': Busan,
+  '27': Daegu,
+  '28': Incheon,
+  '29': Gwangju,
+  '30': Daejeon,
+  '31': Ulsan,
+  '36': Sejong,
+  '41': Gyeonggi,
+  '51': Gangwon,
+  '43': Chungbuk,
+  '44': Chungnam,
+  '52': Jeonbuk,
+  '46': Jeonnam,
+  '47': Gyeongbuk,
+  '48': Gyeongnam,
+  '50': Jeju
 };
 
 function Map() {
