@@ -25,6 +25,7 @@ import tripRegionStore from "../../store/trip/tripRegionStore";
 import { hideLoader, showLoader } from "../../utils/uiUtil";
 import { getTrashPlanApi, getTripbyMemberIdApi } from "../../services/memberApi";
 import { changeTripStatusApi, getTripApi } from "../../services/tripApi";
+import useProtectedNavigate from "../../hooks/useProtectedNavigate";
 
 const { Sider, Content } = Layout;
 
@@ -47,6 +48,7 @@ const contentStyle = {
 
 const MyTripPage = () => {
   // 경로 설정
+  const protectedNavigate = useProtectedNavigate();
   const navigate = useNavigate();
   // 모달 창
   const openTwoBtnModal = modalStore((state) => state.openTwoBtnModal);
@@ -226,35 +228,8 @@ const MyTripPage = () => {
   const handleTripEdit = () => { // 모달 open
     openTwoBtnModal({
       ...oneBtnPreset.editCheck,
-      onOk: async () => {
-        setLoading(true);
-        showLoader();
-        // React 한번에 처리하기 못하게 한박자 쉬게 만드는 코드
-        await new Promise(resolve => setTimeout(resolve, 0));
-
-        // 북마크, 여행 계획표 zustand 담기 
-        setBookmarks(myBookmarks);
-        setPlanDays(mySchedules);
-        // 여행명, 여행일자, 여행 기간, 참여인원 zustand 담기
-        setTripName(myTripName);
-        setConfirmedDates([dayjs(myPlanDates.startDate),dayjs(myPlanDates.endDate)]);
-        setActiveDayCount(myActiveDay);
-        setEntryCount(myEntryCount);
-        // 스케줄 목록 내 분류 zustand 담기
-        const extraCategories = mySchedules.flatMap(day =>
-          day.schedules
-            .map(schedule => schedule.category)
-            .filter(Boolean) // undefined & null 제거
-        );
-        // 중복 제거(기본 값(SCHEDULE_CATEGORYS)외 존재 시, 추가)
-        const uniqueCategories = [...new Set([
-          ...SCHEDULE_CATEGORYS,
-          ...extraCategories
-        ])];
-        setScheduleCategorys(uniqueCategories);
-
-        setLoading(false);
-        navigate("/plan")
+      onOk: () => {
+        protectedNavigate({ path: `/plan/${selectedMenu}`, requireAuth: true });
       }
     })
   }; 

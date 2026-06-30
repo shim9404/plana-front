@@ -47,7 +47,7 @@ const HeaderMain = () => {
   const protectedNavigate = useProtectedNavigate();
 
   const isAdmin = isLoggedIn && userRole === 'ADMIN';
-  const isPlanning = location.pathname === NAV_PRESET.PLAN.path;
+  const isPlanning = location.pathname.startsWith(NAV_PRESET.PLAN.path);
   const isHome = location.pathname === NAV_PRESET.HOME.path;
   const buttonsRef = useRef(null);
 
