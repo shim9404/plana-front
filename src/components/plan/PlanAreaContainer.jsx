@@ -1,5 +1,5 @@
 import { Empty, Flex, Pagination, Spin } from "antd";
-import { ToggleButtonGroup } from "../common/PLA_Buttons";
+import { IconButton, ToggleButtonGroup } from "../common/PLA_Buttons";
 import { FlexContainer } from "../common/PLA_Containers";
 import { FlexBox } from "../common/PLA_FlexBox";
 import AreaItem from "./area/AreaItem";
@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import SearchInput from "./area/SearchInput";
 import { BookmarkPopup } from "./area/BookmarkPopup";
 import { ScrollStyle } from "../../styles/planStyles";
-import { getAreaApi, getPlaceApi } from "../../services/areaApi";
+import { getAreaApi, getPlaceApi, getThemeApi } from "../../services/areaApi";
 import tripInfoStore from "../../store/trip/tripInfoStore";
 import regionStore from "../../store/home/regionStore";
 import { getRegionByIdApi } from "../../services/regionApi";
@@ -17,29 +17,24 @@ import planBookmarkStore from "../../store/trip/planBookmarkStore";
 import tripRegionStore from "../../store/trip/tripRegionStore";
 import LoadingOverlay from "../common/LoadingOverlay";
 import { withMinDelay } from "../../utils/apiUtil";
+import { UnorderedListOutlined } from "@ant-design/icons";
+import PlaceFilter from "./area/PlaceFilter";
+import ThemeFilter from "./area/ThemeFilter";
 
 // 장소 타입에 따른 필터용 토글 정보
 const FILTER_TOGGLES = [
   {
-    title: "근처 장소",
+    title: "지도 검색",
     type: "PLACE",
-    width: "35%",
+    width: "48%",
     height: "100%",
     fontSize: "16px",
     fontWeight: 500
   },
   {
-    title: "관광지",
-    type: "SPOT",
-    width: "30%",
-    height: "100%",
-    fontSize: "16px",
-    fontWeight: 500
-  },
-  {
-    title: "맛집",
-    type: "FOOD",
-    width: "28%",
+    title: "맞춤 테마",
+    type: "THEME",
+    width: "48%",
     height: "100%",
     fontSize: "16px",
     fontWeight: 500
@@ -60,14 +55,21 @@ const PlanAreaContainer = () => {
   const searchResults = placeSearchStore((state) => state.searchResults);
   const setSearchResults = placeSearchStore((state) => state.setSearchResults);
 
+  // 초기 렌더링 방지
+  const isFirstRender = useRef(true);
+  const isChangingType = useRef(false);
 
   // 장소 데이터(DB)
   const [areaCache, setAreaCache] = useState({
     SPOT: { pages: {}, totalCount: 0 },
     FOOD: { pages: {}, totalCount: 0 },
   });
-  // 장소 데이터(API)
+  // 장소 데이터(카카오 API)
   const [placeCache, setPlaceCache] = useState({
+    pages: {}, totalCount: 0
+  });
+  // 장소 데이터(관광포털 API)
+  const [themeCache, setThemeCache] = useState({
     pages: {}, totalCount: 0
   });
 
@@ -77,11 +79,11 @@ const PlanAreaContainer = () => {
   const [searchKeyword, setSearchKeyword] = useState("");
 
   // searchType별 페이징 상태
-  // searchType별 페이징 상태 - PLACE 추가
   const [pagination, setPagination] = useState({
     PLACE: { current: 1, total: 0 },
     SPOT: { current: 1, total: 0 },
     FOOD: { current: 1, total: 0 },
+    THEME: { current: 1, total: 0 },
   });
   const PAGE_SIZE = 15;
 
@@ -93,6 +95,8 @@ const PlanAreaContainer = () => {
   //#endregion
 
   const onToggleChange = (selected) => {
+    isChangingType.current = true;
+
     setSearchKeyword("");
     setIsSearched(false);
     setSearchType(selected);
@@ -153,6 +157,7 @@ const PlanAreaContainer = () => {
     
     const getRegionData = async () => {
       try {
+        setLoading(true);
         // 이전 좌표 먼저 초기화해야 두번 렌더링 막음
         setObjRegions(null);
         const response = await getRegionByIdApi(selectedSigu);
@@ -161,6 +166,8 @@ const PlanAreaContainer = () => {
 
       } catch (error) {
         console.log(error);
+      } finally {
+        setLoading(false);
       }
     };
     setAreaCache({
@@ -231,20 +238,32 @@ const loadAreaData = async (type, page = 1, keyword = '') => {
     }
   };
 
-  // API 장소 목록 호출 - 페이지 파라미터 추가
-  const loadPlaceData = async (keyword, page = 1) => {
+  // 카테고리 필터링 데이터
+  const [selectedPlaceFilters, setSelectedPlaceFilters] = useState(["CT1","FD6","AT4","CE7","AD5"]); // 지도 검색용
+  const [selectedThemeFilters, setSelectedThemeFilters] = useState(["PET","BF"]);                    // 맞춤 테마용
+
+  const [showFilter, setShowFilter] = useState(false);
+    const handleFilter = () => {
+    setShowFilter(prev => !prev);
+  };
+  
+  // 카카오 API 장소 목록 호출 - 페이지 파라미터 추가
+  const loadPlaceData = async (keyword, page = 1, category = selectedPlaceFilters) => {
     // 정보 로드 전 접근 차단
-    if (!objRegions || !objRegions?.mapX || !objRegions?.mapY) return;
+    if (!objRegions?.mapX || !objRegions?.mapY) return;
+
+    // 페이지 및 옵션 캐시 키
+    const cacheKey = `${page}-${category.join(",")}`;
 
     // 키워드 검색은 캐시 안 씀
     if (keyword) {
       try {
         setLoading(true);
-        const response = await withMinDelay(getPlaceApi(keyword, objRegions.mapX, objRegions.mapY, page));
+        const response = await withMinDelay(getPlaceApi(category, keyword, objRegions.mapX, objRegions.mapY, page));
         setSearchResults(response.data.places);
         setPagination(prev => ({
           ...prev,
-          PLACE: { current: page, total: response.data.totalCount, isEnd: response.data.isEnd }
+          PLACE: { current: page, total: response.data.totalCount }
         }));
       } catch (error) {
         console.warn(`장소 데이터 호출 오류`);
@@ -255,8 +274,8 @@ const loadAreaData = async (type, page = 1, keyword = '') => {
     }
 
     // 키워드 없으면 캐시 확인
-    if (placeCache.pages[page]) {
-      setSearchResults(placeCache.pages[page]);
+    if (placeCache.pages[cacheKey]) {
+      setSearchResults(placeCache.pages[cacheKey]);
       setPagination(prev => ({
         ...prev,
         PLACE: { current: page, total: placeCache.totalCount }
@@ -266,20 +285,20 @@ const loadAreaData = async (type, page = 1, keyword = '') => {
 
     try {
       setLoading(true);
-      const response = await withMinDelay(getPlaceApi("", objRegions.mapX, objRegions.mapY, page));
+      const response = await withMinDelay(getPlaceApi(category, "", objRegions.mapX, objRegions.mapY, page));
       const data = response.data;
 
       // 캐시에 저장
       setPlaceCache(prev => ({
         ...prev,
-        pages: { ...prev.pages, [page]: data.places },
+        pages: { ...prev.pages, [cacheKey]: data.places },
         totalCount: data.totalCount,
       }));
 
       setSearchResults(data.places);
       setPagination(prev => ({
         ...prev,
-        PLACE: { current: page, total: data.totalCount, isEnd: data.isEnd }
+        PLACE: { current: page, total: data.totalCount }
       }));
     } catch (error) {
       console.warn(`장소 데이터 호출 오류`);
@@ -288,30 +307,112 @@ const loadAreaData = async (type, page = 1, keyword = '') => {
     }
   };
 
-  // 검색 필터링 데이터
-  const [filteredLists, setFilteredLists] = useState([]);
+  // 관광포털 API 장소 목록 호출 - 페이지 파라미터 추가
+  const loadThemeData = async (keyword, page = 1, theme = selectedThemeFilters) => { 
+    // 정보 로드 전 접근 차단
+    if (!objRegions || !objRegions?.mapX || !objRegions?.mapY) return;
+
+    // 페이지 및 옵션 캐시 키
+    const cacheKey = `${page}-${theme.join(",")}`;
+
+    // 키워드 검색은 캐시 안 씀
+    if (keyword) {
+      try {
+        setLoading(true);
+        const response = await withMinDelay(getThemeApi(theme, keyword, objRegions.mapX, objRegions.mapY, selectedSigu, page));
+        setSearchResults(response.data.themes);
+        setPagination(prev => ({
+          ...prev,
+          THEME: { current: page, total: response.data.totalCount }
+        }));
+      } catch (error) {
+        console.warn(`장소 데이터 호출 오류`);
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
+
+    // 키워드 없으면 캐시 확인
+    if (themeCache.pages[cacheKey]) {
+      setSearchResults(themeCache.pages[cacheKey]);
+      setPagination(prev => ({
+        ...prev,
+        THEME: { current: page, total: themeCache.totalCount }
+      }));
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const response = await withMinDelay(getThemeApi(theme, "", objRegions.mapX, objRegions.mapY, selectedSigu, page));
+      const data = response.data;
+
+      // 캐시에 저장
+      setThemeCache(prev => ({
+        ...prev,
+        pages: { ...prev.pages, [cacheKey]: data.themes },
+        totalCount: data.totalCount,
+      }));
+
+      setSearchResults(data.themes);
+      setPagination(prev => ({
+        ...prev,
+        THEME: { current: page, total: data.totalCount }
+      }));
+    } catch (error) {
+      console.warn(`장소 데이터 호출 오류`);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   // 초기화 (searchType 또는 지역 변경 시)
   useEffect(() => {
-    if (!objRegions) return;
+    if (!objRegions || !objRegions?.mapX || !objRegions?.mapY) return;
 
     setSearchKeyword("");
-    setFilteredLists([]);
     setIsSearched(false);
 
+    setPlaceCache({
+      pages: {},
+      totalCount: 0,
+    });
+
+    setThemeCache({
+      pages: {},
+      totalCount: 0,
+    });
+
+    setPagination(prev => ({
+      ...prev,
+      PLACE: {
+        current: 1,
+        total: 0,
+      },
+      THEME: {
+        current: 1,
+        total: 0,
+      }
+    }));
+
+    setSearchResults([]);
+    
     if (searchType === "PLACE") {
-      loadPlaceData("", 1);
+      setSelectedPlaceFilters(["CT1","FD6","AT4","CE7","AD5"]);
+      loadPlaceData("", 1, ["CT1","FD6","AT4","CE7","AD5"]);
     } else {
-      loadAreaData(searchType,1);
+      setSelectedThemeFilters(["PET","BF"]);
+      loadThemeData("", 1, ["PET","BF"]);
     }
   }, [searchType, objRegions]);
 
   // 페이지 변경
   const onPageChange = (page) => {
     if (searchType === "PLACE") {
-      loadPlaceData(searchKeyword, page);
+      loadPlaceData(searchKeyword, page, selectedPlaceFilters);
     } else {
-      loadAreaData(searchType, page, searchKeyword);
+      loadThemeData(searchKeyword, page, selectedThemeFilters);
     }
     if (listRef.current) listRef.current.scrollTop = 0;
   };
@@ -325,13 +426,12 @@ const loadAreaData = async (type, page = 1, keyword = '') => {
     setSearchKeyword(finalKeyword);
 
     if (!finalKeyword) {
-      setFilteredLists([]);
       setIsSearched(false);
       const currentPage = pagination[searchType]?.current || 1;
       if (searchType === "PLACE") {
-        loadPlaceData("", currentPage);
+        loadPlaceData("", currentPage, selectedPlaceFilters);
       } else {
-        loadAreaData(searchType, currentPage, ''); // keyword 빈 문자열로 캐시 방식 복원
+        loadThemeData("", currentPage, selectedThemeFilters);
       }
       return;
     }
@@ -339,13 +439,53 @@ const loadAreaData = async (type, page = 1, keyword = '') => {
     setIsSearched(true);
 
     if (searchType === "PLACE") {
-      loadPlaceData(finalKeyword);
+      loadPlaceData(finalKeyword, 1, selectedPlaceFilters);
       return;
+    } else {
+      loadThemeData(finalKeyword, 1, selectedThemeFilters);
     }
 
     // SPOT, FOOD는 API로 키워드 검색
-    loadAreaData(searchType, 1, finalKeyword);
+    // loadAreaData(searchType, 1, finalKeyword);
   };
+
+  // 옵션 변경
+  useEffect(() => {
+    if (!objRegions || !objRegions?.mapX || !objRegions?.mapY) return;
+    
+  // 초기 렌더링 무시
+  if (isFirstRender.current) {
+    isFirstRender.current = false;
+    return;
+  }
+
+  // searchType 변경 중이면 실행 막기
+  if (isChangingType.current) {
+    isChangingType.current = false;
+    return;
+  }
+
+    // 캐시 초기화
+    setPlaceCache({
+      pages: {},
+      totalCount: 0,
+    });
+
+    setThemeCache({
+      pages: {},
+      totalCount: 0,
+    });
+
+    setSearchKeyword("");
+    if (searchType === "PLACE") {
+      if (selectedPlaceFilters.length === 0) return;
+      loadPlaceData("", 1, selectedPlaceFilters);
+    } else {
+      if (selectedThemeFilters.length === 0) return;
+      loadThemeData("", 1, selectedThemeFilters);
+    }
+  
+  }, [selectedPlaceFilters, selectedThemeFilters]);
 
   // 리스트 스크롤 초기화
   useEffect(() => {
@@ -376,25 +516,45 @@ const loadAreaData = async (type, page = 1, keyword = '') => {
         >
           {/* 헤더 */}
           <FlexBox
-            h="108px"
-            settings={{ isVertical: true, justify: "space-around" }}
+            h="auto"
+            settings={{ isVertical: true, justify: "flex-start" }}
             style={{ 
               borderBottom: "solid 1px #A8A8A8",
               minHeight: "108px",
+              gap: "15px",
+              overflow: "visible",
+              paddingBottom: "5px",
+              flex: "none",
             }}
             bg="none"
           >
-            <FlexBox h="40px" bg="none">
+            <FlexBox h="40px" bg="none" style={{ minHeight: "40px" }}>
               <ToggleButtonGroup toggles={FILTER_TOGGLES} onChangedEvent={onToggleChange} />
             </FlexBox>
-            <FlexBox h="48px" bg="none">
-              <SearchInput
-                placeholder={"여행 장소를 검색해 보세요!"}
-                value={searchKeyword}
-                onSearchEvent={onKeywordSearch}
-                onChange={onKeywordChange}
-              />
-            </FlexBox>
+              {!showFilter ? (
+                <FlexBox h="48px"  bg="none" style={{ gap: "10px" }}>
+                  <SearchInput
+                    placeholder={"여행 장소를 검색해 보세요!"}
+                    value={searchKeyword}
+                    onSearchEvent={onKeywordSearch}
+                    onChange={onKeywordChange}
+                  />
+                  <IconButton width="38px" height="38px" fontSize="12px" type={"default"} onClickEvent={handleFilter}>
+                    <UnorderedListOutlined style={{ fontSize: "16px" }}/>
+                  </IconButton>
+                </FlexBox>
+                ) : (
+                searchType === "PLACE" ? (
+                  <FlexBox w="320px">
+                    <PlaceFilter setShowFilter = {setShowFilter} selectedPlaceFilters={selectedPlaceFilters} setSelectedPlaceFilters={setSelectedPlaceFilters}/>
+                  </FlexBox>
+                  ) : (
+                  <FlexBox w="320px">
+                    <ThemeFilter setShowFilter = {setShowFilter} selectedThemeFilters={selectedThemeFilters} setSelectedThemeFilters={setSelectedThemeFilters}/>
+                  </FlexBox>
+                  )
+                )
+              }
           </FlexBox>
           {/* 리스트 */}
           <FlexBox
@@ -430,7 +590,7 @@ const loadAreaData = async (type, page = 1, keyword = '') => {
               showSizeChanger={false}
               size="small"
               itemRender={(page, type, element) => {
-                if (type === "next" && searchType === "PLACE" && pagination[searchType]?.isEnd) {
+                if (type === "next" && searchType === "PLACE") {
                   return <span style={{ pointerEvents: "none", opacity: 0.3 }}>{element}</span>;
                 }
                 return element;
