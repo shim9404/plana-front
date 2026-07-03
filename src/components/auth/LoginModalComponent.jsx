@@ -5,7 +5,7 @@ import modalStore from '../../store/modalStore';
 import { loginApi } from '../../services/authApi';
 import styles from '../../styles/login.module.css';
 
-const LoginModalComponent = ({ open, onClose }) => {
+const LoginModalComponent = ({ open, onClose, onLogin }) => {
   const [form] = Form.useForm();
   const [submitting, setSubmitting] = useState(false);
   const [loginError, setLoginError] = useState('');
@@ -28,7 +28,11 @@ const LoginModalComponent = ({ open, onClose }) => {
       });
       login(result.data, values.email);
       message.success('로그인되었습니다.');
-      handleClose();
+      form.resetFields();
+      form.setFields([]);
+      setLoginError('');
+      onLogin?.();
+      // handleClose();
     } catch (error) {
       const status = error?.response?.status;
       const body = error?.response?.data;

@@ -1,10 +1,9 @@
 import { Navigate, useLocation } from "react-router-dom";
 import authStore from "../store/authStore";
-import modalStore from "../store/modalStore";
+import LoginRequired from "./LoginRequired";
 
 //  role 체크 (권한 여부) 
 const PrivateRouter = ({ children, allowedRoles }) => {
-  const openLoginModal = modalStore((state) => state.openLoginModal);
   const userRole = authStore((state) => state.userRole);  
   const isLoggedIn = authStore((state) => state.isLoggedIn);
   const location = useLocation();
@@ -13,11 +12,8 @@ const PrivateRouter = ({ children, allowedRoles }) => {
   if (allowedRoles.includes(userRole)) { return children; }
   // 권한 없음
   if (isLoggedIn) { return <Navigate to="/error" replace state={{ errorKey: "FORBIDDEN", from: location.pathname }} /> }
-  else {
-      openLoginModal();
-      return;
-  }
-  return <Navigate to="/" replace />
+  // 로그인 요청
+  return <LoginRequired />
 };
 
 export default PrivateRouter;
