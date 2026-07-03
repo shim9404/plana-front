@@ -33,6 +33,16 @@ export const getTripApi = async (tripId) => {
 }
 
 /**
+ * 여행 조회(공유 링크)
+ * @param {String} shareToken 
+ * @returns 
+ */
+export const getSharedTripApi = async (shareToken) => {
+  const response = await axiosInstance.get(`/api/trips/share/${shareToken}`);
+  return response.data;
+}
+
+/**
  * 여행 정보 수정
  * @param {String} tripId
  * @param {{ name: String, entryCount: Integer }} payload

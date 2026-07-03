@@ -13,9 +13,10 @@ import MobileGuard from "./view/layouts/MobileGuard.jsx";
 
 
 function App() {
-  const isLoginOpen = modalStore((state) => state.isLoginOpen);
+  const loginModal = modalStore((state) => state.loginModal);
   const openLoginModal = modalStore((state) => state.openLoginModal);
   const closeLoginModal = modalStore((state) => state.closeLoginModal);
+  const confirmLoginModal = modalStore((state) => state.confirmLoginModal);
   const isSignupOpen = modalStore((state) => state.isSignupOpen);
   const closeSignupModal = modalStore((state) => state.closeSignupModal);
   const oneBtnModal = modalStore((state) => state.oneBtnModal);
@@ -46,7 +47,8 @@ useEffect(() => {
   return (
     <>
       <LoginModalComponent
-        open={isLoginOpen}
+        open={loginModal.isOpen}
+        onLogin={confirmLoginModal}
         onClose={closeLoginModal}
       />
       <SignUpModalComponent
