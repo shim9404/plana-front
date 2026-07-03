@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import { Navigate, useLocation } from "react-router-dom";
-import authStore from "./store/authStore";
+import authStore from "../store/authStore";
 
 
 /**
