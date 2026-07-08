@@ -595,7 +595,12 @@ const PlanAreaContainer = () => {
 
     setSelectedAroundFilter("");
 
-    loadPlaceData("", 1, selectedPlaceFilters);
+    if (searchType == "PLACE") {
+      loadPlaceData("", 1, selectedPlaceFilters);
+    }
+    else {
+      loadThemeData("", 1, selectedThemeFilters);
+    }
   }
 
   // 연관 여행지 키워드 검색
