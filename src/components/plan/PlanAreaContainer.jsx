@@ -494,9 +494,9 @@ const PlanAreaContainer = () => {
 
   // 페이지 변경
   const onPageChange = (page) => {
-    if (selectedPlaceFilters) {
-      loadAroundData(selectedPlaceFilters, page);
-    return;
+    if (selectedAroundFilter) {
+      loadAroundData(selectedAroundFilter, page);
+      return;
     }
 
     if (searchType === "PLACE") {
