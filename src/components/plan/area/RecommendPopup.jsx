@@ -59,7 +59,7 @@ const RecommendPopup = ({ onClose }) => {
         style={{position: "absolute", top: "calc(50% - 355px)", gap: "10px", alignItems: "center"}}
       >
         <IconButton width={showBackButton ? "220px" : "40px"} height="40px" fontSize="15px" type="default"
-          onClickEvent={!showBackButton ? onClose : undefined}
+          onClickEvent={onClose}
           onMouseEnter={() => setShowBackButton(true)}
           onMouseLeave={() => setShowBackButton(false)}
           style={{
