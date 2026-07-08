@@ -4,6 +4,8 @@ import { FlexContainer } from '../../common/PLA_Containers';
 import { TextButton } from '../../common/PLA_Buttons';
 import { CloseOutlined } from '@ant-design/icons';
 import { Checkbox } from 'antd';
+import modalStore from "../../../store/modalStore";
+import { oneBtnPreset } from '../../../utils/alertModalPreset';
 
 const FILTER_OPTION = [
   { label: "문화시설", value: "CT1" },
@@ -15,6 +17,9 @@ const FILTER_OPTION = [
 
 // 지도 검색용 필터
 const PlaceFilter = ({setShowFilter, selectedPlaceFilters, setSelectedPlaceFilters}) => {
+  // 모달창
+  const openOneBtnModal = modalStore((state) => state.openOneBtnModal);
+
   const [checkedFilters, setCheckedFilters] = useState(selectedPlaceFilters);
 
   useEffect(() => {
@@ -34,6 +39,11 @@ const PlaceFilter = ({setShowFilter, selectedPlaceFilters, setSelectedPlaceFilte
   // 적용
   const handleApply = () => {
     setShowFilter(false);
+    if (checkedFilters.length === 0) {
+      openOneBtnModal(oneBtnPreset.CheckWarn);
+      return;
+    }
+    
     setSelectedPlaceFilters(checkedFilters);
   };
 

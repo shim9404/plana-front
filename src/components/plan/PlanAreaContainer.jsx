@@ -129,7 +129,7 @@ const PlanAreaContainer = () => {
     closeBookmarkPopup();
     setIsFilterCamp(false);
     setIsFilterWellness(false);
-    setAroundFilter("");
+    setSelectedAroundFilter("");
   };
 
   const scrollEvent = () => {
@@ -217,7 +217,7 @@ const PlanAreaContainer = () => {
   }, [selectedSigu]);
 
   // DB 장소 목록 호출 - 페이징
-const loadAreaData = async (type, page = 1, keyword = '') => {
+  const loadAreaData = async (type, page = 1, keyword = '') => {
     // 키워드 검색 시 캐시 안 씀
     if (keyword) {
       try {
@@ -411,6 +411,16 @@ const loadAreaData = async (type, page = 1, keyword = '') => {
 
     // 페이지 및 옵션 캐시 키
     const cacheKey = `${filter}-${page}`;
+
+    // 키워드 없으면 캐시 확인
+    if (aroundCache.pages[cacheKey]) {
+      setSearchResults(aroundCache.pages[cacheKey]);
+      setPagination(prev => ({
+        ...prev,
+        AROUND: { current: page, total: aroundCache.totalCount }
+      }));
+      return;
+    }
 
     try {
       setLoading(true);
@@ -654,13 +664,13 @@ const loadAreaData = async (type, page = 1, keyword = '') => {
                 selectedAroundFilter ? (
                 <FlexBox h="48px"  bg="none" style={{ gap: "10px" }}>
                   {selectedAroundFilter === "CAMP" ? (
-                    <TextBox size="20px">
+                    <TextBox size="20px" color="#565656">
                       <TentTree size={25} style={{marginRight: "15px", position: "relative", top: "0px"}}/> 
                         캠핑
                       </TextBox> 
                     ) : ( 
-                    <TextBox size="20px">
-                      <Leaf size={30} style={{marginRight: "15px", position: "relative", top: "0px"}}/> 
+                    <TextBox size="20px" color="#565656">
+                      <Leaf size={25} style={{marginRight: "15px", position: "relative", top: "0px"}}/> 
                         웰니스
                     </TextBox>)
                   }
