@@ -70,3 +70,41 @@ export const getThemeApi = async (theme, keyword, mapX, mapY, regionId, page = 1
   });
   return response.data;
 };
+
+/**
+ * @param {String} filter
+ * @param {Number} mapX
+ * @param {Number} mapY
+ * @param {Number} page
+ */
+export const getAroundApi = async (filter, mapX, mapY, page = 1) => {
+
+  const response = await axiosInstance.get(`/api/areas/around`, {
+    params: {
+      filter,
+      mapX,
+      mapY,
+      page,
+      size: 10,
+    },
+  });
+  return response.data;
+};
+
+/**
+ * @param {String} keyword
+ * @param {Number} page
+ * @param {String} regionId
+ */
+export const getRealatedPlaceApi = async (keyword, regionId, page = 1) => {
+
+  const response = await axiosInstance.get(`/api/areas/related-places`, {
+    params: {
+      keyword,
+      regionId,
+      page,
+      size: 10,
+    },
+  });
+  return response.data;
+};

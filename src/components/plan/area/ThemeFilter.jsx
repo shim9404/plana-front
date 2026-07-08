@@ -4,6 +4,8 @@ import { FlexContainer } from '../../common/PLA_Containers';
 import { TextButton } from '../../common/PLA_Buttons';
 import { CloseOutlined } from '@ant-design/icons';
 import { Checkbox } from 'antd';
+import modalStore from "../../../store/modalStore";
+import { oneBtnPreset } from '../../../utils/alertModalPreset';
 
 const FILTER_OPTION = [
   { label: "반려동물 동반", value: "PET" },
@@ -11,6 +13,9 @@ const FILTER_OPTION = [
 ];
 
 const ThemeFilter = ({setShowFilter, selectedThemeFilters, setSelectedThemeFilters}) => {
+  // 모달창
+  const openOneBtnModal = modalStore((state) => state.openOneBtnModal);
+
   const [checkedFilters, setCheckedFilters] = useState(selectedThemeFilters);
 
   useEffect(() => {
@@ -29,6 +34,12 @@ const ThemeFilter = ({setShowFilter, selectedThemeFilters, setSelectedThemeFilte
 
   // 적용
   const handleApply = () => {
+    setShowFilter(false);
+    if (checkedFilters.length === 0) {
+      openOneBtnModal(oneBtnPreset.CheckWarn);
+      return;
+    }
+        
     setShowFilter(false);
     setSelectedThemeFilters(checkedFilters);
   };
