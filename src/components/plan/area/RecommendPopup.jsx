@@ -54,30 +54,28 @@ const RecommendPopup = ({ onClose }) => {
       }}
     >
       {/* 상단 */}
-      <FlexBox w="900px" h="50px"
+      <FlexBox w="450px" h="50px"
         settings={{ justify: "flex-end" }}
         style={{position: "absolute", top: "calc(50% - 355px)", gap: "10px", alignItems: "center"}}
       >
-        <IconButton width="40px" height="40px" fontSize="15px" type="default" 
-          onClickEvent={onClose}
-          onMouseEnter={() => setShowBackButton(true)}
-          onMouseLeave={() => setShowBackButton(false)}
-        >
-          <Undo2 size = "25px" color="#A8A8A8"/>
-        </IconButton>
-          <IconButton width="220px" height="40px" fontSize="15px" type="default" 
-            onClickEvent={onClose}
-            style={{
-              opacity: showBackButton ? 1 : 0,
-              visibility: showBackButton ? "visible" : "hidden",
-              pointerEvents: "none",
-              }}
-            >
-            <Undo2 size = "25px" color="#A8A8A8"/>
-            <TextBox style={{marginLeft:"10px", fontSize:"15px"}}>
-              추천 받지 않고 돌아가기
-            </TextBox>
+        {showBackButton ? (
+          <IconButton width="220px" height="40px" fontSize="15px" type="default"
+            onMouseEnter={() => setShowBackButton(true)}
+            onMouseLeave={() => setShowBackButton(false)}
+          >
+            <Undo2 size="25px" color="#A8A8A8" />
+              <TextBox style={{ marginLeft: "10px", fontSize: "15px" }}>
+                추천 받지 않고 돌아가기
+              </TextBox>
           </IconButton>
+          ) : (
+          <IconButton width="40px" height="40px" fontSize="15px" type="default"
+            onClickEvent={onClose}
+            onMouseEnter={() => setShowBackButton(true)}
+          >
+          <Undo2 size="25px" color="#A8A8A8" />
+          </IconButton>
+        )}
       </FlexBox>
       {/* 팝업 */}      
       <FlexBox w="450px" h="600px" bg="#FFFFFF"
