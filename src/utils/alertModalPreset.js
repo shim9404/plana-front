@@ -60,6 +60,11 @@ export const oneBtnPreset = {
     message: "삭제 후 복구가 불가능합니다.\n이 여행 목록을 영구 삭제하시겠습니까? ",
     type: "warning"
   },
+  "CheckWarn": {
+    title: "경고",
+    message: "최소 1개 이상의 필터를 선택해주세요.",
+    type: "warning"
+  },
   default: {
     title: "오류",
     message: "잠시 후 다시 시도해 주세요.",
