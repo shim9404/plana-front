@@ -20,5 +20,5 @@ export const CATEGORY_ICON = {
   "HP8": Hospital, // 병원
   "PM9": Hospital, // 약국
   "ETC": LayoutDashboard, // 기타
-  default: LayoutDashboard,
+  default: LayoutDashboard
 }
