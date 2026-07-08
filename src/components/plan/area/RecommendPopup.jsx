@@ -58,24 +58,30 @@ const RecommendPopup = ({ onClose }) => {
         settings={{ justify: "flex-end" }}
         style={{position: "absolute", top: "calc(50% - 355px)", gap: "10px", alignItems: "center"}}
       >
-        {showBackButton ? (
-          <IconButton width="220px" height="40px" fontSize="15px" type="default"
-            onMouseEnter={() => setShowBackButton(true)}
-            onMouseLeave={() => setShowBackButton(false)}
+        <IconButton width={showBackButton ? "220px" : "40px"} height="40px" fontSize="15px" type="default"
+          onClickEvent={!showBackButton ? onClose : undefined}
+          onMouseEnter={() => setShowBackButton(true)}
+          onMouseLeave={() => setShowBackButton(false)}
+          style={{
+            overflow: "hidden",
+            transition: "width .18s ease",
+          }}
+        >
+          <Undo2 size={25} color="#A8A8A8" />
+          <TextBox fontSize="20px"
+            style={{
+              marginLeft: showBackButton ? "8px" : "0px",
+              width: showBackButton ? "auto" : "0px",
+              overflow: "hidden",
+              opacity: showBackButton ? 1 : 0,
+              whiteSpace: "nowrap",
+              transition: "opacity .1s",
+              fontSize: "15px",
+            }}
           >
-            <Undo2 size="25px" color="#A8A8A8" />
-              <TextBox style={{ marginLeft: "10px", fontSize: "15px" }}>
-                추천 받지 않고 돌아가기
-              </TextBox>
-          </IconButton>
-          ) : (
-          <IconButton width="40px" height="40px" fontSize="15px" type="default"
-            onClickEvent={onClose}
-            onMouseEnter={() => setShowBackButton(true)}
-          >
-          <Undo2 size="25px" color="#A8A8A8" />
-          </IconButton>
-        )}
+            추천 받지 않고 돌아가기
+          </TextBox>
+        </IconButton>
       </FlexBox>
       {/* 팝업 */}      
       <FlexBox w="450px" h="600px" bg="#FFFFFF"
