@@ -10,6 +10,8 @@ import tripRegionStore from "../../store/trip/tripRegionStore";
 import tripDateStore from "../../store/trip/tripDateStore";
 import { DebounceInput } from "../common/PLA_Input";
 import { TextButton } from "../common/PLA_Buttons";
+import { Button, Popover } from "antd";
+import { PopoverShareContent, PopoverShareTitle } from "./share/PopoverShareContent";
 
 const PlanHeader = () => {
   const setSelectedZdo = tripRegionStore((state) => state.setSelectedZdo);
@@ -25,6 +27,7 @@ const PlanHeader = () => {
 
   const [isShared, setIsShared] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isOpenShare, setIsOpenShare] = useState(false);
   const [ cascaderValue, setCascaderValue ] = useState([])
   const [changedName, setChangedName] = useState("");         // Input 변동 값 (API 요청 용도)
   const [displayName, setDisplayName] = useState(tripName);   // Input 비었을 경우 복구 용도
@@ -187,8 +190,8 @@ const PlanHeader = () => {
           </FlexBox>
         </FlexBox>
         {/* 공유 버튼 영역 */}
-        <FlexBox w="80px"  settings={{ isVertical: true, justify: "end" }} bg="none" style={{ minWidth: "80px" }}>
-          <FlexBox h="24px" settings={{ justify: "center" }} bg="none">
+        <FlexBox w="80px" h="52px" settings={{ isVertical: true, justify: "end" }} bg="none" style={{ minWidth: "80px" }}>
+          <FlexBox h="20px" settings={{ justify: "center" }} bg="none">
             {
               isShared ?
               <TextBox width="auto" alignW="right">모든 사용자<GlobalOutlined style={{margin: "4px"}}/></TextBox>
@@ -197,9 +200,18 @@ const PlanHeader = () => {
             }
           </FlexBox>
           <FlexBox h="32px" settings={{ justify: "center" }} bg="none">
-            <TextButton width="100%" height="100%" alignW="left" fontSize="14px" bg="none" style={{ color: "#565656" }}>
+          <Popover
+            content={<PopoverShareContent isShared={isShared} setIsShared={setIsShared} />}
+            title={<PopoverShareTitle />}
+            trigger="click"
+            placement="bottomRight"
+            open={isOpenShare}
+            onOpenChange={(open) => setIsOpenShare(open)}
+          >
+            <Button style={{ width: "100%", height: "100%", alignW: "left", fontSize: "14px", bg: "none", color: "#565656"  }}>
               공유
-            </TextButton>
+            </Button>
+          </Popover>
           </FlexBox>
         </FlexBox>
       </FlexBox>
