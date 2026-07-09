@@ -1,5 +1,5 @@
 import { Button, Flex, Modal } from 'antd'
-import React from 'react'
+import React, { useState } from 'react'
 import { FlexBox } from '../../components/common/PLA_FlexBox'
 import { FlexContainer } from '../../components/common/PLA_Containers'
 import { IconButton, TextButton } from '../../components/common/PLA_Buttons';
@@ -124,6 +124,9 @@ const travelDataList = [
 
 
 const UploadHubPlanModal =({ isModalOpen, handleClose }) => {
+
+  const [selectedPlanId, setSelectedPlanId] = useState(null);
+
   return (
       <Modal
         title={
@@ -158,7 +161,12 @@ const UploadHubPlanModal =({ isModalOpen, handleClose }) => {
         <div style={cardListStyle}>
           {travelDataList.map((plan) => (
             // 분리한 개별 카드 스타일 적용
-            <LoungeCard key={plan.id} plan={plan} />
+            <LoungeCard
+              key={plan.id} 
+              plan={plan} 
+              isSelected={selectedPlanId === plan.id}
+              onSelect={() => setSelectedPlanId(plan.id)}
+            />
           ))}
         </div>
       </Modal>
