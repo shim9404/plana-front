@@ -2,13 +2,14 @@ import tripInfoStore from "../../store/trip/tripInfoStore";
 import { FlexBox, TextBox } from "../common/PLA_FlexBox";
 import TripDatePicker from "../home/TripDatePicker";
 import TripRegionPicker from "../home/TripRegionPicker";
-import { CheckCircleTwoTone, SyncOutlined } from "@ant-design/icons";
+import { CheckCircleTwoTone, GlobalOutlined, LockOutlined, SyncOutlined } from "@ant-design/icons";
 import { useEffect, useRef, useState } from "react";
 import { editTripDateApi, editTripInfoApi } from "../../services/tripApi";
 import planDaysStore from "../../store/trip/planDaysStore";
 import tripRegionStore from "../../store/trip/tripRegionStore";
 import tripDateStore from "../../store/trip/tripDateStore";
 import { DebounceInput } from "../common/PLA_Input";
+import { TextButton } from "../common/PLA_Buttons";
 
 const PlanHeader = () => {
   const setSelectedZdo = tripRegionStore((state) => state.setSelectedZdo);
@@ -22,6 +23,7 @@ const PlanHeader = () => {
   const setActiveDayCount = tripDateStore((state) => state.setActiveDayCount);
   const addPlanDays = planDaysStore((state) => state.addPlanDays);
 
+  const [isShared, setIsShared] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [ cascaderValue, setCascaderValue ] = useState([])
   const [changedName, setChangedName] = useState("");         // Input 변동 값 (API 요청 용도)
@@ -39,7 +41,7 @@ const PlanHeader = () => {
     setCascaderValue(value);                 
   }, [selectedSigu])
 
-  const textboxStyle = { minWidth: "60px", marginLeft: "8px" };
+  const textboxStyle = { minWidth: "60px", marginLeft: "8px", marginBottom: "4px", fontSize: "12px", color: "#A8A8A8", fontWeight: 500, lineHeight: "100%" };
 
   const handleChangeRegion = (value) => {
     // value는 [zdoCode, siguId] 배열 형태
@@ -142,23 +144,23 @@ const PlanHeader = () => {
   };
 
   return (
-    <FlexBox h="64px" style={{ position: "absolute", zIndex: 100, top: "0px", margin: "18px 0px", minWidth: "708px", pointerEvents: "none" }} settings={{ justify: "center" }}>
-      <FlexBox w={`calc(100vw - ${120 + 210 + 200}px)`} bg="none" style={{ gap: "12px", minWidth: "708px", pointerEvents: "auto" }}>
+    <FlexBox h="64px" style={{ position: "absolute", zIndex: 100, top: "0px", margin: "0px", minWidth: "708px", pointerEvents: "none" }} settings={{ justify: "start" }}>
+      <FlexBox w={`calc(100vw - ${120 + 120}px)`} bg="none" style={{ gap: "12px", margin: "0px 0px 0px 104px ", minWidth: "708px", pointerEvents: "auto" }}>
         {/* 여행 일정 영역 */}
-        <FlexBox w="300px" settings={{ isVertical: true }}>
-          <TextBox alignW="left" bg="none" style={textboxStyle}>
+        <FlexBox h="auto" w="300px" settings={{ isVertical: true }}>
+          <TextBox h="none" alignW="left" bg="none" style={textboxStyle}>
             여행 일정
           </TextBox>
-          <TripDatePicker width="300px" height="48px" isShowConfirm handleSave={(dates) => handleSaveTripDate(dates)} />
+          <TripDatePicker width="280px" height="40px" isShowConfirm handleSave={(dates) => handleSaveTripDate(dates)} />
 
         </FlexBox>
         {/* 검색 지역 영역 */}
-        <FlexBox w="220px" settings={{ isVertical: true }} bg="none">
-          <TextBox alignW="left" bg="none" style={textboxStyle}>
+        <FlexBox h="auto" w="220px" settings={{ isVertical: true }} bg="none">
+          <TextBox h="none" alignW="left" bg="none" style={textboxStyle}>
             검색 지역
           </TextBox>
           <TripRegionPicker
-            width="220px" height="48px"
+            width="220px" height="40px"
             value={cascaderValue}
             allowClear={false}
             onChange={handleChangeRegion}
@@ -166,22 +168,38 @@ const PlanHeader = () => {
           />
         </FlexBox>
         {/* 여행명 영역 */}
-        <FlexBox settings={{ isVertical: true }} bg="none">
-          <TextBox alignW="left" bg="none" style={textboxStyle}>
+        <FlexBox h="auto" settings={{ isVertical: true }} bg="none">
+          <TextBox h="none" alignW="left" bg="none" style={textboxStyle}>
             여행 이름
           </TextBox>
-          <FlexBox h="48px" style={{ position: "relative" }}>
-            <DebounceInput showCount maxLength={30} style={{ height: "48px", fontSize: "16px", color: "#565656", padding: "8px 56px 8px 18px" }}
+          <FlexBox h="40px" style={{ position: "relative" }}>
+            <DebounceInput showCount maxLength={30} style={{ height: "40px", fontSize: "16px", color: "#565656", padding: "8px 56px 8px 18px" }}
               placeholder={tripName} defaultValue={displayName} 
               onChangeEvent={handleChangeTripName} 
               onFocus={handleFocusTripName}
               onBlur={() => { handleSaveTripName() }} />
-            <FlexBox w="52px" h="52px" settings={{ justify: "center" }} style={{ fontSize: "20px", right: "0%", position: "absolute", zIndex: 10 }}>
+            <FlexBox w="44px" h="44px" settings={{ justify: "center" }} style={{ fontSize: "20px", right: "0%", position: "absolute", zIndex: 10 }}>
               {
                 isSaving ?
                   <SyncOutlined spin /> : <CheckCircleTwoTone twoToneColor="#52c41a" />
               }
             </FlexBox>
+          </FlexBox>
+        </FlexBox>
+        {/* 공유 버튼 영역 */}
+        <FlexBox w="80px"  settings={{ isVertical: true, justify: "end" }} bg="none" style={{ minWidth: "80px" }}>
+          <FlexBox h="24px" settings={{ justify: "center" }} bg="none">
+            {
+              isShared ?
+              <TextBox width="auto" alignW="right">모든 사용자<GlobalOutlined style={{margin: "4px"}}/></TextBox>
+              :
+              <TextBox width="auto" alignW="right">초대 멤버<LockOutlined style={{margin: "4px"}}/> </TextBox>
+            }
+          </FlexBox>
+          <FlexBox h="32px" settings={{ justify: "center" }} bg="none">
+            <TextButton width="100%" height="100%" alignW="left" fontSize="14px" bg="none" style={{ color: "#565656" }}>
+              공유
+            </TextButton>
           </FlexBox>
         </FlexBox>
       </FlexBox>
