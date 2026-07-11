@@ -33,9 +33,6 @@ import { FlexContainer } from "../../components/common/PLA_Containers";
 import tripRegionStore from "../../store/trip/tripRegionStore";
 import tripRecommandStore from "../../store/trip/tripRecommandStore";
 import RecommendPopup from "../../components/plan/area/RecommendPopup";
-import { TextButton } from "../../components/common/PLA_Buttons";
-import { Leaf, TentTree } from "lucide-react";
-import tripAroundStore from "../../store/trip/tripAroundStore";
 const { Header, Sider, Content } = Layout;
 
 //#region layout styles
@@ -118,10 +115,6 @@ const PlanPage = ({ tripData }) => {
   const isRecommend = tripRecommandStore((state) => state.isRecommend);
   const isRecommendPopup = tripRecommandStore((state) => state.isRecommendPopup);
   const setIsRecommendPopup = tripRecommandStore((state) => state.setIsRecommendPopup);
-
-  // 주변 장소(켐핑/웰니스) 활성화/비활성화
-  const setIsFilterCamp = tripAroundStore((state) => state.setIsFilterCamp);
-  const setIsFilterWellness = tripAroundStore((state) => state.setIsFilterWellness);
 
   const [isDraggingBookmark, setIsDraggingBookmark] = useState(false); // 북마크 드래그 오버레이 표시 여부
   const draggingBookmarkRef = useRef(null); // 표시되는 북마크 오버레이 아이템
@@ -520,23 +513,6 @@ const PlanPage = ({ tripData }) => {
             </Sider>
             {/* 계획표(확장 영역 포함) */}
             <Content style={{ position: "relative" }}>
-              {
-                !isFoldTable && (
-                  <FlexBox h="45px" bg="none" settings={{ justify: "flex-start" }} 
-                    style={{position: "absolute", top: "10px", left: "20px", gap: "10px", pointerEvents: "auto",}}>
-                    <TextButton type="default" width="90px" height="35px" fontSize="15px" style={{color: "#795548", border: "1px solid #795548"}}
-                      onClickEvent={() => {setIsFilterCamp(true); setIsFilterWellness(false);}}>
-                      <TentTree size={15} style={{marginRight: "5px", position: "relative", top: "2px"}}/> 
-                        캠핑
-                    </TextButton>
-                    <TextButton type="default" width="90px" height="35px" fontSize="15px" style={{color: "#388E3C", border: "1px solid #388E3C"}}
-                      onClickEvent={() => {setIsFilterCamp(false); setIsFilterWellness(true);}}>
-                      <Leaf size={15} style={{marginRight: "5px", position: "relative", top: "2px"}}/> 
-                        웰니스
-                    </TextButton>
-                  </FlexBox>
-                  )
-              }
               {/* absolute: 계획표 접기 버튼 */}
               <FlexBox w="14px" bg="none" style={{ position: "absolute", top: "0px", right: "0px",}}>
                 <Button type="default"
