@@ -39,6 +39,7 @@ export const LoungeCard = ({ plan, isSelected, onSelect }) => {
       backgroundColor: '#f9fafb',
       boxShadow: 'inset 0 3px 6px rgba(0, 0, 0, 0.06)',
       transform: 'scale(0.99)',
+      border: '1px solid #a8a8a8',
     } : {
       backgroundColor: '#fff',
       border: '1px solid #e5e7eb',
@@ -51,19 +52,19 @@ export const LoungeCard = ({ plan, isSelected, onSelect }) => {
     <div style={dynamicCardStyle} onClick={onSelect}>
       <div style={cardTopSectionStyle}>
         <div style={periodBadgeStyle}>
-          {plan.period}
+          {plan?.nights}박{plan?.nights + 1}일 
         </div>
         <div style={titleWrapperStyle}>
-          <div style={cardTitleStyle}>{plan.title}</div>
-          <div style={cardDateStyle}>여행일 {plan.date}</div>
+          <div style={cardTitleStyle}>{plan?.name}</div>
+          <div style={cardDateStyle}>여행일 {plan?.startDate} ~ {plan?.endDate}</div>
         </div>
       </div>
 
       <div style={cardDividerStyle} />
 
       <div style={cardBottomSectionStyle}>
-        <CategoryBarChart statList={plan.categoryStatList} style={{ flex: 1.2 }} />
-        <RegionBarChart statList={plan.regionStatList} style={{ flex: 1 }} />
+        <CategoryBarChart statList={plan?.categoryStatList} style={{ flex: 1.2 }} />
+        <RegionBarChart statList={plan?.regionStatList} style={{ flex: 1 }} />
       </div>
     </div>
   );

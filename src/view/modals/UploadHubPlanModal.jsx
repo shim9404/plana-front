@@ -1,31 +1,40 @@
-import { Button, Flex, Modal } from 'antd'
-import React, { useState } from 'react'
+import { Button, Empty, Flex, Modal, Spin } from 'antd'
+import React, { useEffect, useRef, useState } from 'react'
 import { FlexBox } from '../../components/common/PLA_FlexBox'
 import { FlexContainer } from '../../components/common/PLA_Containers'
 import { IconButton, TextButton } from '../../components/common/PLA_Buttons';
-import { X } from 'lucide-react';
-import { LoungeCard } from '../../components/lounge/LoungeCard'
+import { Dice1, X } from 'lucide-react';
+import { getMyTripsApi, uploadHubPlanApi } from '../../services/loungeApi';
+import { StepPlanSelect } from '../../components/lounge/StepPlanSelect';
+import { StepKeywordSelect } from '../../components/lounge/StepKeywordSelect';
+import LoadingOverlay from '../../components/common/LoadingOverlay';
+import authStore from '../../store/authStore';
 
-// 1. 모달 타이틀 스타일
 const modalTitleStyle = {
   fontSize: '22px',
   fontWeight: 'bold',
   textAlign: 'center',
 };
 
-// 2. 하단 '다음' 버튼 스타일
 const nextButtonStyle = {
   width: '180px',
   height: '50px'
 };
 
-// 3. Ant Design Modal 내부 구역별 스타일 객체 (Mask, Content, Header, Body, Footer)
+const prevButtonStyle = {
+  width: '120px',
+  height: '50px',
+  marginRight: '12px',
+  borderColor: '#a8a8a8',
+  color: '#565656'
+};
+
 const modalContainerStyles = {
   mask: {
     backgroundColor: 'rgba(0, 0, 0, 0.45)',
   },
   content: {
-    height: '687px', // 모달 전체 크기 고정
+    height: '687px',
     padding: 0,
     borderRadius: '16px',
   },
@@ -35,8 +44,6 @@ const modalContainerStyles = {
     padding: 0,          
     top: '24px',         
     right: '24px',       
-    
-    // 내부 X 아이콘을 정확히 46px 박스의 정중앙에 배치
     display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -47,7 +54,7 @@ const modalContainerStyles = {
     marginBottom: 0,
   },
   body: {
-    height: '475px', // 강제 스크롤 생성을 위한 고정 높이
+    height: '475px',
     overflowY: 'auto',
     padding: '0 36px 16px 36px',
   },
@@ -59,118 +66,198 @@ const modalContainerStyles = {
   },
 };
 
-// 4. 카드 리스트 정렬 컨테이너 스타일
-const cardListStyle = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '16px',
-};
-
-// 5. 개별 카드 아이템 스타일
-const cardItemStyle = {
-  border: '1px solid #d9d9d9',
-  borderRadius: '12px',
-  padding: '20px',
-  height: '121px',
-  backgroundColor: '#fff',
-  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
-  flexShrink: 0,
-};
-
-
 const customCloseButtonStyle = {
   position: 'absolute',
-  top: '30px',          // 상단 여백 (시안에 맞춰 미세조정 가능)
-  right: '36px',         // 우측 여백 (시안에 맞춰 미세조정 가능)
-  width: '46px',        // 가로 46px 고정
-  height: '46px',       // 세로 46px 고정
-  border: '1px solid #d9d9d9', // 테두리 선
+  top: '30px',          
+  right: '36px',         
+  width: '46px',        
+  height: '46px',       
+  border: '1px solid #d9d9d9', 
   display: 'flex',
-  fontSize: '20px',     // X 아이콘 크기
+  fontSize: '20px',     
   userSelect: 'none'
 };
 
-// 샘플 데이터 배열 (전달해주신 형태 반영)
-const travelDataList = [
-  {
-    id: 1,
-    period: "11박 12일",
-    title: "일이삼사오육칠팔구십일이삼사오육칠팔구십일이삼사오육칠팔구십",
-    date: "2025.10.09",
-    categoryStatList: [
-      { category: "FD6", ratio: 45 },
-      { category: "CE7", ratio: 40 },
-      { category: "ETC", ratio: 15 }
-    ],
-    regionStatList: [
-      { region: "경기도", ratio: 70 },
-      { region: "서울", ratio: 30 }
-    ]
-  },
-  {
-    id: 2,
-    period: "3박 4일",
-    title: "대구 맛집 도장깨기 여행 계획",
-    date: "2026.07.07",
-    categoryStatList: [
-      { category: "ETC", ratio: 83 },
-      { category: "FD6", ratio: 17 }
-    ],
-    regionStatList: [
-      { region: "대구광역시", ratio: 100 }
-    ]
-  }
-];
 
-
-const UploadHubPlanModal =({ isModalOpen, handleClose }) => {
-
+const UploadHubPlanModal = ({ isModalOpen, handleClose, onSuccess }) => {
+  const [currentStep, setCurrentStep] = useState(1);
   const [selectedPlanId, setSelectedPlanId] = useState(null);
+  const [selectedKeywords, setSelectedKeywords] = useState([]);
+  const [myTrips, setMyTrips] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  // 2. 모달 바디 엘리먼트 타겟팅을 위한 ref 생성
+  const modalContentRef = useRef(null);
+  const nickname = authStore((state) => state.nickname);  
+  useEffect(() => {
+    if (isModalOpen) {
+      
+      const fetchMyTrips = async () => {
+        setIsLoading(true);
+        try {
+          const trips = await getMyTripsApi();
+          setMyTrips(trips.data);
+        } catch (error) {
+          console.error(error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      fetchMyTrips();
+    } else {
+      setCurrentStep(1);
+      setSelectedPlanId(null);
+      setSelectedKeywords([]);
+    }
+  }, [isModalOpen]);
+
+  // 3. 스텝이 바뀔 때마다 스크롤을 맨 위로 올리는 로직 추가
+  useEffect(() => {
+    if (modalContentRef.current) {
+      const modalBody = modalContentRef.current.closest('.ant-modal-body');
+      if (modalBody) {
+        modalBody.scrollTop = 0;
+      }
+    }
+  }, [currentStep]);
+
+  const selectedPlan = myTrips?.find((plan) => plan.tripId === selectedPlanId);
+
+  const handleToggleKeyword = (keywordId) => {
+    if (selectedKeywords.includes(keywordId)) {
+      setSelectedKeywords(selectedKeywords.filter((id) => id !== keywordId));
+    } else {
+      setSelectedKeywords([...selectedKeywords, keywordId]);
+    }
+  };
+
+  const handleUpload = async () => {
+    if (isLoading) return;
+    
+    const payload = {
+      isPublic: true,
+      keywords: selectedKeywords,
+    };
+
+    setIsLoading(true);
+
+    const result = await uploadHubPlanApi(selectedPlanId, payload);
+    
+    // 서버 응답에 포인트 정보가 포함되어 있다고 가정 (없다면 고정값 가능)
+    const pointAmount = result.data?.pointAmount || 100; 
+
+    // 오늘 날짜 구하기 (포맷: YYYY-MM-DD)
+    const today = new Date();
+    const publishDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
+    // 2. [핵심] 상세조회 없이 기존 캐시 데이터 + 입력 데이터로만 결과물 조립
+    const successModalData = {
+      ...selectedPlan,             // 이름, 날짜, nights, 통계 리스트(categoryStatList, regionStatList) 포함
+      publishDate,                 // 오늘 날짜
+      pointAmount,                 // 지급된 포인트
+      keywordIds: selectedKeywords, // 선택한 키워드 리스트
+      copyCount: 0,               // 신규 등록이므로 0
+      likeCount: 0,                // 신규 등록이므로 0
+      nickname: nickname
+    };
+    
+    // 3. 부모에게 완성된 데이터 전달 후 업로드 모달 닫기
+    onSuccess(successModalData);
+      
+    handleClose();
+
+    console.log(result);
+  };
+
+  const renderFooter = () => {
+    if (isLoading) return null;
+
+    if (currentStep === 1) {
+      return [
+        <TextButton
+          key="next"
+          type="primary"
+          style={nextButtonStyle}
+          fontSize="18px"
+          disabled={!selectedPlanId}
+          onClickEvent={() => setCurrentStep(2)}
+        >
+          다음
+        </TextButton>
+      ];
+    }
+
+    return [
+      <TextButton
+        key="prev"
+        type="default"
+        style={prevButtonStyle}
+        fontSize="18px"
+        onClickEvent={() => setCurrentStep(1)}
+      >
+        이전
+      </TextButton>,
+      <TextButton
+        key="upload"
+        type="primary"
+        style={nextButtonStyle}
+        fontSize="18px"
+        onClickEvent={handleUpload}
+      >
+        업로드
+      </TextButton>
+    ];
+  };
 
   return (
-      <Modal
-        title={
-          <div style={modalTitleStyle}>
-            라운지에 공개할 여행 계획을 선택해 주세요!
-          </div>
-        }
-        open={isModalOpen}
-        onCancel={handleClose}
-        closable={false}
-        centered
-        width={660}
-        // 분리한 푸터 버튼 스타일 적용
-        footer={[
-          <TextButton 
-            type="primary" 
-            style={nextButtonStyle}
-            fontSize='18px'
-          >
-            다음
-          </TextButton>
-        ]}
-        
-        // 분리한 AntD 모달 세부 스타일 객체 통째로 주입
-        styles={modalContainerStyles}
-      >
-        <IconButton type="default" style={customCloseButtonStyle} 
-        onClickEvent={handleClose}>
-          <X size={25} />
-        </IconButton>
-        {/* 분리한 카드 리스트 래퍼 스타일 적용 */}
-        <div style={cardListStyle}>
-          {travelDataList.map((plan) => (
-            // 분리한 개별 카드 스타일 적용
-            <LoungeCard
-              key={plan.id} 
-              plan={plan} 
-              isSelected={selectedPlanId === plan.id}
-              onSelect={() => setSelectedPlanId(plan.id)}
-            />
-          ))}
+    <Modal
+      title={
+        <div style={modalTitleStyle}>
+          {currentStep === 1
+            ? "라운지에 공개할 여행 계획을 선택해 주세요!"
+            : "라운지에 공개할 여행의 테마를 선택해주세요!"}
         </div>
-      </Modal>
-    );
+      }
+      open={isModalOpen}
+      onCancel={handleClose}
+      closable={false}
+      centered
+      width={660}
+      footer={renderFooter()}
+      styles={modalContainerStyles}
+    >
+      <IconButton type="default" style={customCloseButtonStyle} onClickEvent={handleClose}>
+        <X size={25} />
+      </IconButton>
+
+      <LoadingOverlay loading={isLoading}>
+
+      {/* 4. 내부 컨텐츠를 감싸는 div에 ref 연결 */}
+        <div ref={modalContentRef} style={{width:'100%', height:'100%'}}>      
+        {
+            !isLoading &&  myTrips.length == 0 ?
+            <FlexBox justify='center' alignItems='center' style={{width:'100%'}}>
+              <Empty description= "공개가능한 여행 계획이 없습니다."/>
+            </FlexBox>
+            :
+          currentStep === 1 ?
+            <StepPlanSelect        
+              myTrips={myTrips}
+              selectedPlanId={selectedPlanId}
+              onSelect={setSelectedPlanId}
+            />
+            :
+            <StepKeywordSelect
+              selectedPlan={selectedPlan}
+              selectedKeywords={selectedKeywords}
+              onToggleKeyword={handleToggleKeyword}
+            />
+          }
+        </div>
+      </LoadingOverlay>
+    </Modal>
+  );
+  
 };
 
-export default UploadHubPlanModal
+export default UploadHubPlanModal;
