@@ -266,7 +266,7 @@ const UploadSuccessModal = ({ isModalOpen, handleClose, planData }) => {
         내 여행 계획이 라운지에 올라갔어요!
       </div>
 
-      {!hasPoint ? (
+      {hasPoint ? (
         <div style={boxContainerStyle}>
           <div style={pointIconStyle}>P</div>
           <div>

@@ -12,8 +12,6 @@ import modalStore from "../../store/modalStore.js";
 import tripDateStore from "../../store/trip/tripDateStore.js";
 import tripInfoStore from "../../store/trip/tripInfoStore.js";
 import tripRegionStore from "../../store/trip/tripRegionStore.js";
-import UploadHubPlanModal from "../modals/UploadHubPlanModal.jsx";
-import UploadSuccessModal from "../modals/UploadSuccessModal.jsx";
 
 const HomePage = () => {
   const setTripId = tripInfoStore((state) => state.setTripId);

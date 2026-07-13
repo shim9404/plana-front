@@ -142,8 +142,7 @@ const UploadHubPlanModal = ({ isModalOpen, handleClose, onSuccess }) => {
 
     const result = await uploadHubPlanApi(selectedPlanId, payload);
     
-    // 서버 응답에 포인트 정보가 포함되어 있다고 가정 (없다면 고정값 가능)
-    const pointAmount = result.data?.pointAmount || 100; 
+    const pointAmount = result.data?.point; 
 
     // 오늘 날짜 구하기 (포맷: YYYY-MM-DD)
     const today = new Date();
