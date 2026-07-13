@@ -85,7 +85,7 @@ const infoIconStyle = {
 };
 
 const boxPrimaryTextStyle = {
-  fontSize: '20px',
+  fontSize: '18px',
   fontWeight: 'bold',
   color: '#000000',
   lineHeight: '1.2',
@@ -149,15 +149,20 @@ const cardTitleWrapperStyle = {
   flexDirection: 'column',
   alignItems: 'flex-end',
   textAlign: 'right',
-  maxWidth: '260px',
+  maxWidth: '260px', 
+  width: '100%',     
 };
 
 const cardTitleStyle = {
   fontSize: '16px',
   fontWeight: 'bold',
   color: '#1f2937',
-  wordBreak: 'break-all',
   lineHeight: '1.2',
+  
+  whiteSpace: 'nowrap',       
+  overflow: 'hidden',        
+  textOverflow: 'ellipsis',  
+  width: '100%',            
 };
 
 const cardNicknameStyle = {

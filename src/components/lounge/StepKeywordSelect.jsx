@@ -7,6 +7,7 @@ const keywordContainerStyle = {
   display: 'flex',
   flexDirection: 'column',
   gap: '24px',
+  width: '100%',
 };
 
 const keywordSectionWrapperStyle = {

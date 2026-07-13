@@ -18,8 +18,26 @@ const cardItemStyle = {
 };
 
 const cardTopSectionStyle = { display: 'flex', alignItems: 'stretch', gap: '12px' };
-const titleWrapperStyle = { display: 'flex', flexDirection: 'column' };
-const cardTitleStyle = { fontSize: '16px', fontWeight: 'bold', color: '#1f2937', lineHeight: '1.2', wordBreak: 'break-all' };
+
+const titleWrapperStyle = { 
+  display: 'flex', 
+  flexDirection: 'column',
+  flex: 1,
+  minWidth: 0 
+};
+
+const cardTitleStyle = { 
+  fontSize: '16px', 
+  fontWeight: 'bold', 
+  color: '#1f2937', 
+  lineHeight: '1.2',
+  whiteSpace: 'nowrap',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  width: '100%',
+  marginBottom: '2px' // 날짜와의 간격을 위해 살짝 추가
+};
+
 const cardDateStyle = { fontSize: '12px', color: '#9ca3af' };
 const cardDividerStyle = { height: '1px', backgroundColor: '#e5e7eb', margin: '8px 0' };
 const cardBottomSectionStyle = { display: 'flex', gap: '16px' };
@@ -51,7 +69,7 @@ export const LoungeCard = ({ plan, isSelected, onSelect }) => {
     <div style={dynamicCardStyle} onClick={onSelect}>
       <div style={cardTopSectionStyle}>
         <div style={periodBadgeStyle}>
-          { plan?.nights == 0 ? "당일" : `${planData.nights}박 ${planData.nights + 1}일` }
+          { plan?.nights == 0 ? "당일" : `${plan?.nights}박 ${plan?.nights + 1}일` }
         </div>
         <div style={titleWrapperStyle}>
           <div style={cardTitleStyle}>{plan?.name}</div>
