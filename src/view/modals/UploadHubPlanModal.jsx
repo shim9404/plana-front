@@ -86,7 +86,6 @@ const UploadHubPlanModal = ({ isModalOpen, handleClose, onSuccess }) => {
   const [myTrips, setMyTrips] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   
-  // 2. 모달 바디 엘리먼트 타겟팅을 위한 ref 생성
   const modalContentRef = useRef(null);
   const nickname = authStore((state) => state.nickname);  
   useEffect(() => {
@@ -232,7 +231,6 @@ const UploadHubPlanModal = ({ isModalOpen, handleClose, onSuccess }) => {
 
       <LoadingOverlay loading={isLoading}>
 
-      {/* 4. 내부 컨텐츠를 감싸는 div에 ref 연결 */}
         <div ref={modalContentRef} style={{width:'100%', height:'100%'}}>      
         {
             !isLoading &&  myTrips.length == 0 ?

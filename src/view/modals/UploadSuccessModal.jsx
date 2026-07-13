@@ -1,36 +1,50 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Button, Modal } from 'antd';
 import { TextButton } from '../../components/common/PLA_Buttons';
-import { Files, ThumbsUp } from 'lucide-react';
+import { Files, ThumbsUp, Info } from 'lucide-react';
 import { CategoryBarChart } from '../../components/lounge/CategoryBarChart';
 import { RegionBarChart } from '../../components/lounge/RegionBarChart';
-import { KEYWORD_ICONS, KEYWORD_OPTIONS } from '../../constants/keyword';
+import { KEYWORD_OPTIONS } from '../../constants/keyword';
 
-// 고정 스타일들은 외부 유지
-const baseModalStyles = {
+const modalContainerStyles = {
   mask: {
     backgroundColor: 'rgba(0, 0, 0, 0.45)',
   },
   content: {
     width: '484px',
+    height: '687px',
     padding: 0,
     borderRadius: '24px',
     overflow: 'hidden',
+    boxSizing: 'border-box',
   },
   header: { display: 'none' },
+  body: {
+    height: '687px',
+    padding: '40px 36px',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    boxSizing: 'border-box',
+  },
   footer: { display: 'none' },
 };
 
 const titleStyle = {
+  width: '100%',
   fontSize: '24px',
   fontWeight: 'bold',
   color: '#000000',
   textAlign: 'center',
   marginTop: '12px',
   marginBottom: '24px',
+  whiteSpace: 'nowrap',
+  letterSpacing: '-0.7px',
+  boxSizing: 'border-box',
 };
 
-const pointBoxStyle = {
+const boxContainerStyle = {
   width: '100%',
   height: '96px',
   backgroundColor: '#f3f4f6',
@@ -40,6 +54,7 @@ const pointBoxStyle = {
   padding: '0 24px',
   gap: '16px',
   marginBottom: '28px',
+  boxSizing: 'border-box',
 };
 
 const pointIconStyle = {
@@ -54,33 +69,49 @@ const pointIconStyle = {
   fontSize: '26px',
   fontWeight: '900',
   color: '#4b5563',
+  flexShrink: 0,
 };
 
-const pointTextStyle = {
-  fontSize: '22px',
+const infoIconStyle = {
+  width: '52px',
+  height: '52px',
+  borderRadius: '50%',
+  backgroundColor: '#e5e7eb',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  color: '#6b7280',
+  flexShrink: 0,
+};
+
+const boxPrimaryTextStyle = {
+  fontSize: '20px',
   fontWeight: 'bold',
   color: '#000000',
-  lineHeight: '1.1',
+  lineHeight: '1.2',
 };
 
-const pointSubTextStyle = {
+const boxSubTextStyle = {
   fontSize: '13px',
   color: '#9ca3af',
-};
-
-const linkTextStyle = {
-  fontSize: '13px',
-  color: '#4b5563',
-  cursor: 'pointer',
-  textDecoration: 'none',
-  padding: 0,
+  marginTop: '2px',
 };
 
 const linkWrapperStyle = {
   width: '100%',
   display: 'flex',
   justifyContent: 'flex-end',
-  marginBottom: '6px',
+  marginBottom: '8px',
+  boxSizing: 'border-box',
+};
+
+const linkTextStyle = {
+  fontSize: '13px',
+  color: '#4b5563',
+  fontWeight: '500',
+  cursor: 'pointer',
+  textDecoration: 'none',
+  transition: 'color 0.2s',
 };
 
 const previewCardStyle = {
@@ -94,9 +125,11 @@ const previewCardStyle = {
   flexDirection: 'column',
   gap: '10px',
   marginBottom: '16px',
+  boxSizing: 'border-box',
 };
 
 const cardTopRowStyle = {
+  width: '100%',
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'flex-start',
@@ -134,28 +167,31 @@ const cardNicknameStyle = {
 };
 
 const cardDividerStyle = {
+  width: '100%',
   height: '1px',
   backgroundColor: '#e5e7eb',
   margin: '2px 0',
 };
 
 const keywordRowStyle = {
+  width: '100%',
   display: 'flex',
-  gap: '3px',
+  gap: '6px',
 };
 
 const keywordIconBoxStyle = {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  width: '36px',          // 시안의 직사각형 비율에 맞춤
+  width: '36px',
   height: '30px',
-  border: '1px solid #d9d9d9', // periodBadge와 동일한 톤의 테두리
+  border: '1px solid #d9d9d9',
   borderRadius: '8px',
   backgroundColor: '#fff',
 };
 
 const cardBottomRowStyle = {
+  width: '100%',
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'flex-end',
@@ -195,6 +231,7 @@ const noticeWrapperStyle = {
   alignSelf: 'flex-start',
   paddingLeft: '4px',
   marginBottom: '24px',
+  boxSizing: 'border-box',
 };
 
 const noticeTextStyle = {
@@ -210,32 +247,11 @@ const confirmButtonStyle = {
   borderColor: '#a3a3a3',
   color: '#ffffff',
   borderRadius: '12px',
-  marginTop: 'auto', // 높이가 줄어들어도 항상 최하단 고정
+  marginTop: 'auto',
 };
 
 const UploadSuccessModal = ({ isModalOpen, handleClose, planData }) => {
-  // 1. 포인트 유무 체크 조건 (0이거나 undefined/null 이면 false)
   const hasPoint = planData?.pointAmount && planData.pointAmount > 0;
-  
-  // 2. 포인트 유무에 따른 모달 높이 동적 계산 (687px - 124px = 563px)
-  const modalHeight = hasPoint ? '687px' : '563px';
-
-  // 3. AntD 스타일에 동적 높이 주입
-  const modalContainerStyles = {
-    ...baseModalStyles,
-    content: {
-      ...baseModalStyles.content,
-      height: modalHeight,
-    },
-    body: {
-      padding: '40px 36px',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'flex-start',
-      height: modalHeight,
-    },
-  };
 
   return (
     <Modal
@@ -250,26 +266,39 @@ const UploadSuccessModal = ({ isModalOpen, handleClose, planData }) => {
         내 여행 계획이 라운지에 올라갔어요!
       </div>
 
-      {/* 4. 조건부 렌더링: 포인트가 있을 때만 렌더링 */}
-      {hasPoint && (
-        <div style={pointBoxStyle}>
+      {!hasPoint ? (
+        <div style={boxContainerStyle}>
           <div style={pointIconStyle}>P</div>
           <div>
-            <div style={pointTextStyle}>여행 포인트 + {planData?.pointAmount}</div>
-            <div style={pointSubTextStyle}>여행 최초 공개</div>
+            <div style={boxPrimaryTextStyle}>여행 포인트 + {planData?.pointAmount}</div>
+            <div style={boxSubTextStyle}>여행 최초 공개</div>
+          </div>
+        </div>
+      ) : (
+        <div style={boxContainerStyle}>
+          <div style={infoIconStyle}>
+            <Info size={28} />
+          </div>
+          <div>
+            <div style={boxPrimaryTextStyle}>포인트 미지급</div>
+            <div style={boxSubTextStyle}>최초 공개 시에만 포인트가 적립됩니다.</div>
           </div>
         </div>
       )}
 
       <div style={linkWrapperStyle}>
-        <Button
-          type="link"
-          size="small"
+        <span
           style={linkTextStyle}
           onClick={() => console.log('바로가기 클릭')}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.textDecoration = 'underline';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.textDecoration = 'none';
+          }}
         >
           내가 올린 계획 바로 보기 &gt;
-        </Button>
+        </span>
       </div>
 
       <div style={previewCardStyle}>
@@ -286,21 +315,20 @@ const UploadSuccessModal = ({ isModalOpen, handleClose, planData }) => {
         <div style={cardDividerStyle} />
 
         <div style={keywordRowStyle}>
-        {planData?.keywordIds?.map((keywordId) => {
-            // 1. 상수 배열에서 해당 키워드 정보(아이콘, 색상 등)를 찾습니다.
+          {planData?.keywordIds?.map((keywordId) => {
             const keywordOption = KEYWORD_OPTIONS.find((opt) => opt.id === keywordId);
             if (!keywordOption) return null;
 
             const IconComponent = keywordOption.icon;
             return (
-            <div key={keywordId} style={keywordIconBoxStyle}>
-                {/* 2. 등록해둔 고유의 색상과 두께를 적용해 시안처럼 선명하게 표현합니다 */}
+              <div key={keywordId} style={keywordIconBoxStyle}>
                 <IconComponent size={16} color={keywordOption.iconColor} strokeWidth={2.5} />
-            </div>
+              </div>
             );
-        })}
+          })}
         </div>
-        <div style={{ display: 'flex', gap: '16px' }}>
+
+        <div style={{ display: 'flex', gap: '16px', width: '100%' }}>
           <CategoryBarChart statList={planData?.categoryStatList} style={{ flex: 1.2 }} />
           <RegionBarChart statList={planData?.regionStatList} style={{ flex: 1 }} />
         </div>
