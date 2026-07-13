@@ -17,8 +17,12 @@ const PlanBookmarkContainer = () => {
   const isExpandBookmark = planUIStore((state) => state.isExpandBookmark);
   const setIsExpandBookmark = planUIStore((state) => state.setIsExpandBookmark);
   const canExpandBookmark = planUIStore((state) => state.canExpandBookmark);
+
+  // 연관 여행지 추천 여부 
   const isRecommend = tripRecommandStore((state) => state.isRecommend);
   const setIsRecommend = tripRecommandStore((state) => state.setIsRecommend);
+  const setIsRecommendPopup = tripRecommandStore((state) => state.setIsRecommendPopup);
+  const setFocusPlace = tripRecommandStore((state) => state.setFocusPlace);
   
   const [isExpandHover, setIsExpandHover] = useState(false);
   const [filterBookmarks, setFilterBookmarks] = useState([]);
@@ -103,7 +107,7 @@ const PlanBookmarkContainer = () => {
                   transform: isRecommend ? "translateY(0)" : "translateY(1px)",
                   transition: "all 0.2s ease",
                 }}
-                onClickEvent={() => setIsRecommend(!isRecommend)}>
+                onClickEvent={() => {setIsRecommend(!isRecommend); setIsRecommendPopup(false); setFocusPlace("");}}>
                 <Sparkles size={15} style={{marginRight: "5px", position: "relative", top: "2px"}}/> 
                 연관여행지 추천 받기!
               </TextButton>
