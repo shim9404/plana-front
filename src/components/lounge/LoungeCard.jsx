@@ -19,20 +19,19 @@ const cardItemStyle = {
 
 const cardTopSectionStyle = { display: 'flex', alignItems: 'stretch', gap: '12px' };
 const titleWrapperStyle = { display: 'flex', flexDirection: 'column' };
-const cardTitleStyle = { fontSize: '15px', fontWeight: 'bold', color: '#1f2937', lineHeight: '1.2', wordBreak: 'break-all' };
-const cardDateStyle = { fontSize: '11px', color: '#9ca3af' };
+const cardTitleStyle = { fontSize: '16px', fontWeight: 'bold', color: '#1f2937', lineHeight: '1.2', wordBreak: 'break-all' };
+const cardDateStyle = { fontSize: '12px', color: '#9ca3af' };
 const cardDividerStyle = { height: '1px', backgroundColor: '#e5e7eb', margin: '8px 0' };
 const cardBottomSectionStyle = { display: 'flex', gap: '16px' };
 
 const periodBadgeStyle = {
   display: 'flex', alignItems: 'center', justifyContent: 'center',
   border: '1px solid #d9d9d9', borderRadius: '8px', padding: '0 8px',
-  fontSize: '13px', color: '#4b5563', fontWeight: '500', flexShrink: 0,
+  fontSize: '14px', color: '#4b5563', fontWeight: '500', flexShrink: 0,
 };
 
 export const LoungeCard = ({ plan, isSelected, onSelect }) => {
   
-  // 이전 선배가 피드백 준 움푹 들어가는 선택 스타일 적용
   const dynamicCardStyle = {
     ...cardItemStyle,
     ...(isSelected ? {
@@ -52,7 +51,7 @@ export const LoungeCard = ({ plan, isSelected, onSelect }) => {
     <div style={dynamicCardStyle} onClick={onSelect}>
       <div style={cardTopSectionStyle}>
         <div style={periodBadgeStyle}>
-          {plan?.nights}박{plan?.nights + 1}일 
+          { plan?.nights == 0 ? "당일" : `${planData.nights}박 ${planData.nights + 1}일` }
         </div>
         <div style={titleWrapperStyle}>
           <div style={cardTitleStyle}>{plan?.name}</div>

@@ -11,20 +11,21 @@ import LoadingOverlay from '../../components/common/LoadingOverlay';
 import authStore from '../../store/authStore';
 
 const modalTitleStyle = {
-  fontSize: '22px',
+  fontSize: '24px',
   fontWeight: 'bold',
   textAlign: 'center',
+  whiteSpace: 'nowrap',
 };
 
 const nextButtonStyle = {
-  width: '180px',
-  height: '50px'
+  width: '140px',
+  height: '48px'
 };
 
 const prevButtonStyle = {
-  width: '120px',
-  height: '50px',
-  marginRight: '12px',
+  width: '100px',
+  height: '48px',
+  marginRight: '4px',
   borderColor: '#a8a8a8',
   color: '#565656'
 };
@@ -176,7 +177,7 @@ const UploadHubPlanModal = ({ isModalOpen, handleClose, onSuccess }) => {
           key="next"
           type="primary"
           style={nextButtonStyle}
-          fontSize="18px"
+          fontSize="16px"
           disabled={!selectedPlanId}
           onClickEvent={() => setCurrentStep(2)}
         >
@@ -190,7 +191,7 @@ const UploadHubPlanModal = ({ isModalOpen, handleClose, onSuccess }) => {
         key="prev"
         type="default"
         style={prevButtonStyle}
-        fontSize="18px"
+        fontSize="16px"
         onClickEvent={() => setCurrentStep(1)}
       >
         이전
@@ -199,7 +200,7 @@ const UploadHubPlanModal = ({ isModalOpen, handleClose, onSuccess }) => {
         key="upload"
         type="primary"
         style={nextButtonStyle}
-        fontSize="18px"
+        fontSize="16px"
         onClickEvent={handleUpload}
       >
         업로드

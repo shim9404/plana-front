@@ -15,15 +15,15 @@ const keywordSectionWrapperStyle = {
 };
 
 const keywordTitleStyle = {
-  fontSize: '14px',
+  fontSize: '18px',
   fontWeight: '700',
   color: '#1f2937',
   marginBottom: '8px',
 };
 
 const keywordSubDescriptionStyle = {
-  fontSize: '11px',
-  color: '#4b5563',
+  fontSize: '14px',
+  color: '#6B72FF',
   margin: '0 0 12px 0',
 };
 

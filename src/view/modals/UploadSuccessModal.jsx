@@ -92,7 +92,7 @@ const boxPrimaryTextStyle = {
 };
 
 const boxSubTextStyle = {
-  fontSize: '13px',
+  fontSize: '14px',
   color: '#9ca3af',
   marginTop: '2px',
 };
@@ -106,7 +106,7 @@ const linkWrapperStyle = {
 };
 
 const linkTextStyle = {
-  fontSize: '13px',
+  fontSize: '14px',
   color: '#4b5563',
   fontWeight: '500',
   cursor: 'pointer',
@@ -139,7 +139,7 @@ const periodBadgeStyle = {
   border: '1px solid #d9d9d9',
   borderRadius: '8px',
   padding: '6px 12px',
-  fontSize: '13px',
+  fontSize: '14px',
   color: '#4b5563',
   fontWeight: '500',
 };
@@ -153,7 +153,7 @@ const cardTitleWrapperStyle = {
 };
 
 const cardTitleStyle = {
-  fontSize: '15px',
+  fontSize: '16px',
   fontWeight: 'bold',
   color: '#1f2937',
   wordBreak: 'break-all',
@@ -161,7 +161,7 @@ const cardTitleStyle = {
 };
 
 const cardNicknameStyle = {
-  fontSize: '11px',
+  fontSize: '12px',
   color: '#9ca3af',
   marginTop: '2px',
 };
@@ -205,7 +205,7 @@ const cardDateWrapperStyle = {
 };
 
 const cardDateTextStyle = {
-  fontSize: '11px',
+  fontSize: '12px',
   color: '#6b7280',
 };
 
@@ -236,7 +236,7 @@ const noticeWrapperStyle = {
 
 const noticeTextStyle = {
   fontSize: '12px',
-  color: '#3b82f6',
+  color: '#6B72FF',
   margin: 0,
 };
 
@@ -304,7 +304,7 @@ const UploadSuccessModal = ({ isModalOpen, handleClose, planData }) => {
       <div style={previewCardStyle}>
         <div style={cardTopRowStyle}>
           <div style={periodBadgeStyle}>
-            {planData?.nights !== undefined ? `${planData.nights}박 ${planData.nights + 1}일` : '-박 -일'}
+            {planData?.nights == 0 ? "당일" : `${planData?.nights}박 ${planData?.nights + 1}일`}
           </div>
           <div style={cardTitleWrapperStyle}>
             <div style={cardTitleStyle}>{planData?.name || '-'}</div>
@@ -359,7 +359,7 @@ const UploadSuccessModal = ({ isModalOpen, handleClose, planData }) => {
       <TextButton
         type="primary"
         style={confirmButtonStyle}
-        fontSize="18px"
+        fontSize="16px"
         onClickEvent={handleClose}
       >
         확인
