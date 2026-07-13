@@ -76,10 +76,6 @@ const PlanAreaContainer = () => {
   const isFilterWellness = tripAroundStore((state) => state.isFilterWellness);
   const setIsFilterWellness = tripAroundStore((state) => state.setIsFilterWellness);
 
-  // 초기 렌더링 방지
-  const isFirstRender = useRef(true);
-  const isChangingType = useRef(false);
-
   // 장소 데이터(DB)
   const [areaCache, setAreaCache] = useState({
     SPOT: { pages: {}, totalCount: 0 },
@@ -121,7 +117,6 @@ const PlanAreaContainer = () => {
   //#endregion
 
   const onToggleChange = (selected) => {
-    isChangingType.current = true;
 
     setSearchKeyword("");
     setIsSearched(false);
@@ -191,9 +186,10 @@ const PlanAreaContainer = () => {
   useEffect(() => {
     if (selectedSigu == null || selectedSigu.length <= 0) return;
     
+    setLoading(true);
+
     const getRegionData = async () => {
       try {
-        setLoading(true);
         // 이전 좌표 먼저 초기화해야 두번 렌더링 막음
         setObjRegions(null);
         const response = await getRegionByIdApi(selectedSigu);
@@ -202,8 +198,6 @@ const PlanAreaContainer = () => {
 
       } catch (error) {
         console.log(error);
-      } finally {
-        setLoading(false);
       }
     };
     setAreaCache({
@@ -211,6 +205,8 @@ const PlanAreaContainer = () => {
       FOOD: { pages: {}, totalCount: 0 },
     });
     setPlaceCache({ pages: {}, totalCount: 0 });
+    setThemeCache({ pages: {}, totalCount: 0 });
+    setAroundCache({ pages: {}, totalCount: 0 });
 
     getRegionData();
 
@@ -285,12 +281,12 @@ const PlanAreaContainer = () => {
   };
   
   // 카카오 API 장소 목록 호출 - 페이지 파라미터 추가
-  const loadPlaceData = async (keyword, page = 1, category = selectedPlaceFilters) => {
+  const loadPlaceData = async (keyword, page = 1, category) => {
     // 정보 로드 전 접근 차단
     if (!objRegions?.mapX || !objRegions?.mapY) return;
 
     // 페이지 및 옵션 캐시 키
-    const cacheKey = `${page}-${category.join(",")}`;
+    const cacheKey = `${selectedSigu}-${page}-${category.join(",")}`;
 
     // 키워드 검색은 캐시 안 씀
     if (keyword) {
@@ -345,12 +341,12 @@ const PlanAreaContainer = () => {
   };
 
   // 관광포털 API 장소 목록 호출 - 페이지 파라미터 추가
-  const loadThemeData = async (keyword, page = 1, theme = selectedThemeFilters) => { 
+  const loadThemeData = async (keyword, page = 1, theme) => { 
     // 정보 로드 전 접근 차단
     if (!objRegions || !objRegions?.mapX || !objRegions?.mapY) return;
 
     // 페이지 및 옵션 캐시 키
-    const cacheKey = `${page}-${theme.join(",")}`;
+    const cacheKey = `${selectedSigu}-${page}-${theme.join(",")}`;
 
     // 키워드 검색은 캐시 안 씀
     if (keyword) {
@@ -405,12 +401,12 @@ const PlanAreaContainer = () => {
   }
 
   // 관광포털 API 주변 장소(CAMP/WELLNESS) 목록 호출 
-  const loadAroundData = async (filter, page = 1,) => {
+  const loadAroundData = async (filter, page = 1) => {
     // 정보 로드 전 접근 차단
     if (!objRegions?.mapX || !objRegions?.mapY) return;
 
     // 페이지 및 옵션 캐시 키
-    const cacheKey = `${filter}-${page}`;
+    const cacheKey = `${selectedSigu}-${page}-${filter}`;
 
     // 키워드 없으면 캐시 확인
     if (aroundCache.pages[cacheKey]) {
@@ -469,6 +465,11 @@ const PlanAreaContainer = () => {
       totalCount: 0,
     });
 
+    setAreaCache({
+      pages: {},
+      totalCount: 0,
+    })
+
     setPagination(prev => ({
       ...prev,
       PLACE: {
@@ -480,14 +481,10 @@ const PlanAreaContainer = () => {
         total: 0,
       }
     }));
-
-    setSearchResults([]);
     
     if (searchType === "PLACE") {
-      setSelectedPlaceFilters(["CT1","FD6","AT4","CE7","AD5"]);
       loadPlaceData("", 1, ["CT1","FD6","AT4","CE7","AD5"]);
     } else {
-      setSelectedThemeFilters(["PET","BF"]);
       loadThemeData("", 1, ["PET","BF"]);
     }
   }, [searchType, objRegions]);
@@ -547,25 +544,11 @@ const PlanAreaContainer = () => {
   // 옵션 변경
   useEffect(() => {
     if (!objRegions || !objRegions?.mapX || !objRegions?.mapY) return;
-    
-    // 초기 렌더링 무시
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
-
-    // searchType 변경 중이면 실행 막기
-    if (isChangingType.current) {
-      isChangingType.current = false;
-      return;
-    }
 
     setSearchKeyword("");
     if (searchType === "PLACE") {
-      if (selectedPlaceFilters.length === 0) return;
       loadPlaceData("", 1, selectedPlaceFilters);
     } else {
-      if (selectedThemeFilters.length === 0) return;
       loadThemeData("", 1, selectedThemeFilters);
     }
   
@@ -574,13 +557,15 @@ const PlanAreaContainer = () => {
   // 주변 장소 버튼 선택(캠핑, 웰니스)
   useEffect(() => {
     if (!objRegions || !objRegions?.mapX || !objRegions?.mapY) return;
-
+    
     if (isFilterCamp) {
+      setSearchKeyword("캠핑")
       setSelectedAroundFilter("CAMP");
       loadAroundData("CAMP");
     }
 
     if (isFilterWellness) {
+      setSearchKeyword("웰니스")
       setSelectedAroundFilter("WELLNESS");
       loadAroundData("WELLNESS");
     }
@@ -594,6 +579,7 @@ const PlanAreaContainer = () => {
     setIsFilterWellness(false);
 
     setSelectedAroundFilter("");
+    setSearchKeyword("")
 
     if (searchType == "PLACE") {
       loadPlaceData("", 1, selectedPlaceFilters);
@@ -665,49 +651,34 @@ const PlanAreaContainer = () => {
             <FlexBox h="40px" bg="none" style={{ minHeight: "40px" }}>
               <ToggleButtonGroup toggles={FILTER_TOGGLES} onChangedEvent={onToggleChange} />
             </FlexBox>
-              {
-                selectedAroundFilter ? (
-                <FlexBox h="48px"  bg="none" style={{ gap: "10px" }}>
-                  {selectedAroundFilter === "CAMP" ? (
-                    <TextBox size="20px" color="#565656">
-                      <TentTree size={25} style={{marginRight: "15px", position: "relative", top: "0px"}}/> 
-                        캠핑
-                      </TextBox> 
-                    ) : ( 
-                    <TextBox size="20px" color="#565656">
-                      <Leaf size={25} style={{marginRight: "15px", position: "relative", top: "0px"}}/> 
-                        웰니스
-                    </TextBox>)
-                  }
-                  <CloseOutlined style={{cursor:"pointer"}} onClick={closeAroundFilter}/>
-                </FlexBox>
-                ) : ( 
-                  (!showFilter ? (
-                    <FlexBox h="48px"  bg="none" style={{ gap: "10px" }}>
-                      <SearchInput
-                        placeholder={"여행 장소를 검색해 보세요!"}
-                        value={searchKeyword}
-                        onSearchEvent={onKeywordSearch}
-                        onChange={onKeywordChange}
-                      />
-                      <IconButton width="38px" height="38px" fontSize="12px" type={"default"} onClickEvent={handleFilter}>
-                        <UnorderedListOutlined style={{ fontSize: "16px" }}/>
-                      </IconButton>
+              {!showFilter ? (
+                  <FlexBox h="48px"  bg="none" style={{ gap: "10px" }}>
+                    <SearchInput
+                      placeholder={"여행 장소를 검색해 보세요!"}
+                      value={searchKeyword}
+                      onSearchEvent={onKeywordSearch}
+                      onChange={onKeywordChange}
+                    />
+                    <IconButton width="38px" height="38px" fontSize="12px" type={"default"} 
+                      onClickEvent={selectedAroundFilter ? closeAroundFilter : handleFilter}>
+                      {selectedAroundFilter ? (
+                        <CloseOutlined style={{ fontSize: "16px" }} />
+                      ) : (
+                        <UnorderedListOutlined style={{ fontSize: "16px" }} />
+                      )}
+                    </IconButton>
+                  </FlexBox>
+                  ) : (
+                  searchType === "PLACE" ? (
+                    <FlexBox w="320px">
+                      <PlaceFilter setShowFilter = {setShowFilter} selectedPlaceFilters={selectedPlaceFilters} setSelectedPlaceFilters={setSelectedPlaceFilters}/>
                     </FlexBox>
                     ) : (
-                    searchType === "PLACE" ? (
-                      <FlexBox w="320px">
-                        <PlaceFilter setShowFilter = {setShowFilter} selectedPlaceFilters={selectedPlaceFilters} setSelectedPlaceFilters={setSelectedPlaceFilters}/>
-                      </FlexBox>
-                      ) : (
-                      <FlexBox w="320px">
-                        <ThemeFilter setShowFilter = {setShowFilter} selectedThemeFilters={selectedThemeFilters} setSelectedThemeFilters={setSelectedThemeFilters}/>
-                      </FlexBox>
-                      )
+                    <FlexBox w="320px">
+                      <ThemeFilter setShowFilter = {setShowFilter} selectedThemeFilters={selectedThemeFilters} setSelectedThemeFilters={setSelectedThemeFilters}/>
+                    </FlexBox>
                     )
-                  )
-                )
-              }
+              )}
           </FlexBox>
           {/* 리스트 */}
           <FlexBox

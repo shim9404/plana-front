@@ -10,6 +10,7 @@ import ErrorPage from "../view/pages/ErrorPage";
 import HomePage from "../view/pages/HomePage";
 import { navRef } from "../utils/navUtil";
 import TripAccessGuard from "../components/plan/TripAccessGuard";
+import LoungePage from "../view/pages/LoungePage";
 
 const AppRouter = () => {
 
@@ -20,6 +21,7 @@ const AppRouter = () => {
     <Routes>
       {/* 공개 페이지: 누구나 접근 가능 */}
       <Route path="/" element={<HomePage />} />
+      <Route path="/lounge" element={<LoungePage />} />
       <Route path="/error" element={<ErrorPage />} />
 
       {/* 권한 필요: ADMIN 또는 MANAGER, MEMBER만 접근 가능 */}
