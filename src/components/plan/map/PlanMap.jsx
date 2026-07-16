@@ -169,7 +169,7 @@ const PlanMap = () => {
       if (!x || !y || !Number.isFinite(x) || !Number.isFinite(y)) return;
 
       const position = new window.kakao.maps.LatLng(y, x);
-      const bookmarkType = getBookmarkType(item.areaId || item.placeId)
+      const bookmarkType = getBookmarkType(item.areaId || item.placeId || item.themeId)
 
       const overlay =  new window.kakao.maps.CustomOverlay({
         map,

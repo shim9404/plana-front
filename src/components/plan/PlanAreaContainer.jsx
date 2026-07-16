@@ -114,6 +114,7 @@ const PlanAreaContainer = () => {
   const [popupPosY, setPopupPosY] = useState(0);
   const [selectedAreaId, setSelectedAreaId] = useState("");
   const [selectedPlaceId, setSelectedPlaceId] = useState("");
+  const [selectedThemeId, setSelectedThemeId] = useState("");
   //#endregion
 
   const onToggleChange = (selected) => {
@@ -134,10 +135,11 @@ const PlanAreaContainer = () => {
   const closeBookmarkPopup = () => {
     setSelectedAreaId("");
     setSelectedPlaceId("");
+    setSelectedThemeId("");
   }
 
-  const openBookmarkPopup = (posY, areaId, placeId) => {
-    if (areaId == selectedAreaId || placeId == selectedPlaceId) {
+  const openBookmarkPopup = (posY, areaId, placeId, themeId) => {
+    if (areaId == selectedAreaId || placeId == selectedPlaceId || themeId == selectedThemeId) {
       closeBookmarkPopup();
       return;
     }
@@ -146,6 +148,7 @@ const PlanAreaContainer = () => {
     setPopupPosY(popupPosY);
     setSelectedPlaceId(placeId);
     setSelectedAreaId(areaId);
+    setSelectedThemeId(themeId);
   };
 
   const handleBookmarkChanged = async (type) => {
@@ -154,8 +157,13 @@ const PlanAreaContainer = () => {
       // SPOT, FOOD - areaId만 있으면 됨
       data = { areaId: selectedAreaId };
     } else {
-      // PLACE - area 전체 데이터 필요
-      data = searchResults.find((a) => a.placeId === selectedPlaceId);
+      if (searchType == "PLACE") {
+        // PLACE - area 전체 데이터 필요
+        data = searchResults.find((a) => a.placeId === selectedPlaceId);
+      } else {
+        // THEME - area 전체 데이터 필요
+        data = searchResults.find((a) => a.themeId === selectedThemeId);
+      }
     }
 
     const result = await addBookmark(type, data);
@@ -483,9 +491,9 @@ const PlanAreaContainer = () => {
     }));
     
     if (searchType === "PLACE") {
-      loadPlaceData("", 1, ["CT1","FD6","AT4","CE7","AD5"]);
+      loadPlaceData("", 1, selectedPlaceFilters);
     } else {
-      loadThemeData("", 1, ["PET","BF"]);
+      loadThemeData("", 1, selectedThemeFilters);
     }
   }, [searchType, objRegions]);
 
@@ -690,7 +698,7 @@ const PlanAreaContainer = () => {
             {searchResults?.length > 0 ? (
               searchResults.map((area, idx) => (
                 <AreaItem
-                  key={area.areaId || area.placeId}
+                  key={area.areaId || area.placeId || area.themeId}
                   area={area}
                   number={idx + 1}
                   margin="4px"
@@ -722,7 +730,7 @@ const PlanAreaContainer = () => {
             />
           </FlexBox>
           {/* 북마크 팝업 */}
-          {((selectedAreaId?.length > 0) || (selectedPlaceId?.length > 0)) && (
+          {((selectedAreaId?.length > 0) || (selectedPlaceId?.length > 0) || (selectedThemeId?.length > 0)) && (
             <FlexBox
               w="240px"
               h="80px"
