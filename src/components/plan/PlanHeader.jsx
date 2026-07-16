@@ -11,7 +11,7 @@ import tripDateStore from "../../store/trip/tripDateStore";
 import { DebounceInput } from "../common/PLA_Input";
 import { TextButton } from "../common/PLA_Buttons";
 import { Button, Popover } from "antd";
-import { PopoverShareContent, PopoverShareTitle } from "./share/PopoverShareContent";
+import { PopoverShareContent, PopoverShareTitle } from "./share/PopoverShareTrip";
 
 const PlanHeader = () => {
   const setSelectedZdo = tripRegionStore((state) => state.setSelectedZdo);
@@ -21,11 +21,11 @@ const PlanHeader = () => {
   const tripName = tripInfoStore((state) => state.tripName);
   const setTripName = tripInfoStore((state) => state.setTripName);
   const tripId = tripInfoStore((state) => state.tripId);
+  const shareToken = tripInfoStore((state) => state.shareToken);
   
   const setActiveDayCount = tripDateStore((state) => state.setActiveDayCount);
   const addPlanDays = planDaysStore((state) => state.addPlanDays);
 
-  const [isShared, setIsShared] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isOpenShare, setIsOpenShare] = useState(false);
   const [ cascaderValue, setCascaderValue ] = useState([])
@@ -193,15 +193,16 @@ const PlanHeader = () => {
         <FlexBox w="80px" h="52px" settings={{ isVertical: true, justify: "end" }} bg="none" style={{ minWidth: "80px" }}>
           <FlexBox h="20px" settings={{ justify: "center" }} bg="none">
             {
-              isShared ?
+              shareToken && shareToken.length > 0 ?
               <TextBox width="auto" alignW="right">모든 사용자<GlobalOutlined style={{margin: "4px"}}/></TextBox>
               :
               <TextBox width="auto" alignW="right">초대 멤버<LockOutlined style={{margin: "4px"}}/> </TextBox>
             }
           </FlexBox>
           <FlexBox h="32px" settings={{ justify: "center" }} bg="none">
-          <Popover
-            content={<PopoverShareContent isShared={isShared} setIsShared={setIsShared} />}
+          <Popover 
+            zIndex={1}
+            content={<PopoverShareContent />}
             title={<PopoverShareTitle />}
             trigger="click"
             placement="bottomRight"

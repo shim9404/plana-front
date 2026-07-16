@@ -1,6 +1,8 @@
 import React from 'react'
 import { FlexBox, TextBox } from '../../common/PLA_FlexBox'
 import { Select } from 'antd'
+import { MEMBER_SHARING_OPTIONS } from '../../../Constants/tripShare'
+import { TextButton } from '../../common/PLA_Buttons'
 
 const SharedMemberItem = ({member}) => {
   return (
@@ -17,9 +19,24 @@ const SharedMemberItem = ({member}) => {
         <TextBox alignW="left" color="#A8A8A8" size="12px">{member?.email || "이메일 없음"}</TextBox>
       </FlexBox>
       {/* 권한 설정 */}
-      <Select defaultValue={member?.role || "뷰어"} style={{ width: "100px", border: "none", textAlign: "center" }}>
-        <Option value="viewer" style={{ textAlign: "center" }}>뷰어</Option>
-        <Option value="editor" style={{ textAlign: "center" }}>편집자</Option>
+      <Select defaultValue={member?.role || "VIEWER"} style={{ height: "28px", width: "96px", border: "none", textAlign: "center", fontSize: "14px", color: "#565656" }}
+      options={MEMBER_SHARING_OPTIONS}
+      popupRender={menu => {
+        return (
+        <FlexBox w="100%" style={{overflow: "hidden", textAlign: "center"}} settings={{isVertical: true, align:"stretch"}}>
+          {menu}
+          <FlexBox settings={{isVertical: true}} style={{borderTop: "solid 1px #D9D9D9", paddingTop: "8px", gap: "4px"}}>
+            <TextButton width="100%" height="28px"  type="primary">
+              다시 초대
+            </TextButton>
+            <TextButton width="100%" height="28px"  type="primary" danger>
+              제거
+            </TextButton>
+          </FlexBox>
+        </FlexBox>
+        )
+      }}>
+
       </Select>
     </FlexBox>
   )
