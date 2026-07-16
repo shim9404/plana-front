@@ -24,6 +24,13 @@ const tripInfoStore = create((set) => ({
   setTripId: (newData) =>
     set({
       tripId: newData
+    }),
+
+  // 여행 공유 토큰
+  shareToken: "",
+  setShareToken: (newData) =>
+    set({
+      shareToken: newData
     })
 }));
 

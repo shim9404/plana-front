@@ -85,7 +85,23 @@ const modalStore = create((set, get) => ({
         isOpen: false
       }
     });
-  }
+  },
+  // 우측 메뉴 드로어
+  menuDrawer: false,
+  openMenuDrawer: (props = {}) =>
+    set({
+      menuDrawer: {
+        isOpen: true,
+        props
+      }
+    }),
+  closeMenuDrawer: (props = {}) =>
+    set({
+      menuDrawer: {
+        isOpen: false,
+        props
+      }
+    }),
 }));
 
 export default modalStore;
