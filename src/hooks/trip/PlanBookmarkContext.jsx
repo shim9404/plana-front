@@ -18,7 +18,7 @@ export const PlanBookmarkProvider = ({ children }) => {
   }, [bookmarks]);
 
   const getBookmarkType = useCallback((id) => {
-    const findBookmark = bookmarks.find(bookmark => bookmark.bookmarkId === id || bookmark.placeId === id || bookmark.areaId === id);
+    const findBookmark = bookmarks.find(bookmark => bookmark.bookmarkId === id || bookmark.placeId === id || bookmark.areaId === id || bookmark.themeId === id);
     return findBookmark? findBookmark.bookmarkType : "NONE";
   }, [bookmarks]);
 
