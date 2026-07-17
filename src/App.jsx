@@ -10,6 +10,8 @@ import { oneBtnPreset } from "./utils/alertModalPreset.js";
 import { SESSION_EXPIRED_NOTICE_KEY } from "./services/axiosInstance.js";
 import { isMobile } from "react-device-detect";
 import MobileGuard from "./view/layouts/MobileGuard.jsx";
+import { Drawer } from "antd";
+import MenuDrawerContent from "./view/layouts/MenuDrawerContent.jsx";
 
 
 function App() {
@@ -26,6 +28,8 @@ function App() {
   const openTwoBtnModal = modalStore((state) => state.openTwoBtnModal);
   const closeTwoBtnModal = modalStore((state) => state.closeTwoBtnModal);
   const confirmTwoBtnModal = modalStore((state) => state.confirmTwoBtnModal);
+  const menuDrawer = modalStore((state) => state.menuDrawer);
+  const closeMenuDrawer = modalStore((state) => state.closeMenuDrawer);
 
 useEffect(() => {
   const checkExpired = () => {
@@ -67,6 +71,14 @@ useEffect(() => {
           onOk={confirmTwoBtnModal}
         />
       )}
+      <Drawer
+        closable={{ placement: 'end' }}
+        mask={{ enabled: true, blur: true }}
+        onClose={closeMenuDrawer}
+        open={menuDrawer.isOpen}
+      >
+        <MenuDrawerContent/>
+      </Drawer>
       <HeaderMain />
       <AppRouter />
     </>
