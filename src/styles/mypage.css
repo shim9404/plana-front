@@ -2,11 +2,10 @@
 /* 상단 프로필 박스 */
 .profile-box {
   display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 20px;
   border-bottom: 2px solid #c4c4c4;
-  margin: 20px 20px 20px 20px;
-  padding: 30px;
+  width: 100%;
 }
 
 .profile-name {
@@ -18,32 +17,28 @@
 }
 
 /* Menu */
+.custom-menu {
+  border: none;
+}
+
 .custom-menu .ant-menu-item {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 15px;
-  margin-bottom: 15px;
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 20px;
+  border-radius: 18px;
+  background: #e0e0e0;
 }
 
 .custom-menu .ant-menu-item .anticon {
-  margin-left: 50px;
-  margin-right: 3px;
-  color: #aaa;
-}
-
-.custom-menu .ant-menu-item:hover {
-  background-color: #fff !important;
-}
-
-.custom-menu .ant-menu-item-selected {
-  background-color: #fff !important;
-  color: #000 !important;
-  font-weight: 700;
+  margin: 0;
+  color: #7e7e7e;
 }
 
 .custom-menu .ant-menu-item-selected .anticon {
-  color: #000 !important;
+  color: #272727 !important;
 }
 
 /* ============== Content 영역 ================ */
@@ -69,7 +64,7 @@
   padding-top: 40px;
   max-width: 480px;
   margin: 0 auto;
-  font-size: 16px;
+  font-size: 15px;
 }
 
 /* 프로필 변경 부분 */
@@ -166,7 +161,7 @@
   padding-top: 100px;
   max-width: 480px;
   margin: 0 auto;
-  font-size: 16px;
+  font-size: 15px;
 }
 
 .ant-input-affix-wrapper:focus,
@@ -176,7 +171,7 @@
   box-shadow: none !important;
 }
 
-/* === 콘텐츠 2 _ 푀원 탈퇴 === */
+/* === 콘텐츠 3 _ 회원 탈퇴 === */
 .withdraw-box {
   border-left: 4px solid #c4c4c4;
   border-top: 5px solid #c4c4c4;
@@ -190,11 +185,100 @@
   padding-top: 30px;
   max-width: 480px;
   margin: 0 auto;
-  font-size: 16px;
+  font-size: 15px;
 }
 
 .withdraw-button-wrapper {
   display: flex;
   justify-content: end;
   gap: 10px;
+}
+
+/* === 콘텐츠 4 _ 여행 포인트 === */
+.edit_content_4 {
+  padding-top: 20px;
+  max-width: 1500px;
+  margin: 0 auto;
+  font-size: 15px;
+}
+
+/* 상단 */
+.point-header{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.point-info{
+  display: flex;
+  align-items: center;
+}
+
+.point-filter{
+  display:flex;
+}
+
+.point-filter button{
+  width: 70px;
+  height: 35px;
+  border: 1px solid #c4c4c4;
+  background: #fff;
+  cursor: pointer;
+}
+
+.point-filter button.active{
+  background: #e0e0e0;
+  font-weight: bold;
+}
+
+/* 테이블 */
+.point-table{
+  border: 1px solid #c4c4c4;
+  height: 480px;
+  display: flex;
+  flex-direction: column;
+}
+
+.table-body{
+  flex:1;
+  overflow-y:auto;
+}
+
+.table-header{
+  position: relative;
+  display: grid;
+  justify-items: center;
+  align-items: center; 
+  grid-template-columns: 200px 500px 100px 150px 150px;
+  padding: 15px 50px 5px;
+  box-sizing: border-box;
+  color: #707070ff;
+}
+
+.table-header::after {
+  content: "";
+  position: absolute;
+  left: 50px;
+  right: 50px;
+  bottom: 0px;
+  border-bottom: 1px solid #c4c4c4;
+}
+
+.table-row{
+  position: relative;
+  display: grid;
+  justify-items: center;
+  align-items: center; 
+  grid-template-columns: 200px 500px 100px 150px 150px;
+  padding: 15px 50px 5px;
+  box-sizing: border-box;
+}
+
+.plus{
+  color:#00a000;
+}
+
+.minus{
+  color:#ff3b30;
 }

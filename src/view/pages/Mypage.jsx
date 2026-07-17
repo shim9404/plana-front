@@ -1,6 +1,6 @@
 import PageLayout from "../../components/common/PageLayout";
-import { Layout, Menu } from "antd";
-import { KeyOutlined, ProfileOutlined, SmileOutlined } from "@ant-design/icons";
+import { Layout, Menu, Tooltip } from "antd";
+import { GiftOutlined, KeyOutlined, UserOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import authStore from "../../store/authStore";
 import '../../styles/mypage.css';
@@ -9,6 +9,7 @@ import PasswordChangeComponent from "../../components/mypage/PasswordChangeCompo
 import MemberWithdrawComponent from "../../components/mypage/MemberWithdrawComponent";
 import ProfileMarkerImage from "../../components/mypage/ProfileMarkerImage";
 import { getMemberApi } from "../../services/memberApi";
+import TripPointComponent from "../../components/mypage/TripPointComponent";
 
 const { Sider, Content } = Layout;
 
@@ -64,13 +65,12 @@ const Mypage = () => {
     <PageLayout>
       <Layout style={layoutStyle}>
         {/* == 사이드 영역 == */}
-        <Sider width={'300px'} theme="light">
+        <Sider width={'130px'} theme="light">
           {/* 상단 프로필 박스 */}
           <div className="demo-logo-vertical" />
           <div className="profile-box">
             <ProfileMarkerImage
               number={parseInt((objectMemberItem.profileImage || "profileImage1").replace("profileImage", ""), 10)} active={1}/>
-            <div className="profile-name">{objectMemberItem.nickname}</div>
           </div>
           {/* 메뉴 */}
           <Menu
@@ -80,13 +80,24 @@ const Mypage = () => {
             items={[
               {
                 key: '1',
-                icon: <ProfileOutlined style={{ fontSize: '25px' }} />,
-                label: '회원 정보 수정'
+                icon:
+                  <Tooltip title="회원 정보 수정" placement="right">
+                    <UserOutlined style={{ fontSize: '30px' }} />
+                  </Tooltip>
               },
               {
                 key: '2',
-                icon: <KeyOutlined style={{ fontSize: '25px' }} />,
-                label: '비밀번호 변경'
+                icon: 
+                  <Tooltip title="비밀번호 수정" placement="right">
+                    <KeyOutlined style={{ fontSize: '30px' }} />
+                  </Tooltip>
+              },
+              {
+                key: '4',
+                icon: 
+                  <Tooltip title="여행 포인트" placement="right">
+                    <GiftOutlined style={{ fontSize: '30px' }} />
+                  </Tooltip>
               }
             ]}
           />
@@ -117,6 +128,11 @@ const Mypage = () => {
             accessToken={accessToken}         // 회원 토큰
             logout={logout}                   // 로그아웃
             setSelectedMenu={setSelectedMenu} // 메뉴 선택 번호
+            />
+          }
+          {/* 여행 포인트 콘텐츠 (4) */}
+          {selectedMenu === '4' &&
+            <TripPointComponent
             />
           }
         </Content>
