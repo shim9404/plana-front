@@ -15,19 +15,15 @@ const { Sider, Content } = Layout;
 
 const layoutStyle = {
   display: "flex",
-  minHeight: '100%'
+  minHeight: "100%"
 };
 
 const contentStyle = {
   display: 'flex',
   flexDirection: 'column',
-  margin: '24px',
-  padding: '48px',
+  padding: '60px',
   background: '#ffffff',
-  borderRadius: '15px',
   boxShadow: '0 3px 5px rgba(0,0,0,0.5)',
-  height: 'calc(100vh - 150px)',
-  overflowY: 'auto'
 }
 
 const Mypage = () => {

@@ -7,129 +7,149 @@ const TripPointComponent = () => {
   // 포인트 상태 
   const [selectedState, setSelectedState] = useState("전체");
   const statefilter = ["전체", "적립", "사용", "만료"];
+  const typeMap = {적립: "EARN", 사용: "USE", 만료: "EXPIRE"};
 
   // 임의 데이터 (api 연결 예정)
   const myPointLists = [
     {
-      pointId: "P1", 
+      pointId: "P12", 
       memberId: "M3",
       tripId: "null",
-      content: "회원가입 축하 포인트",
-      status: "적립",
+      content: "여행 계획 생성 슬롯 추가",
+      type: "USE",
       amount: 1000,     
-      createDate: "2026.03.01 14:35:54",
+      remain: 500,
+      orginPointId: "null",
+      createDate: "2026.03.12 14:35:54",
     },
     {
-      pointId: "P2", 
+      pointId: "P11", 
       memberId: "M3",
-      tripId: "T5",
-      content: "[내 부산 여행] 생성",
-      status: "적립",
+      tripId: "null",
+      content: "여행 계획 생성 슬롯 추가",
+      type: "USE",
+      amount: 1000,     
+      remain: 1500,
+      orginPointId: "null",
+      createDate: "2026.03.11 14:35:54",
+    },
+    {
+      pointId: "P10", 
+      memberId: "M3",
+      tripId: "T2",
+      content: "[내 부산 여행2] 공유 삭제(24시간 이내)",
+      type: "EXPIRE",
+      amount: 1000,     
+      remain: 2500,
+      orginPointId: "P7",
+      createDate: "2026.03.10 14:35:54",
+    },
+    {
+      pointId: "P9", 
+      memberId: "M3",
+      tripId: "T2",
+      content: "[내 부산 여행2] 여행 계획 삭제(24시간 이내)",
+      type: "EXPIRE",
+      amount: 500,    
+      remain: 3500,
+      orginPointId: "P3",
+      createDate: "2026.03.09 14:35:54",
+    },
+    {
+      pointId: "P8", 
+      memberId: "M3",
+      tripId: "T1",
+      content: "[내 부산 여행1] 생성 - 포인트 만료(60일)",
+      type: "EXPIRE",
       amount: 500,     
-      createDate: "2026.03.01 14:35:54",
+      remain: 4000,
+      orginPointId: "P2",
+      createDate: "2026.03.08 14:35:54",
     },
     {
-      pointId: "P3", 
+      pointId: "P7", 
       memberId: "M3",
-      tripId: "T5",
-      content: "[내 부산 여행] 공유",
-      status: "적립",
+      tripId: "T1",
+      content: "[내 부산 여행1] 공유",
+      type: "EARN",
       amount: 1000,   
-      createDate: "2026.03.01 14:35:54",
-    },
-    {
-      pointId: "P3", 
-      memberId: "M3",
-      tripId: "T5",
-      content: "[내 부산 여행] 공유",
-      status: "적립",
-      amount: 1000,   
-      createDate: "2026.03.01 14:35:54",
-    },
-    {
-      pointId: "P3", 
-      memberId: "M3",
-      tripId: "T5",
-      content: "[내 부산 여행] 공유",
-      status: "적립",
-      amount: 1000,   
-      createDate: "2026.03.01 14:35:54",
-    },
-    {
-      pointId: "P3", 
-      memberId: "M3",
-      tripId: "T5",
-      content: "[내 부산 여행] 공유",
-      status: "적립",
-      amount: 1000,   
-      createDate: "2026.03.01 14:35:54",
-    },
-    {
-      pointId: "P3", 
-      memberId: "M3",
-      tripId: "T5",
-      content: "[내 부산 여행] 공유",
-      status: "적립",
-      amount: 1000,   
-      createDate: "2026.03.01 14:35:54",
-    },
-    {
-      pointId: "P4", 
-      memberId: "M3",
-      tripId: "T5",
-      content: "[내 부산 여행] 생성 - 포인트 만료(60일)",
-      status: "만료",
-      amount: -500,     
-      createDate: "2026.03.01 14:35:54",
-    },
-    {
-      pointId: "P5", 
-      memberId: "M3",
-      tripId: "T5",
-      content: "[내 부산 여행] 여행 계획 삭제(24시간 이내)",
-      status: "만료",
-      amount: -500,    
-      createDate: "2026.03.01 14:35:54",
+      remain: 4500,
+      orginPointId: "null",
+      createDate: "2026.03.07 14:35:54",
     },
     {
       pointId: "P6", 
       memberId: "M3",
       tripId: "T5",
-      content: "[내 부산 여행] 공유 삭제(24시간 이내)",
-      status: "만료",
-      amount: -1000,     
-      createDate: "2026.03.01 14:35:54",
+      content: "[내 부산 여행5] 생성",
+      type: "EARN",
+      amount: 500,   
+      remain: 3500,
+      orginPointId: "null",
+      createDate: "2026.03.06 14:35:54",
     },
     {
-      pointId: "P7", 
+      pointId: "P5", 
       memberId: "M3",
-      tripId: "T5",
-      content: "여행 계획 생성 슬롯 추가",
-      status: "사용",
-      amount: -1000,     
+      tripId: "T4",
+      content: "[내 부산 여행4] 생성",
+      type: "EARN",
+      amount: 500,   
+      remain: 3000,
+      orginPointId: "null",
+      createDate: "2026.03.05 14:35:54",
+    },
+    {
+      pointId: "P4", 
+      memberId: "M3",
+      tripId: "T3",
+      content: "[내 부산 여행3] 생성",
+      type: "EARN",
+      amount: 500,   
+      remain: 2500,
+      orginPointId: "null",
+      createDate: "2026.03.04 14:35:54",
+    },
+    {
+      pointId: "P3", 
+      memberId: "M3",
+      tripId: "T2",
+      content: "[내 부산 여행2] 생성",
+      type: "EARN",
+      amount: 500,   
+      remain: 2000,
+      orginPointId: "null",
+      createDate: "2026.03.03 14:35:54",
+    },
+    {
+      pointId: "P2", 
+      memberId: "M3",
+      tripId: "T1",
+      content: "[내 부산 여행1] 생성",
+      type: "EARN",
+      amount: 500,     
+      remain: 1500,
+      orginPointId: "null",
+      createDate: "2026.03.02 14:35:54",
+    },
+    {
+      pointId: "P1", 
+      memberId: "M3",
+      tripId: "null",
+      content: "회원가입 축하 포인트",
+      type: "EARN",
+      amount: 1000,     
+      remain: 1000,
+      orginPointId: "null",
       createDate: "2026.03.01 14:35:54",
     },
   ];
-  const point = myPointLists.reduce((sum, item) => sum + item.amount, 0);
-
-  const pointLists = (() => {
-  let remain = 0;
-
-  // 잔액 계산
-  const list = myPointLists.map((item) => {
-    remain += item.amount;
-
-    return {
-      ...item,
-      remain,
-    };
-  });
-
-  // 상태 필터 처리
-  return selectedState === "전체"
-    ? list
-    : list.filter((item) => item.status === selectedState);
-})();
+  
+  const point = myPointLists[0]?.remain ?? 0;
+  const pointLists =
+    selectedState === "전체"
+      ? myPointLists
+      : myPointLists.filter((item) => item.type === typeMap[selectedState]);
 
   return (
     <>
@@ -177,17 +197,12 @@ const TripPointComponent = () => {
                   <div>{item.createDate}</div>
                   <div>{item.content}</div>
                   <div
-                    className={
-                      item.status === "사용"
-                        ? "minus"
-                        : item.status === "만료"
-                        ? "minus"
-                        : "plus"
-                    }
+                    className={item.type === "EARN" ? "plus": "minus"}
                   >
-                    {item.status}
+                    {{EARN: "적립", USE: "사용", EXPIRE: "만료"}[item.type]}
                   </div>
-                  <div className={item.amount <= 0 ? "minus" : "plus"}>
+                  <div className={item.type === "EARN" ? "plus" : "minus"}>
+                    {item.type === "EARN" ? "+" : "-"}
                     {item.amount.toLocaleString()}
                   </div>
                   <div>{item.remain.toLocaleString()}</div>
