@@ -153,12 +153,6 @@ const TripPointComponent = () => {
 
   return (
     <>
-      {/* 콘텐츠 상단 */}
-      <div className="content-header">
-        <GiftOutlined style={{fontSize: 30}}/>
-        <span className="content-header__title">여행 포인트</span>
-      </div>
-      {/* 콘텐츠 내용 */}
       <div className="edit_content_4">
         <div className="point-wrap">
           {/* 상단 */}

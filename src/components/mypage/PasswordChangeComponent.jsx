@@ -59,12 +59,6 @@ const PasswordChangeComponent = ({memberId, setSelectedMenu}) => {
 
   return (
     <>
-      {/* 콘텐츠 상단 */}
-      <div className="content-header">
-        <KeyOutlined style={{fontSize: '30px'}}/>
-        <span className="content-header__title">비밀번호 수정</span>
-      </div>
-      {/* 콘텐츠 내용 */}
       <div className="edit_content2">
         {/* 비밀번호 변경 부분 */}
         <div className="edit__row">

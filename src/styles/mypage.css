@@ -1,7 +1,4 @@
 /* ============== 사이드 영역  ================ */
-.ant-layout-sider {
-  border-right: 1px solid #c4c4c4;
-}
 /* 상단 프로필 박스 */
 .profile-box {
   display: flex;
@@ -9,6 +6,7 @@
   align-items: center;
   border-bottom: 2px solid #c4c4c4;
   width: 100%;
+  flex-shrink: 0;
 }
 
 .profile-name {
@@ -21,6 +19,8 @@
 
 /* Menu */
 .custom-menu {
+  flex: 1;
+  overflow-y: auto;
   border: none;
 }
 
@@ -32,12 +32,17 @@
   height: 56px;
   margin: 0 auto 20px;
   border-radius: 18px;
-  background: #e0e0e0;
+  background: #f3f3f3;
+  transition: all 0.2s ease;
+  color: #7e7e7e;
 }
 
-.custom-menu .ant-menu-item .anticon {
-  margin: 0;
-  color: #7e7e7e;
+.custom-menu .ant-menu-item:hover {
+  background: #d5d5d5 !important;
+}
+
+.custom-menu .ant-menu-item-selected {
+  background: #d5d5d5 !important;
 }
 
 .custom-menu .ant-menu-item-selected .anticon {
@@ -45,16 +50,29 @@
 }
 
 /* ============== Content 영역 ================ */
+/* Content 전체 */
+.mypage-content{
+  height: 100%;
+}
+
+/* 내용만 스크롤 */
+.content-scroll{
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+}
+
 /* 콘텐트 공통 상단 표시 */
-.content-header {
+.content-header{
+  flex-shrink: 0;
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100%;
-  max-width: 1500px;
-  margin: 0 auto;
   gap: 10px;
+  padding: 20px 0;
   border-bottom: 2px solid #c4c4c4;
+  background: #fff;
+  z-index: 100;
 }
 
 .content-header__title {
@@ -240,7 +258,6 @@
 /* 테이블 */
 .point-table{
   border: 1px solid #c4c4c4;
-  height: 550px;
   display: flex;
   flex-direction: column;
 }
