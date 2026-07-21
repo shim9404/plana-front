@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Button, Input, message, Modal } from 'antd';
-import { ProfileOutlined } from '@ant-design/icons';
+import { UserOutlined } from '@ant-design/icons';
 import '../../styles/mypage.css';
 import { TextButton } from '../common/PLA_Buttons';
 import ProfileMarkerImage from "../../components/mypage/ProfileMarkerImage";
@@ -84,12 +84,6 @@ const MemberChangeComponent = ({memberId, objectMemberItem, getMember, setSelect
 
   return (
     <>
-      {/* 콘텐츠 상단 */}
-      <div className="content-header">
-        <ProfileOutlined style={{fontSize: 30}}/>
-        <span className="content-header__title">회원 정보 수정</span>
-      </div>
-      {/* 콘텐츠 내용 */}
       <div className="edit_content_1">
         {/* 프로필 변경 부분 */}
         <div className="profile-edit__image-section">
