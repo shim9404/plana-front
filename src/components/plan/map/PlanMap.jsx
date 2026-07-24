@@ -169,7 +169,7 @@ const PlanMap = () => {
       if (!x || !y || !Number.isFinite(x) || !Number.isFinite(y)) return;
 
       const position = new window.kakao.maps.LatLng(y, x);
-      const bookmarkType = getBookmarkType(item.areaId || item.placeId || item.themeId)
+      const bookmarkType = getBookmarkType(item.areaId || item.placeId);
 
       const overlay =  new window.kakao.maps.CustomOverlay({
         map,
@@ -269,7 +269,7 @@ const PlanMap = () => {
           position: "absolute",
           top: "350px",
           left: isHide ? "40px " : "430px",
-          zIndex: isHide ? 1 : 0,
+          zIndex: isHide ? 0 : 1,
           pointerEvents: "auto",
           }}
         >

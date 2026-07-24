@@ -114,7 +114,6 @@ const PlanAreaContainer = () => {
   const [popupPosY, setPopupPosY] = useState(0);
   const [selectedAreaId, setSelectedAreaId] = useState("");
   const [selectedPlaceId, setSelectedPlaceId] = useState("");
-  const [selectedThemeId, setSelectedThemeId] = useState("");
   //#endregion
 
   const onToggleChange = (selected) => {
@@ -135,11 +134,10 @@ const PlanAreaContainer = () => {
   const closeBookmarkPopup = () => {
     setSelectedAreaId("");
     setSelectedPlaceId("");
-    setSelectedThemeId("");
   }
 
-  const openBookmarkPopup = (posY, areaId, placeId, themeId) => {
-    if (areaId == selectedAreaId || placeId == selectedPlaceId || themeId == selectedThemeId) {
+  const openBookmarkPopup = (posY, areaId, placeId) => {
+    if (areaId == selectedAreaId || placeId == selectedPlaceId) {
       closeBookmarkPopup();
       return;
     }
@@ -148,7 +146,6 @@ const PlanAreaContainer = () => {
     setPopupPosY(popupPosY);
     setSelectedPlaceId(placeId);
     setSelectedAreaId(areaId);
-    setSelectedThemeId(themeId);
   };
 
   const handleBookmarkChanged = async (type) => {
@@ -157,19 +154,13 @@ const PlanAreaContainer = () => {
       // SPOT, FOOD - areaId만 있으면 됨
       data = { areaId: selectedAreaId };
     } else {
-      if (searchType == "PLACE") {
-        // PLACE - area 전체 데이터 필요
-        data = searchResults.find((a) => a.placeId === selectedPlaceId);
-      } else {
-        // THEME - area 전체 데이터 필요
-        data = searchResults.find((a) => a.themeId === selectedThemeId);
-      }
+      data = searchResults.find((a) => a.placeId === selectedPlaceId);
     }
 
     const result = await addBookmark(type, data);
 
     // 추천 장소 팝업 열기
-    setFocusPlace(result.data)
+    setFocusPlace(result.data);
     setIsRecommendPopup(true);
   };
 
@@ -454,7 +445,7 @@ const PlanAreaContainer = () => {
   useEffect(() => {
     if (!objRegions || !objRegions?.mapX || !objRegions?.mapY) return;
 
-    setIsRecommendPopup(false);
+    // setIsRecommendPopup(false);
 
     setIsFilterCamp(false);
     setIsFilterWellness(false);
@@ -657,7 +648,7 @@ const PlanAreaContainer = () => {
             bg="none"
           >
             <FlexBox h="40px" bg="none" style={{ minHeight: "40px" }}>
-              <ToggleButtonGroup toggles={FILTER_TOGGLES} onChangedEvent={onToggleChange} />
+              <ToggleButtonGroup toggles={FILTER_TOGGLES} selected={searchType} onChangedEvent={onToggleChange} />
             </FlexBox>
               {!showFilter ? (
                   <FlexBox h="48px"  bg="none" style={{ gap: "10px" }}>
@@ -698,7 +689,7 @@ const PlanAreaContainer = () => {
             {searchResults?.length > 0 ? (
               searchResults.map((area, idx) => (
                 <AreaItem
-                  key={area.areaId || area.placeId || area.themeId}
+                  key={area.areaId || area.placeId}
                   area={area}
                   number={idx + 1}
                   margin="4px"
@@ -730,7 +721,7 @@ const PlanAreaContainer = () => {
             />
           </FlexBox>
           {/* 북마크 팝업 */}
-          {((selectedAreaId?.length > 0) || (selectedPlaceId?.length > 0) || (selectedThemeId?.length > 0)) && (
+          {((selectedAreaId?.length > 0) || (selectedPlaceId?.length > 0)) && (
             <FlexBox
               w="240px"
               h="80px"
