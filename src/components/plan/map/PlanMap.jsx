@@ -268,24 +268,25 @@ const PlanMap = () => {
         <div style={{ 
           position: "absolute",
           top: "350px",
-          left: isHide ? "40px " : "430px",
-          zIndex: isHide ? 0 : 1,
+          left: "430px",
           pointerEvents: "auto",
           }}
         >
-          <FlexBox h="45px" bg="none" settings={{ justify: "flex-start" }} 
-            style={{position: "absolute", top: "10px", left: "20px", gap: "10px", pointerEvents: "auto",}}>
-            <TextButton type="default" width="90px" height="35px" fontSize="15px" style={{color: "#795548", border: "1px solid #795548"}}
-              onClickEvent={() => {setIsFilterCamp(true); setIsFilterWellness(false);}}>
-              <TentTree size={15} style={{marginRight: "5px", position: "relative", top: "2px"}}/> 
-                캠핑
-            </TextButton>
-            <TextButton type="default" width="90px" height="35px" fontSize="15px" style={{color: "#388E3C", border: "1px solid #388E3C"}}
-              onClickEvent={() => {setIsFilterCamp(false); setIsFilterWellness(true);}}>
-              <Leaf size={15} style={{marginRight: "5px", position: "relative", top: "2px"}}/> 
-                웰니스
-            </TextButton>
-          </FlexBox>
+          {!isHide && (
+            <FlexBox h="45px" bg="none" settings={{ justify: "flex-start" }} 
+              style={{position: "absolute", top: "10px", left: "20px", gap: "10px", pointerEvents: "auto",}}>
+              <TextButton type="default" width="90px" height="35px" fontSize="15px" style={{color: "#795548", border: "1px solid #795548"}}
+                onClickEvent={() => {setIsFilterCamp(true); setIsFilterWellness(false);}}>
+                <TentTree size={15} style={{marginRight: "5px", position: "relative", top: "2px"}}/> 
+                  캠핑
+              </TextButton>
+              <TextButton type="default" width="90px" height="35px" fontSize="15px" style={{color: "#388E3C", border: "1px solid #388E3C"}}
+                onClickEvent={() => {setIsFilterCamp(false); setIsFilterWellness(true);}}>
+                <Leaf size={15} style={{marginRight: "5px", position: "relative", top: "2px"}}/> 
+                  웰니스
+              </TextButton>
+            </FlexBox>
+          )}
         </div>
         {/* 하단 BUTTON UI */}
         <Flex  
