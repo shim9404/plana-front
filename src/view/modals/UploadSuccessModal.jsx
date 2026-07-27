@@ -5,6 +5,7 @@ import { Files, ThumbsUp, Info } from 'lucide-react';
 import { CategoryBarChart } from '../../components/lounge/CategoryBarChart';
 import { RegionBarChart } from '../../components/lounge/RegionBarChart';
 import { KEYWORD_OPTIONS } from '../../constants/keyword';
+import { LoungePostCard } from '../../components/lounge/LoungePostCard';
 
 const modalContainerStyles = {
   mask: {
@@ -114,120 +115,6 @@ const linkTextStyle = {
   transition: 'color 0.2s',
 };
 
-const previewCardStyle = {
-  width: '100%',
-  border: '1px solid #e5e7eb',
-  borderRadius: '16px',
-  padding: '16px 20px',
-  backgroundColor: '#fff',
-  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '10px',
-  marginBottom: '16px',
-  boxSizing: 'border-box',
-};
-
-const cardTopRowStyle = {
-  width: '100%',
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'flex-start',
-};
-
-const periodBadgeStyle = {
-  border: '1px solid #d9d9d9',
-  borderRadius: '8px',
-  padding: '6px 12px',
-  fontSize: '14px',
-  color: '#4b5563',
-  fontWeight: '500',
-};
-
-const cardTitleWrapperStyle = {
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'flex-end',
-  textAlign: 'right',
-  maxWidth: '260px', 
-  width: '100%',     
-};
-
-const cardTitleStyle = {
-  fontSize: '16px',
-  fontWeight: 'bold',
-  color: '#1f2937',
-  lineHeight: '1.2',
-  
-  whiteSpace: 'nowrap',       
-  overflow: 'hidden',        
-  textOverflow: 'ellipsis',  
-  width: '100%',            
-};
-
-const cardNicknameStyle = {
-  fontSize: '12px',
-  color: '#9ca3af',
-  marginTop: '2px',
-};
-
-const cardDividerStyle = {
-  width: '100%',
-  height: '1px',
-  backgroundColor: '#e5e7eb',
-  margin: '2px 0',
-};
-
-const keywordRowStyle = {
-  width: '100%',
-  display: 'flex',
-  gap: '6px',
-};
-
-const keywordIconBoxStyle = {
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  width: '36px',
-  height: '30px',
-  border: '1px solid #d9d9d9',
-  borderRadius: '8px',
-  backgroundColor: '#fff',
-};
-
-const cardBottomRowStyle = {
-  width: '100%',
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'flex-end',
-  marginTop: '4px',
-};
-
-const cardDateWrapperStyle = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '2px',
-};
-
-const cardDateTextStyle = {
-  fontSize: '12px',
-  color: '#6b7280',
-};
-
-const cardStatsWrapperStyle = {
-  display: 'flex',
-  gap: '12px',
-  color: '#4b5563',
-};
-
-const cardStatItemStyle = {
-  display: 'flex',
-  alignItems: 'center',
-  gap: '4px',
-  fontSize: '14px',
-  fontWeight: '500',
-};
-
 const noticeWrapperStyle = {
   width: '100%',
   display: 'flex',
@@ -235,7 +122,7 @@ const noticeWrapperStyle = {
   gap: '2px',
   alignSelf: 'flex-start',
   paddingLeft: '4px',
-  marginBottom: '24px',
+  marginTop: '10px',
   boxSizing: 'border-box',
 };
 
@@ -306,55 +193,7 @@ const UploadSuccessModal = ({ isModalOpen, handleClose, planData }) => {
         </span>
       </div>
 
-      <div style={previewCardStyle}>
-        <div style={cardTopRowStyle}>
-          <div style={periodBadgeStyle}>
-            {planData?.nights == 0 ? "당일" : `${planData?.nights}박 ${planData?.nights + 1}일`}
-          </div>
-          <div style={cardTitleWrapperStyle}>
-            <div style={cardTitleStyle}>{planData?.name || '-'}</div>
-            <div style={cardNicknameStyle}>{planData?.nickname || '-'}</div>
-          </div>
-        </div>
-
-        <div style={cardDividerStyle} />
-
-        <div style={keywordRowStyle}>
-          {planData?.keywordIds?.map((keywordId) => {
-            const keywordOption = KEYWORD_OPTIONS.find((opt) => opt.id === keywordId);
-            if (!keywordOption) return null;
-
-            const IconComponent = keywordOption.icon;
-            return (
-              <div key={keywordId} style={keywordIconBoxStyle}>
-                <IconComponent size={16} color={keywordOption.iconColor} strokeWidth={2.5} />
-              </div>
-            );
-          })}
-        </div>
-
-        <div style={{ display: 'flex', gap: '16px', width: '100%' }}>
-          <CategoryBarChart statList={planData?.categoryStatList} style={{ flex: 1.2 }} />
-          <RegionBarChart statList={planData?.regionStatList} style={{ flex: 1 }} />
-        </div>
-
-        <div style={cardBottomRowStyle}>
-          <div style={cardDateWrapperStyle}>
-            <div style={cardDateTextStyle}>여행일 {planData?.startDate} ~ {planData?.endDate}</div>
-            <div style={cardDateTextStyle}>게시일 {planData?.publishDate || '-'}</div>
-          </div>
-          <div style={cardStatsWrapperStyle}>
-            <div style={cardStatItemStyle}>
-              <span>0</span>
-              <Files size={16} />
-            </div>
-            <div style={cardStatItemStyle}>
-              <span>0</span>
-              <ThumbsUp size={16} />
-            </div>
-          </div>
-        </div>
-      </div>
+      <LoungePostCard plan={planData} />
 
       <div style={noticeWrapperStyle}>
         <p style={noticeTextStyle}>*라운지에 공개된 여행 계획은 삭제할 수 없어요.</p>

@@ -11,3 +11,9 @@ export const uploadHubPlanApi = async (tripId, payload) => {
   return response.data;
 };
 
+
+
+export const getHubPlansApi = async (payload) => {
+  const response = await axiosInstance.get(`/api/lounge/hubs`, { params: payload });
+  return response.data;
+};
