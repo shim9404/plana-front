@@ -122,13 +122,14 @@ export const IconButton = ({
   );
 };
 
-export const ToggleButtonGroup = ({ toggles, isVertical, onChangedEvent, btnStyle }) => {
-  let [selected, setSelected] = useState(toggles[0].type);
+export const ToggleButtonGroup = ({ toggles, selected, isVertical, onChangedEvent, btnStyle }) => {
+  // let [selected, setSelected] = useState(toggles[0].type);
 
   const handleChangeToggle = (select) => {
     if (select === selected) return;
-    onChangedEvent && onChangedEvent(select);
-    setSelected(select);
+    //onChangedEvent && onChangedEvent(select);
+    //setSelected(select);
+    onChangedEvent?.(select);
   }
 
   const flexStyle = {
