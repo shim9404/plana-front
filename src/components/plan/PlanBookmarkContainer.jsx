@@ -8,12 +8,21 @@ import { getBookmarkColor } from "../../utils/plan/bookmarkUtils";
 import DraggableBookmarkItem from "../bookmark/DraggableBookmarkItem";
 import planBookmarkStore from "../../store/trip/planBookmarkStore";
 import planUIStore from "../../store/trip/planUIStore";
+import { TextButton } from "../common/PLA_Buttons";
+import { Sparkles } from "lucide-react";
+import tripRecommandStore from "../../store/trip/tripRecommandStore";
 
 const PlanBookmarkContainer = () => {
   const bookmarks = planBookmarkStore((state) => state.bookmarks);
   const isExpandBookmark = planUIStore((state) => state.isExpandBookmark);
   const setIsExpandBookmark = planUIStore((state) => state.setIsExpandBookmark);
   const canExpandBookmark = planUIStore((state) => state.canExpandBookmark);
+
+  // 연관 여행지 추천 여부 
+  const isRecommend = tripRecommandStore((state) => state.isRecommend);
+  const setIsRecommend = tripRecommandStore((state) => state.setIsRecommend);
+  const setIsRecommendPopup = tripRecommandStore((state) => state.setIsRecommendPopup);
+  const setFocusPlace = tripRecommandStore((state) => state.setFocusPlace);
   
   const [isExpandHover, setIsExpandHover] = useState(false);
   const [filterBookmarks, setFilterBookmarks] = useState([]);
@@ -89,6 +98,19 @@ const PlanBookmarkContainer = () => {
             <TextBox size="16px" alignW="left" color="#565656">
               <StarOutlined size="24px" style={{ marginRight: "8px" }} />
               북마크
+              <TextButton type="default" width="190px" height="25px" fontSize="14px" 
+                style={{marginLeft: "15px", marginRight: "8px",
+                  backgroundColor: isRecommend ? "#FFFFFF" : "#E5E5E5",
+                  border: isRecommend ? "1px solid #444444" : "1px solid #BDBDBD",
+                  color: isRecommend ? "#222222" : "#7A7A7A",
+                  boxShadow: isRecommend ? "0 2px 5px rgba(0,0,0,0.18)" : "inset 0 2px 4px rgba(0,0,0,0.15)",    
+                  transform: isRecommend ? "translateY(0)" : "translateY(1px)",
+                  transition: "all 0.2s ease",
+                }}
+                onClickEvent={() => {setIsRecommend(!isRecommend); setIsRecommendPopup(false); setFocusPlace("");}}>
+                <Sparkles size={15} style={{marginRight: "5px", position: "relative", top: "2px"}}/> 
+                연관여행지 추천 받기!
+              </TextButton>
             </TextBox>
           </FlexBox>
           {/* 헤더 우측 필터 */}

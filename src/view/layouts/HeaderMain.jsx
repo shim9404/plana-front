@@ -5,6 +5,7 @@ import {
   CompassOutlined,
   LoginOutlined,
   LogoutOutlined,
+  MenuOutlined,
   SlidersOutlined,
   UserOutlined,
 } from "@ant-design/icons";
@@ -18,21 +19,9 @@ import useProtectedNavigate from "../../hooks/useProtectedNavigate";
 import { NAV_PRESET } from "../../utils/protectedNavPreset";
 
 import PlanALogo from '../../assets/images/svg/logos/plana-logo.svg?react';
+import PlanAIcon from '../../assets/images/svg/logos/plana-icon.svg?react';
 
 const { Header } = Layout;
-
-const headerStyle = {
-  backgroundColor: "rgba(255, 255, 255, 0.9)",
-  position: "absolute",
-  zIndex: "100",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  width: "100%",
-  height: "98px",
-  lineHeight: 1.2,
-  borderBottom: "solid 2px #A8A8A8",
-};
 
 const HeaderMain = () => {
   const loaction = useLocation();
@@ -43,11 +32,12 @@ const HeaderMain = () => {
   const userRole = authStore((state) => state.userRole);
 
   const openLoginModal = modalStore((state) => state.openLoginModal);
+  const openMenuDrawer = modalStore((state) => state.openMenuDrawer);
 
   const protectedNavigate = useProtectedNavigate();
 
   const isAdmin = isLoggedIn && userRole === 'ADMIN';
-  const isPlanning = location.pathname === NAV_PRESET.PLAN.path;
+  const isPlanning = location.pathname.startsWith(NAV_PRESET.PLAN.path);
   const isHome = location.pathname === NAV_PRESET.HOME.path;
   const buttonsRef = useRef(null);
 
@@ -77,7 +67,7 @@ const HeaderMain = () => {
     },
     {
       key: "MYTRIP",
-      isVisiable: true,
+      isVisiable: !isPlanning,
       name: "내 여행",
       type: "default",
       onClickEvent: () => { protectedNavigate(NAV_PRESET.MYTRIP) },
@@ -93,7 +83,7 @@ const HeaderMain = () => {
     },
     {
       key: "LOGIN",
-      isVisiable: !isLoggedIn,
+      isVisiable: !isLoggedIn && !isPlanning,
       name: "로그인",
       type: "default",
       onClickEvent: openLoginModal,
@@ -101,13 +91,38 @@ const HeaderMain = () => {
     },
     {
       key: "LOGOUT",
-      isVisiable: isLoggedIn,
+      isVisiable: isLoggedIn && !isPlanning,
       name: "로그아웃",
       type: "default",
       onClickEvent: handleLogout,
       icon: <LogoutOutlined />
     },
+    {
+      key: "MENU",
+      isVisiable: isPlanning,
+      w: "60px",
+      h: "58px",
+      mw: "60px",
+      iconSize: "18px",
+      name: "",
+      type: "default",
+      onClickEvent: openMenuDrawer,
+      icon: <MenuOutlined />
+    }
   ]
+
+  const headerStyle = {
+    backgroundColor: "rgba(255, 255, 255, 0.9)",
+    position: "absolute",
+    zIndex: "100",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "100%",
+    height: isPlanning ? "72px" : "98px",
+    lineHeight: 1.2,
+    borderBottom: "solid 2px #A8A8A8",
+  };
 
   useEffect(() => {
 
@@ -118,9 +133,11 @@ const HeaderMain = () => {
       <FlexBox settings={{ justify: "center" }}>
         <FlexBox w={isHome ? "80%" : "100%"} bg="none" style={{ margin: "48px" }}>
           {/* 로고 */}
-          <FlexBox w="200px" bg="none">
+          <FlexBox w={isPlanning ? "52px" : "200px"} bg="none">
             <Link to="/" className="header-trip__brand">
-              <PlanALogo width="137" height="52" />
+            {
+              isPlanning ? <PlanAIcon width="52" height="52" /> : <PlanALogo width="137" height="52" />
+            }
             </Link>
           </FlexBox>
           {/* 계획 페이지 헤더 영역 */}
@@ -132,7 +149,8 @@ const HeaderMain = () => {
             {
               menuButtons.map((menu) => {
                 return (menu.isVisiable &&
-                  <MenuButton key={menu.key} name={menu.name} type={menu.type} onClickEvent={menu.onClickEvent}>
+                  <MenuButton key={menu.key} name={menu.name} type={menu.type} onClickEvent={menu.onClickEvent}
+                  w={menu.w || "80px"} h={menu.h || "64px"} mw={menu.mw || "64px"} mh={menu.mh || "64px"} iconSize={menu.iconSize ||"24px"} fontSize="12px">
                     {menu.icon}
                   </MenuButton>
                 )

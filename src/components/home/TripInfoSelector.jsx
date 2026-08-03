@@ -55,8 +55,8 @@ const TripInfoSelector = ({ setHoveredId }) => {
       return;
     }
 
-    handleCreateTrip(() => {
-      protectedNavigate(NAV_PRESET.PLAN);
+    handleCreateTrip((tripId) => {
+      protectedNavigate({ path: `/plan/${tripId}`, requireAuth: true });
     });
   }
 
@@ -73,12 +73,7 @@ const TripInfoSelector = ({ setHoveredId }) => {
       const result = await addTripApi(data);
       if (result) {
         const response = result.data;
-        setBookmarks([]);
-        setTripId(response.tripId);
-        setTripName(response.name);
-        setPlanDays(response.days);
-        setActiveDayCount(response.days.length);
-        successCallback?.();
+        successCallback?.(response.tripId);
       }
     } catch (e) {
       console.log(e);

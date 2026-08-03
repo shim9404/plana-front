@@ -10,12 +10,15 @@ import { oneBtnPreset } from "./utils/alertModalPreset.js";
 import { SESSION_EXPIRED_NOTICE_KEY } from "./services/axiosInstance.js";
 import { isMobile } from "react-device-detect";
 import MobileGuard from "./view/layouts/MobileGuard.jsx";
+import { Drawer } from "antd";
+import MenuDrawerContent from "./view/layouts/MenuDrawerContent.jsx";
 
 
 function App() {
-  const isLoginOpen = modalStore((state) => state.isLoginOpen);
+  const loginModal = modalStore((state) => state.loginModal);
   const openLoginModal = modalStore((state) => state.openLoginModal);
   const closeLoginModal = modalStore((state) => state.closeLoginModal);
+  const confirmLoginModal = modalStore((state) => state.confirmLoginModal);
   const isSignupOpen = modalStore((state) => state.isSignupOpen);
   const closeSignupModal = modalStore((state) => state.closeSignupModal);
   const oneBtnModal = modalStore((state) => state.oneBtnModal);
@@ -25,6 +28,8 @@ function App() {
   const openTwoBtnModal = modalStore((state) => state.openTwoBtnModal);
   const closeTwoBtnModal = modalStore((state) => state.closeTwoBtnModal);
   const confirmTwoBtnModal = modalStore((state) => state.confirmTwoBtnModal);
+  const menuDrawer = modalStore((state) => state.menuDrawer);
+  const closeMenuDrawer = modalStore((state) => state.closeMenuDrawer);
 
 useEffect(() => {
   const checkExpired = () => {
@@ -46,7 +51,8 @@ useEffect(() => {
   return (
     <>
       <LoginModalComponent
-        open={isLoginOpen}
+        open={loginModal.isOpen}
+        onLogin={confirmLoginModal}
         onClose={closeLoginModal}
       />
       <SignUpModalComponent
@@ -65,6 +71,14 @@ useEffect(() => {
           onOk={confirmTwoBtnModal}
         />
       )}
+      <Drawer
+        closable={{ placement: 'end' }}
+        mask={{ enabled: true, blur: true }}
+        onClose={closeMenuDrawer}
+        open={menuDrawer.isOpen}
+      >
+        <MenuDrawerContent/>
+      </Drawer>
       <HeaderMain />
       <AppRouter />
     </>

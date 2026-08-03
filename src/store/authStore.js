@@ -49,6 +49,12 @@ const authStore = create((set) => ({
       username: newData
     }),
 
+  nickname: readFromStorage("nickname"),
+  setNickname: (newData) =>
+    set({
+      nickname: newData
+    }),
+
   profileImage: readFromStorage("profileImage"),
   setProfileImage: (newData) =>
     set({
@@ -61,6 +67,7 @@ const authStore = create((set) => ({
     // localStorage 저장
     localStorage.setItem("email", inputEmail);
     localStorage.setItem("name", data.name);
+    localStorage.setItem("nickname", data.nickname);
     localStorage.setItem("role", data.role);
 
     if (data.memberId != null && data.memberId !== "") {
@@ -76,6 +83,7 @@ const authStore = create((set) => ({
       email: inputEmail,
       memberId: data.memberId,
       username: data.name,
+      nickname: data.nickname,
       profileImage: data.profileImage
     });
 
@@ -94,6 +102,7 @@ const authStore = create((set) => ({
     localStorage.removeItem("memberId");
     localStorage.removeItem("profileImage");
     localStorage.removeItem("trip_auto_login");
+    localStorage.removeItem("nickname");
 
     // 상태 초기화
     set({

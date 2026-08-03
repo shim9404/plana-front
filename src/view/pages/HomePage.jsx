@@ -49,6 +49,7 @@ const HomePage = () => {
   }, []);
 
 
+
   // 컴포넌트 마운트 시 DB 데이터 불러오기 및 zustand 초기화
   useEffect(() => {
     setTripId(null);

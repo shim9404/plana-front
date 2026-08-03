@@ -59,11 +59,6 @@ const MemberWithdrawComponent = ({ memberId, email, accessToken, logout, setSele
 
   return (
     <>
-      {/* 콘텐츠 상단 */}
-      <div className="content-header">
-        <ProfileOutlined style={{ fontSize: '30px' }} />
-        <span className="content-header__title">PLAN A 회원 탈퇴</span>
-      </div>
       {/* 회원 탈퇴 주의문구 박스 */}
       <div className="withdraw-box">
         <Typography.Title level={4} style={{ color: 'red' }}>회원 탈퇴 주의사항!</Typography.Title>

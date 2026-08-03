@@ -34,6 +34,7 @@ const AreaItem = ({ id, area, number, margin, popupBookmark }) => {
   }
 
   const handleOpenlink = (link) => {
+    if (!link?.trim()) return;
     window.open(link, "_blank");
   }
 
@@ -70,7 +71,7 @@ const AreaItem = ({ id, area, number, margin, popupBookmark }) => {
         <FlexBox w="48px" bg="none" settings={{ isVertical: true, justify: "space-around" }} style={{ padding: "8px", position: "relative" }}
           ref={buttonRef}>
           <AreaBookmarkButton popupBookmark={popupBookmark} findId={area.areaId || area.placeId} onClickEvent={handleBookmark}/>
-          <IconButton width="36px" height="36px" type="default" onClickEvent={() => handleOpenlink(area.link)}>
+          <IconButton width="36px" height="36px" type="default" disabled={!area.link?.trim()} onClickEvent={() => handleOpenlink(area.link)}>
             <ExportOutlined />
           </IconButton>
         </FlexBox>

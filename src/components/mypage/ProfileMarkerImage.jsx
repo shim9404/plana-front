@@ -33,7 +33,22 @@ const ProfileMarkerImage = ({ number = 1, active = 1 }) => {
     border: "1px solid #eee"
   };
 
-  const style = active === 2 ? style2 : style1;
+  const style3 = {
+    ...common,
+    width: "60px",
+    height: "60px",
+    backgroundPosition: `-${col * 110 * scale}px -${row * 110 * scale}px`,
+    backgroundSize: `${330 * scale}px ${330 * scale}px`,
+    boxShadow: "0 2px 5px rgba(0,0,0,0.5)",
+  }
+
+  const styleMap = {
+    1: style1,
+    2: style2,
+    3: style3,
+  };
+  
+  const style = styleMap[active] || style1;
 
   return <div style={style} />;
 }

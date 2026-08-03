@@ -5,10 +5,12 @@ import { renderToString } from "react-dom/server";
 import { IconButton, TextButton } from "../../common/PLA_Buttons";
 import placeSearchStore from "../../../store/trip/placeSearchStore";
 import { Button, Flex } from "antd";
-import { Eye, EyeOff, MouseLeft, MouseOff, SearchX, ZoomIn, ZoomOut } from "lucide-react";
+import { Eye, EyeOff, Leaf, MouseLeft, MouseOff, SearchX, TentTree, ZoomIn, ZoomOut } from "lucide-react";
 import planBookmarkStore from "../../../store/trip/planBookmarkStore";
 import { getBookmarkColor, getBookmarkSubColor, getBookmarkActiveColor } from "../../../utils/plan/bookmarkUtils";
 import { StarTwoTone } from "@ant-design/icons";
+import { FlexBox } from "../../common/PLA_FlexBox";
+import tripAroundStore from "../../../store/trip/tripAroundStore";
 
 /**
  * Kakao Maps SDK 로드 함수
@@ -75,6 +77,11 @@ const PlanMap = () => {
   const [isDrag, setisDrag] = useState(true); // 드래그
   const [isZoom, setIsZoom] = useState(true); // 줌
   const [isHide, setIsHide] = useState(false); // UI on/off
+
+  // 주변 장소 관련 상태 관리
+  // 주변 장소(켐핑/웰니스) 활성화/비활성화
+  const setIsFilterCamp = tripAroundStore((state) => state.setIsFilterCamp);
+  const setIsFilterWellness = tripAroundStore((state) => state.setIsFilterWellness);
   
   // 검색 결과 + 클릭 여부 데이터
   const isSearched = placeSearchStore((state) => state.isSearched);
@@ -162,7 +169,7 @@ const PlanMap = () => {
       if (!x || !y || !Number.isFinite(x) || !Number.isFinite(y)) return;
 
       const position = new window.kakao.maps.LatLng(y, x);
-      const bookmarkType = getBookmarkType(item.areaId || item.placeId)
+      const bookmarkType = getBookmarkType(item.areaId || item.placeId);
 
       const overlay =  new window.kakao.maps.CustomOverlay({
         map,
@@ -257,39 +264,62 @@ const PlanMap = () => {
     <div style={{ position: "relative", width: "100%", height: "100%"}}>
       <div id="map" ref={mapContainerRef}
         style={{ width: "100%", height: "100%", position: "absolute" , zIndex: isHide ? 1 : 0 }} />
-      {/* BUTTON UI */}
-      <Flex  
-        style={{
-          flexDirection: "column",
+        {/* 상단 BUTTON UI */}
+        <div style={{ 
           position: "absolute",
-          bottom: "40px",
-          left: isHide ? "40px " : "450px",
-          display: "flex",
-          gap: "10px",
-          zIndex: isHide ? 1 : 0,
-        }}
-      >
-        { map && (
-            <>
-              <Button 
-                icon={isHide ? <EyeOff size={20}/> : <Eye size={20} /> } 
-                onClick={() => setIsHide(!isHide)}
-                style={{ width:'40px', height: '40px',  borderRadius: '50%', display: 'flex', alignItems: 'center' }}
-              />
-              <Button 
-                icon={isDrag ? <MouseLeft size={20}/> : <MouseOff size={20} /> } 
-                onClick={toggleDrag}
-                style={{ width:'40px', height: '40px',  borderRadius: '50%', display: 'flex', alignItems: 'center' }}
-              />
-              <Button 
-                icon={isZoom ? <ZoomIn size={20}/> : <SearchX size={20} /> } 
-                onClick={toggleZoom}
-                style={{ width:'40px', height: '40px', borderRadius: '50%' , display: 'flex', alignItems: 'center' }}
-              />
-            </>
-          )
-        }
-
+          top: "350px",
+          left: "430px",
+          pointerEvents: "auto",
+          }}
+        >
+          {!isHide && (
+            <FlexBox h="45px" bg="none" settings={{ justify: "flex-start" }} 
+              style={{position: "absolute", top: "10px", left: "20px", gap: "10px", pointerEvents: "auto",}}>
+              <TextButton type="default" width="90px" height="35px" fontSize="15px" style={{color: "#795548", border: "1px solid #795548"}}
+                onClickEvent={() => {setIsFilterCamp(true); setIsFilterWellness(false);}}>
+                <TentTree size={15} style={{marginRight: "5px", position: "relative", top: "2px"}}/> 
+                  캠핑
+              </TextButton>
+              <TextButton type="default" width="90px" height="35px" fontSize="15px" style={{color: "#388E3C", border: "1px solid #388E3C"}}
+                onClickEvent={() => {setIsFilterCamp(false); setIsFilterWellness(true);}}>
+                <Leaf size={15} style={{marginRight: "5px", position: "relative", top: "2px"}}/> 
+                  웰니스
+              </TextButton>
+            </FlexBox>
+          )}
+        </div>
+        {/* 하단 BUTTON UI */}
+        <Flex  
+          style={{
+            flexDirection: "column",
+            position: "absolute",
+            bottom: "40px",
+            left: isHide ? "40px " : "450px",
+            display: "flex",
+            gap: "10px",
+            zIndex: isHide ? 1 : 0,
+          }}
+        >
+          { map && (
+              <>
+                <Button 
+                  icon={isHide ? <EyeOff size={20}/> : <Eye size={20} /> } 
+                  onClick={() => setIsHide(!isHide)}
+                  style={{ width:'40px', height: '40px',  borderRadius: '50%', display: 'flex', alignItems: 'center' }}
+                />
+                <Button 
+                  icon={isDrag ? <MouseLeft size={20}/> : <MouseOff size={20} /> } 
+                  onClick={toggleDrag}
+                  style={{ width:'40px', height: '40px',  borderRadius: '50%', display: 'flex', alignItems: 'center' }}
+                />
+                <Button 
+                  icon={isZoom ? <ZoomIn size={20}/> : <SearchX size={20} /> } 
+                  onClick={toggleZoom}
+                  style={{ width:'40px', height: '40px', borderRadius: '50%' , display: 'flex', alignItems: 'center' }}
+                />
+              </>
+            )
+          }
       </Flex>
     </div>
     </>

@@ -33,6 +33,16 @@ export const getTripApi = async (tripId) => {
 }
 
 /**
+ * 여행 조회(공유 링크)
+ * @param {String} shareToken 
+ * @returns 
+ */
+export const getSharedTripApi = async (shareToken) => {
+  const response = await axiosInstance.get(`/api/trips/share/${shareToken}`);
+  return response.data;
+}
+
+/**
  * 여행 정보 수정
  * @param {String} tripId
  * @param {{ name: String, entryCount: Integer }} payload
@@ -182,3 +192,34 @@ export const deleteTripApi = async (tripId) => {
   const reulst = response.data ?? {};
   return reulst.success;
 };
+
+//#region 여행 공유(SHARE)
+/**
+ * 여행 공유 토큰 발급
+ * @param {String} tripId 
+ */
+export const shareTripApi = async (tripId) => {
+  const response = await axiosInstance.post(`/api/trips/${tripId}/share-token`);
+  return response.data;
+}
+
+/**
+ * 여행 공유 토큰 제거
+ * @param {String} tripId 
+ */
+export const unshareTripApi = async (tripId) => {
+  const response = await axiosInstance.delete(`/api/trips/${tripId}/share-token`);
+  const result = response.data ?? {};
+  return result.success;
+}
+
+/**
+ * 여행 계획 공유 멤버 초대
+ * @param {String} tripId 
+ * @param {invitedEmail: string, role: string} payload 
+ */
+export const inviteMemberApi = async (tripId, payload) => {
+  const response = await axiosInstance.post(`/api/trips/${tripId}/invite`, payload);
+  return response.data;
+}
+//#endregion

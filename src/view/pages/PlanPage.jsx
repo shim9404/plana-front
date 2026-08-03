@@ -30,6 +30,9 @@ import { SCHEDULE_CATEGORYS } from "../../constants/scheduleCategory";
 import { hideLoader, showLoader } from "../../utils/uiUtil";
 import { DoubleLeftOutlined, DoubleRightOutlined } from "@ant-design/icons";
 import { FlexContainer } from "../../components/common/PLA_Containers";
+import tripRegionStore from "../../store/trip/tripRegionStore";
+import tripRecommandStore from "../../store/trip/tripRecommandStore";
+import RecommendPopup from "../../components/plan/area/RecommendPopup";
 const { Header, Sider, Content } = Layout;
 
 //#region layout styles
@@ -71,7 +74,7 @@ const mapStyle = {
 }
 //#endregion
 
-const PlanPage = () => {
+const PlanPage = ({ tripData }) => {
   const setEditingSchedule = editScheduleStore((state) => state.setEditingSchedule);
   const setBookmarkInSchedule = editScheduleStore((state) => state.setBookmarkInSchedule);
   const setScheduleCategorys = editScheduleStore((state) => state.setScheduleCategorys);
@@ -99,6 +102,7 @@ const PlanPage = () => {
   const setTripId = tripInfoStore((state) => state.setTripId);
   const setTripName = tripInfoStore((state) => state.setTripName);
   const setEntryCount = tripInfoStore((state) => state.setEntryCount);
+  const setSelectedSigu = tripRegionStore((state) => state.setSelectedSigu);
 
   const regionData = regionStore((state) => state.regionData);
   const updateRegionData = regionStore((state) => state.updateRegionData);
@@ -106,6 +110,11 @@ const PlanPage = () => {
   const cascaderOptions = regionStore((state) => state.regionData.cascaderOptions);
   
   const openOneBtnModal = modalStore((state) => state.openOneBtnModal);
+
+  // 추전 장소 팝업
+  const isRecommend = tripRecommandStore((state) => state.isRecommend);
+  const isRecommendPopup = tripRecommandStore((state) => state.isRecommendPopup);
+  const setIsRecommendPopup = tripRecommandStore((state) => state.setIsRecommendPopup);
 
   const [isDraggingBookmark, setIsDraggingBookmark] = useState(false); // 북마크 드래그 오버레이 표시 여부
   const draggingBookmarkRef = useRef(null); // 표시되는 북마크 오버레이 아이템
@@ -120,29 +129,53 @@ const PlanPage = () => {
 
   // 컴포넌트 마운트
   useEffect(() => {
-    // zustand의 tripId가 없을 경우(다른 페이지를 통해 넘어오지 않은 경우 발생) 
-    if (!tripId) {
-      // local storage에 저장된 tripId 확인
-      const savedTripId = window.localStorage.getItem("tripId");
-      if (!savedTripId) { // 없을 경우 홈으로 강제 이동
-        protectedNavigate(NAV_PRESET.HOME);
-        message.warning("여행이 존재하지 않습니다.");
-        return;
-      }
-      // local storage에 저장된 tripId는 있을 경우 데이터 불러오기 설정
-      setTripId(savedTripId);
-      handleLoadTripData(savedTripId);
-    } else {
-      window.localStorage.setItem("tripId", tripId);
-      hideLoader();
-    }
-
     // zustand 초기화
     setIsExpandTable(false);
     setEditingSchedule(null);
     setIsFoldTable(false);
     setIsSearched(false);
 
+    // 여행명, 여행일자, 여행 기간, 참여인원 Context 담기
+    setTripId(tripData.tripId);
+    setTripName(tripData.name);
+    setConfirmedDates([dayjs(tripData.startDate),dayjs(tripData.endDate)]);
+    setActiveDayCount(tripData.activeDayCount);
+    setEntryCount(tripData.entryCount ?? 1);
+    setSelectedSigu(tripData.regionId);
+    
+    const days = tripData.days;
+    setPlanDays(days);
+
+    // 스케줄 목록 내 분류 Context 담기
+    const extraCategories = days.flatMap(day =>
+      day.schedules
+        .map(schedule => schedule.category)
+        .filter(Boolean) // undefined & null 제거
+    );
+    // 중복 제거(기본 값(SCHEDULE_CATEGORYS)외 존재 시, 추가)
+    const uniqueCategories = [...new Set([
+      ...SCHEDULE_CATEGORYS,
+      ...extraCategories
+    ])];
+    setScheduleCategorys(uniqueCategories);
+
+    const bookmarkData = tripData.bookmarks;
+    const countMap = {};      
+    days.forEach(day => {
+      day.schedules
+        .forEach(s => {
+          if (s.bookmarkId) {
+            countMap[s.bookmarkId] = (countMap[s.bookmarkId] || 0) + 1;
+          }
+        });
+    });
+    const updatedBookmarks = bookmarkData.map(item => ({
+      ...item,
+      linkedCount: countMap[item.bookmarkId] || 0
+    }));
+    
+    setBookmarks(updatedBookmarks);
+    
     // 브라우저 사이즈에 따른 초기화
     handleResizeComponents();
 
@@ -150,6 +183,9 @@ const PlanPage = () => {
     window.addEventListener("resize", () => {
       handleWaitResize(handleResizeComponents);
     }, 150);
+  }, [tripData]);
+
+  useEffect(() => {
 
     // Region 데이터가 유효하지 않은 경우 재요청 (홈을 통해 접근하지 않았을 경우 등)
     if (!regionData ||  cascaderOptions.length <= 0) {
@@ -171,53 +207,9 @@ const PlanPage = () => {
     }
 
     return() => {
-      window.localStorage.removeItem("tripId")
+      setTripId(null);
     }
   }, []);
-
-  const handleLoadTripData = (tripId) => {
-    requestTripData(tripId, (tripData) => {
-      // 여행명, 여행일자, 여행 기간, 참여인원 Context 담기
-      setTripName(tripData.name);
-      setConfirmedDates([dayjs(tripData.startDate),dayjs(tripData.endDate)]);
-      setActiveDayCount(tripData.activeDayCount);
-      setEntryCount(tripData.entryCount ?? 1);
-      setSelectedSigu(tripData.regionId);
-      
-      const days = tripData.days;
-      setPlanDays(days);
-
-      // 스케줄 목록 내 분류 Context 담기
-      const extraCategories = days.flatMap(day =>
-        day.schedules
-          .map(schedule => schedule.category)
-          .filter(Boolean) // undefined & null 제거
-      );
-      // 중복 제거(기본 값(SCHEDULE_CATEGORYS)외 존재 시, 추가)
-      const uniqueCategories = [...new Set([
-        ...SCHEDULE_CATEGORYS,
-        ...extraCategories
-      ])];
-      setScheduleCategorys(uniqueCategories);
-
-      const bookmarkData = tripData.bookmarks;
-      const countMap = {};      
-      days.forEach(day => {
-        day.schedules
-          .forEach(s => {
-            if (s.bookmarkId) {
-              countMap[s.bookmarkId] = (countMap[s.bookmarkId] || 0) + 1;
-            }
-          });
-      });
-      const updatedBookmarks = bookmarkData.map(item => ({
-        ...item,
-        linkedCount: countMap[item.bookmarkId] || 0
-      }));
-      
-      setBookmarks(updatedBookmarks);
-    });
-  };
 
   const handleWaitResize = (onResize, delay = 300) => {
     clearTimeout(timerRef.current);
@@ -566,6 +558,10 @@ const PlanPage = () => {
       <FlexBox style={mapStyle} bg="#E4EAD7">
         <PlanMap />
       </FlexBox>
+      {/* 추천 장소 팝업 */}
+      {isRecommend && isRecommendPopup && (
+        <RecommendPopup onClose={() => setIsRecommendPopup(false)}/>
+      )}
     </PageLayout>
   );
 };

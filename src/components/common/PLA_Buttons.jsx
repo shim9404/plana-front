@@ -27,6 +27,9 @@ export const MenuButton = ({
   children,
   name,
   onClickEvent,
+  w = "80px",
+  h = "64px",
+  mw = "64px",
   type = "default",
   iconSize = "24px",
   fontSize = "12px",
@@ -34,9 +37,9 @@ export const MenuButton = ({
 }) => {
 
   const menuButtonStyle = {
-    width: "80px",
-    minWidth: "64px",
-    height: "64px",
+    width: w,
+    minWidth: mw,
+    height: h,
     marginLeft: "20px",
     padding: "8px",
   };
@@ -119,13 +122,14 @@ export const IconButton = ({
   );
 };
 
-export const ToggleButtonGroup = ({ toggles, isVertical, onChangedEvent, btnStyle }) => {
-  let [selected, setSelected] = useState(toggles[0].type);
+export const ToggleButtonGroup = ({ toggles, selected, isVertical, onChangedEvent, btnStyle }) => {
+  // let [selected, setSelected] = useState(toggles[0].type);
 
   const handleChangeToggle = (select) => {
     if (select === selected) return;
-    onChangedEvent && onChangedEvent(select);
-    setSelected(select);
+    //onChangedEvent && onChangedEvent(select);
+    //setSelected(select);
+    onChangedEvent?.(select);
   }
 
   const flexStyle = {

@@ -2,9 +2,9 @@ import { createRoot } from "react-dom/client";
 import App from "./App.jsx";
 import { App as AntdApp, ConfigProvider, message } from "antd";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import ProtectedRoute from "./ProtectedRoute.jsx";
 import "./styles/global.css";
 import { GLOBAL_TOKEN } from "./styles/antdDesignTokens.js";
+import ProtectedRoute from "./router/ProtectedRoute.jsx";
 
 
 /**
