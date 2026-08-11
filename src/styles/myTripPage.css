@@ -27,6 +27,19 @@
   font-size: 20px;
 }
 
+.point-link {
+  display: inline-block;
+  cursor: pointer;
+  color: #555555;
+  transition: all 0.2s ease;
+}
+
+.point-link:hover {
+  color: #222;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
 /* Menu */
 .trip-list {
   display: flex;

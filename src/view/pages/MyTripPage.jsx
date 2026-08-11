@@ -4,7 +4,6 @@ import { Empty, Layout, message, Spin } from "antd";
 import { CompassOutlined } from "@ant-design/icons";
 import { Download, FilePenLine, MapPinned, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import '../../styles/myTripPage.css';
@@ -15,7 +14,6 @@ import authStore from "../../store/authStore";
 import tripInfoStore from "../../store/trip/tripInfoStore";
 import modalStore from "../../store/modalStore";
 import { oneBtnPreset } from "../../utils/alertModalPreset";
-import dayjs from "dayjs";
 import planBookmarkStore from "../../store/trip/planBookmarkStore";
 import tripDateStore from "../../store/trip/tripDateStore";
 import planDaysStore from "../../store/trip/planDaysStore";
@@ -26,6 +24,8 @@ import { hideLoader, showLoader } from "../../utils/uiUtil";
 import { getTrashPlanApi, getTripbyMemberIdApi } from "../../services/memberApi";
 import { changeTripStatusApi, getTripApi } from "../../services/tripApi";
 import useProtectedNavigate from "../../hooks/useProtectedNavigate";
+import { getPointApi } from "../../services/pointApi";
+import menuStore from "../../store/member/menuStore";
 
 const { Sider, Content } = Layout;
 
@@ -49,24 +49,24 @@ const contentStyle = {
 const MyTripPage = () => {
   // 경로 설정
   const protectedNavigate = useProtectedNavigate();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   // 모달 창
   const openTwoBtnModal = modalStore((state) => state.openTwoBtnModal);
   // 회원 전역 변수
   const memberId = authStore((state) => state.memberId);
   // 북마크 전역 변수
-  const setBookmarks = planBookmarkStore((state) => state.setBookmarks);
+  // const setBookmarks = planBookmarkStore((state) => state.setBookmarks);
   // 여행 계획표 전역 변수
-  const setPlanDays = planDaysStore((state) => state.setPlanDays);
+  // const setPlanDays = planDaysStore((state) => state.setPlanDays);
   // 여행 ID + 여행명 + 참여 인원 전역 변수
   const setTripId = tripInfoStore((state) => state.setTripId);
-  const setTripName = tripInfoStore((state) => state.setTripName);
-  const setEntryCount = tripInfoStore((state) => state.setEntryCount);
+  // const setTripName = tripInfoStore((state) => state.setTripName);
+  // const setEntryCount = tripInfoStore((state) => state.setEntryCount);
   // 여행일자 + 여행 기간(활성화 된 일자 수) 전역 변수
-  const setConfirmedDates = tripDateStore((state) => state.setConfirmedDates);
-  const setActiveDayCount = tripDateStore((state) => state.setActiveDayCount);
+  // const setConfirmedDates = tripDateStore((state) => state.setConfirmedDates);
+  // const setActiveDayCount = tripDateStore((state) => state.setActiveDayCount);
   // 여행 계획 카테고리
-  const setScheduleCategorys = editScheduleStore((state) => state.setScheduleCategorys);
+  // const setScheduleCategorys = editScheduleStore((state) => state.setScheduleCategorys);
   // 지역 전역 변수
   const setSelectedSigu = tripRegionStore((state) => state.setSelectedSigu);
 
@@ -96,11 +96,11 @@ const MyTripPage = () => {
   const trashPlanList = trips.filter((item) => item.status === "INACTIVE");
 
   // 메뉴 - 여행 목록 선택
-  const [selectedMenu, setSelectedMenu] = useState("");
+  const [selectedTrip, setSelectedTrip] = useState("");
   useEffect(() => { 
     // 메뉴 선택의 초기 선택값 설정
-    if (tripList.length > 0 && !tripList.some(trip => trip.tripId === selectedMenu)) {
-      setSelectedMenu(tripList[0].tripId);
+    if (tripList.length > 0 && !tripList.some(trip => trip.tripId === selectedTrip)) {
+      setSelectedTrip(tripList[0].tripId);
       setMyTripName(tripList[0].name);
     }
   }, [tripList]);
@@ -119,13 +119,13 @@ const MyTripPage = () => {
   const [selectedColor, setSelectedColor] = useState("");
 
   const getTripByTripId = async () => {
-    if (!selectedMenu) return;
+    if (!selectedTrip) return;
     showLoader();
     try {
-      const result = await getTripApi(selectedMenu);
+      const result = await getTripApi(selectedTrip);
 
       // 1) trip ID + region ID
-      setTripId(selectedMenu)
+      setTripId(selectedTrip)
       setSelectedSigu(result.data.regionId)
 
       // 2) 여행 일자
@@ -170,9 +170,9 @@ const MyTripPage = () => {
   };
 
   useEffect(() => {
-    if (!selectedMenu) return;
+    if (!selectedTrip) return;
     getTripByTripId();
-  }, [selectedMenu])
+  }, [selectedTrip])
   
 
   // 휴지통 목록 내 여행 정보 초기값
@@ -197,6 +197,23 @@ const MyTripPage = () => {
   // 휴지통 목록(간단) - INACTIVE(비활성) 초기값
   const trashList = trashPlans.filter((item) => item.status === "INACTIVE");
 
+  // 포인트(잔액) 초기 값
+  const [point, setPoint] = useState();
+  useEffect(() => {
+    if (!memberId) return;
+
+    const getPoint = async () => { 
+      try {
+        const result = await getPointApi(memberId);
+        const points = result.data.points;
+        setPoint(points[points.length - 1]?.remain ?? 0);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    
+    getPoint();
+  }, [memberId])
   // =================
 
   // 메뉴 하단 - 휴지통 버튼 선택
@@ -213,7 +230,7 @@ const MyTripPage = () => {
       onOk: async () => { 
         // 여행 계획 + 북마크 status: 비활성화(INACTIVE)
         try {
-          await changeTripStatusApi(selectedMenu, { status: "INACTIVE" });
+          await changeTripStatusApi(selectedTrip, { status: "INACTIVE" });
         } catch (error) {
           console.log(error);
         }
@@ -229,7 +246,7 @@ const MyTripPage = () => {
     openTwoBtnModal({
       ...oneBtnPreset.editCheck,
       onOk: () => {
-        protectedNavigate({ path: `/plan/${selectedMenu}`, requireAuth: true });
+        protectedNavigate({ path: `/plan/${selectedTrip}`, requireAuth: true });
       }
     })
   }; 
@@ -261,6 +278,13 @@ const MyTripPage = () => {
     });
   };
 
+  // 메뉴 상단 - 내 포인트 선택
+  const setSelectedMenu = menuStore((state) => state.setSelectedMenu);
+  const handlePoint = () => {
+    protectedNavigate({ path: `/mypage`, requireAuth: true });
+    setSelectedMenu('4')
+  }
+
 
   return (
     <PageLayout>
@@ -279,7 +303,9 @@ const MyTripPage = () => {
                     onClickEvent={() => { navigate("/plan"); }}>
                     <FormOutlined /> 새 여행 계획하기
                   </TextButton> */}
-                  <div>내 여행 포인트 : 1000</div>
+                  <div className="point-link" onClick={handlePoint} >
+                    내 여행 포인트 : {point}
+                  </div>
                 </div>
               </div>
             {/* 메뉴 */}
@@ -288,9 +314,9 @@ const MyTripPage = () => {
               {tripList.map((trip) => (
                 <div
                   key={trip.tripId}
-                  className={`trip-item ${selectedMenu === trip.tripId && !selectedTrash ? "active" : ""}`}
+                  className={`trip-item ${selectedTrip === trip.tripId && !selectedTrash ? "active" : ""}`}
                   onClick={() => {
-                    setSelectedMenu(trip.tripId); 
+                    setSelectedTrip(trip.tripId); 
                     setSelectedTrash(false);
                     setMyTripName(trip.name);
                   }}>
@@ -350,7 +376,7 @@ const MyTripPage = () => {
                 <div className="trip-content-header">
                   <CompassOutlined style={{fontSize: '35px'}} />
                   <span className="trip-content-header__title">
-                    {tripList.find((trip) => trip.tripId === selectedMenu)?.name}
+                    {tripList.find((trip) => trip.tripId === selectedTrip)?.name}
                   </span>
                 </div>
                 <div className="trip-content-header_button">
