@@ -20,6 +20,7 @@ import { NAV_PRESET } from "../../utils/protectedNavPreset";
 
 import PlanALogo from '../../assets/images/svg/logos/plana-logo.svg?react';
 import PlanAIcon from '../../assets/images/svg/logos/plana-icon.svg?react';
+import menuStore from "../../store/member/menuStore";
 
 const { Header } = Layout;
 
@@ -40,6 +41,8 @@ const HeaderMain = () => {
   const isPlanning = location.pathname.startsWith(NAV_PRESET.PLAN.path);
   const isHome = location.pathname === NAV_PRESET.HOME.path;
   const buttonsRef = useRef(null);
+
+  const setSelectedMenu = menuStore((state) => state.setSelectedMenu);
 
   const handleLogout = async () => {
     try {
@@ -78,7 +81,10 @@ const HeaderMain = () => {
       isVisiable: !isPlanning,
       name: "내 프로필",
       type: "default",
-      onClickEvent: () => { protectedNavigate(NAV_PRESET.MYPAGE) },
+      onClickEvent: () => { 
+        protectedNavigate(NAV_PRESET.MYPAGE),
+        setSelectedMenu('1')
+      },
       icon: <UserOutlined />
     },
     {

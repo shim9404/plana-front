@@ -281,7 +281,7 @@ const MyTripPage = () => {
   // 메뉴 상단 - 내 포인트 선택
   const setSelectedMenu = menuStore((state) => state.setSelectedMenu);
   const handlePoint = () => {
-    protectedNavigate({ path: `/mypage`, requireAuth: true });
+    protectedNavigate({ path: "/mypage", requireAuth: true });
     setSelectedMenu('4')
   }
 
