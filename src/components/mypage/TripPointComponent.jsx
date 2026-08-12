@@ -1,151 +1,35 @@
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import '../../styles/mypage.css';
 import { GiftOutlined } from '@ant-design/icons';
+import { getPointApi } from '../../services/pointApi';
 
-const TripPointComponent = () => {
+const TripPointComponent = ({memberId}) => {
 
   // 포인트 상태 
   const [selectedState, setSelectedState] = useState("전체");
   const statefilter = ["전체", "적립", "사용", "만료"];
   const typeMap = {적립: "EARN", 사용: "USE", 만료: "EXPIRE"};
 
-  // 임의 데이터 (api 연결 예정)
-  const myPointLists = [
-    {
-      pointId: "P12", 
-      memberId: "M3",
-      tripId: "null",
-      content: "여행 계획 생성 슬롯 추가",
-      type: "USE",
-      amount: 1000,     
-      remain: 500,
-      orginPointId: "null",
-      createDate: "2026.03.12 14:35:54",
-    },
-    {
-      pointId: "P11", 
-      memberId: "M3",
-      tripId: "null",
-      content: "여행 계획 생성 슬롯 추가",
-      type: "USE",
-      amount: 1000,     
-      remain: 1500,
-      orginPointId: "null",
-      createDate: "2026.03.11 14:35:54",
-    },
-    {
-      pointId: "P10", 
-      memberId: "M3",
-      tripId: "T2",
-      content: "[내 부산 여행2] 공유 삭제(24시간 이내)",
-      type: "EXPIRE",
-      amount: 1000,     
-      remain: 2500,
-      orginPointId: "P7",
-      createDate: "2026.03.10 14:35:54",
-    },
-    {
-      pointId: "P9", 
-      memberId: "M3",
-      tripId: "T2",
-      content: "[내 부산 여행2] 여행 계획 삭제(24시간 이내)",
-      type: "EXPIRE",
-      amount: 500,    
-      remain: 3500,
-      orginPointId: "P3",
-      createDate: "2026.03.09 14:35:54",
-    },
-    {
-      pointId: "P8", 
-      memberId: "M3",
-      tripId: "T1",
-      content: "[내 부산 여행1] 생성 - 포인트 만료(60일)",
-      type: "EXPIRE",
-      amount: 500,     
-      remain: 4000,
-      orginPointId: "P2",
-      createDate: "2026.03.08 14:35:54",
-    },
-    {
-      pointId: "P7", 
-      memberId: "M3",
-      tripId: "T1",
-      content: "[내 부산 여행1] 공유",
-      type: "EARN",
-      amount: 1000,   
-      remain: 4500,
-      orginPointId: "null",
-      createDate: "2026.03.07 14:35:54",
-    },
-    {
-      pointId: "P6", 
-      memberId: "M3",
-      tripId: "T5",
-      content: "[내 부산 여행5] 생성",
-      type: "EARN",
-      amount: 500,   
-      remain: 3500,
-      orginPointId: "null",
-      createDate: "2026.03.06 14:35:54",
-    },
-    {
-      pointId: "P5", 
-      memberId: "M3",
-      tripId: "T4",
-      content: "[내 부산 여행4] 생성",
-      type: "EARN",
-      amount: 500,   
-      remain: 3000,
-      orginPointId: "null",
-      createDate: "2026.03.05 14:35:54",
-    },
-    {
-      pointId: "P4", 
-      memberId: "M3",
-      tripId: "T3",
-      content: "[내 부산 여행3] 생성",
-      type: "EARN",
-      amount: 500,   
-      remain: 2500,
-      orginPointId: "null",
-      createDate: "2026.03.04 14:35:54",
-    },
-    {
-      pointId: "P3", 
-      memberId: "M3",
-      tripId: "T2",
-      content: "[내 부산 여행2] 생성",
-      type: "EARN",
-      amount: 500,   
-      remain: 2000,
-      orginPointId: "null",
-      createDate: "2026.03.03 14:35:54",
-    },
-    {
-      pointId: "P2", 
-      memberId: "M3",
-      tripId: "T1",
-      content: "[내 부산 여행1] 생성",
-      type: "EARN",
-      amount: 500,     
-      remain: 1500,
-      orginPointId: "null",
-      createDate: "2026.03.02 14:35:54",
-    },
-    {
-      pointId: "P1", 
-      memberId: "M3",
-      tripId: "null",
-      content: "회원가입 축하 포인트",
-      type: "EARN",
-      amount: 1000,     
-      remain: 1000,
-      orginPointId: "null",
-      createDate: "2026.03.01 14:35:54",
-    },
-  ];
-  
-  const point = myPointLists[0]?.remain ?? 0;
+  // 포인트 정보 초기값
+  const [myPointLists, setMyPointLists] = useState([])
+  useEffect(() => {
+    if (!memberId) return;
+
+    const getPoint = async () => { 
+      try {
+        const result = await getPointApi(memberId);
+        const points = result.data.points;
+        setMyPointLists(points);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    
+    getPoint();
+
+  }, [memberId])
+
+  const point = myPointLists[myPointLists.length - 1]?.remain ?? 0;
   const pointLists =
     selectedState === "전체"
       ? myPointLists
