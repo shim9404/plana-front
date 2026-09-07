@@ -65,6 +65,21 @@ export const oneBtnPreset = {
     message: "최소 1개 이상의 필터를 선택해주세요.",
     type: "warning"
   },
+  "loginRequired": {
+    title: "알림",
+    message: "로그인 후 이용해주세요.",
+    type: "error"
+  },
+  "tripCopySuccess": {
+    title: "성공",
+    message: "성공적으로 내 여행에 담겼습니다!",
+    type: "success" // 프로젝트 내 성공 타입 (또는 info/error 등 스타일에 맞게 지정)
+  },
+  "tripNotFound": {
+    title: "오류",
+    message: "여행 정보가 존재하지 않습니다.",
+    type: "error"
+  },
   default: {
     title: "오류",
     message: "잠시 후 다시 시도해 주세요.",

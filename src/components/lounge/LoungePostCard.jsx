@@ -1,5 +1,5 @@
-// components/lounge/LoungePostCard.jsx
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Files, ThumbsUp } from 'lucide-react';
 import { CategoryBarChart } from './CategoryBarChart'; 
 import { RegionBarChart } from './RegionBarChart';     
@@ -17,6 +17,8 @@ const previewCardStyle = {
   flexDirection: 'column',
   gap: '10px',
   boxSizing: 'border-box',
+  cursor: 'pointer',
+  transition: 'transform 0.2s ease, box-shadow 0.2s ease', 
 };
 
 const cardTopRowStyle = {
@@ -124,14 +126,35 @@ const cardStatItemStyle = {
 };
 
 export const LoungePostCard = ({ plan }) => {
+  const navigate = useNavigate();
+
+  // 📌 카드 클릭 시 상세 페이지로 이동 핸들러
+  const handleCardClick = () => {
+    console.log(plan);
+    if (plan.hubPlanId) {
+      navigate(`/lounge/detail/${plan.hubPlanId}`);
+    }
+  };
 
   const formatPublishDate = (dateStr) => {
     if (!dateStr) return '-';
-    return dateStr.substring(0, 10); // 시분초 잘라내고 YYYY-MM-DD 형식만 추출
+    return dateStr.substring(0, 10); 
   };
 
   return (
-    <div style={previewCardStyle}>
+    <div 
+      style={previewCardStyle}
+      onClick={handleCardClick}
+      // 마우스 오버 시 살짝 떠오르는 UI 피드백 효과
+      onMouseEnter={(e) => {
+        e.currentTarget.style.transform = 'translateY(-4px)';
+        e.currentTarget.style.boxShadow = '0 10px 20px rgba(0, 0, 0, 0.08)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = 'translateY(0)';
+        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.05)';
+      }}
+    >
       <div style={cardTopRowStyle}>
         <div style={periodBadgeStyle}>
           {plan?.nights === 0 ? "당일" : `${plan?.nights}박 ${plan?.nights + 1}일`}
@@ -185,4 +208,4 @@ export const LoungePostCard = ({ plan }) => {
       </div>
     </div>
   );
-};
+};         
