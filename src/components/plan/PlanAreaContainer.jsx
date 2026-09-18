@@ -270,7 +270,7 @@ const PlanAreaContainer = () => {
   };
 
   // 카테고리 필터링 데이터
-  const [selectedPlaceFilters, setSelectedPlaceFilters] = useState(["CT1","FD6","AT4","CE7","AD5"]); // 지도 검색용
+  const [selectedPlaceFilters, setSelectedPlaceFilters] = useState(["CT1","FD6","AT4","CE7","AD5", "SW8"]); // 지도 검색용
   const [selectedThemeFilters, setSelectedThemeFilters] = useState(["PET","BF"]);                    // 맞춤 테마용
   const [selectedAroundFilter, setSelectedAroundFilter] = useState("");                              // 주변 여행용(CAMP/WELLNESS)
 
