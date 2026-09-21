@@ -546,8 +546,10 @@ const PlanAreaContainer = () => {
 
     setSearchKeyword("");
     if (searchType === "PLACE") {
+      setPlaceCache({ pages: {}, totalCount: 0 });
       loadPlaceData("", 1, selectedPlaceFilters);
     } else {
+      setThemeCache({ pages: {}, totalCount: 0 });
       loadThemeData("", 1, selectedThemeFilters);
     }
   
