@@ -196,12 +196,12 @@ export const PopoverShareContent = () => {
       {/* 초대자 목록 및 권한 설정 */}
       <FlexBox h="100%" w="100%" settings={{ isVertical: true, justify: "start", align: "start" }} bg="none" style={{ margin: "8px 0px", gap: "8px"  }}>
         {/* 멤버 아이템 */}
+        {/* <SharedMemberItem />
         <SharedMemberItem />
         <SharedMemberItem />
         <SharedMemberItem />
         <SharedMemberItem />
-        <SharedMemberItem />
-        <SharedMemberItem />
+        <SharedMemberItem /> */}
       </FlexBox>
       <hr style={{width: "100%", marginTop: "8px"}}/>
       {/* 여행 계획 접근 권한 : 공유된 사람 or 링크 소유자 */}

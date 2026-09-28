@@ -1,0 +1,18 @@
+.search-type-select-dropdown .ant-select-item {
+  position: relative;
+  margin-bottom: 6px; /* 옵션 사이 여백 확보 */
+}
+
+.search-type-select-dropdown .ant-select-item:last-child {
+  margin-bottom: 0;
+}
+
+.search-type-select-dropdown .ant-select-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: -4px; 
+  height: 1px;
+  background-color: #a8a8a8;
+}

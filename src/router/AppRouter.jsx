@@ -10,7 +10,9 @@ import ErrorPage from "../view/pages/ErrorPage";
 import HomePage from "../view/pages/HomePage";
 import { navRef } from "../utils/navUtil";
 import TripAccessGuard from "../components/plan/TripAccessGuard";
+import { LoungeDetailGuard } from "../components/lounge/LoungeDetailGuard";
 import LoungePage from "../view/pages/LoungePage";
+import {LoungeDetailPage} from "../view/pages/LoungeDetailPage";
 
 const AppRouter = () => {
 
@@ -82,7 +84,15 @@ const AppRouter = () => {
           </PrivateRouter>
         }
       ></Route>
-      <Route path="*" element={<ErrorPage defaultKey="NOT_FOUND" />} />
+      <Route
+        path="/lounge/detail/:id"
+        element={
+          <LoungeDetailGuard>
+            {(loungeData) => <LoungeDetailPage loungeData={loungeData} />}
+          </LoungeDetailGuard>
+        }
+      />
+    <Route path="*" element={<ErrorPage defaultKey="NOT_FOUND" />} />
     </Routes>
   );
 };

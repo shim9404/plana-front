@@ -10,6 +10,7 @@ import MemberWithdrawComponent from "../../components/mypage/MemberWithdrawCompo
 import ProfileMarkerImage from "../../components/mypage/ProfileMarkerImage";
 import { getMemberApi } from "../../services/memberApi";
 import TripPointComponent from "../../components/mypage/TripPointComponent";
+import menuStore from "../../store/member/menuStore";
 
 const { Sider, Content } = Layout;
 
@@ -75,8 +76,9 @@ const Mypage = () => {
   }, [memberId])
 
 
-  // 메뉴(회원 정보 수정(1) / 비밀번호 변경(2) / 회원 탈퇴(3)) 선택 
-  const [selectedMenu, setSelectedMenu] = useState('1');
+  // 메뉴(회원 정보 수정(1) / 비밀번호 변경(2) / 회원 탈퇴(3) / 여행 포인트(4)) 선택 
+  const selectedMenu = menuStore((state) => state.selectedMenu);
+  const setSelectedMenu = menuStore((state) => state.setSelectedMenu);
 
   return (
     <PageLayout style={{overflow: "hidden"}}>
@@ -158,6 +160,7 @@ const Mypage = () => {
             {/* 여행 포인트 콘텐츠 (4) */}
             {selectedMenu === '4' &&
               <TripPointComponent
+              memberId={memberId}               // 회원 id
               />
             }
           </div>

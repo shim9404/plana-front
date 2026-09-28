@@ -13,6 +13,7 @@ const FILTER_OPTION = [
   { label: "관광명소", value: "AT4" },
   { label: "카페", value: "CE7" },
   { label: "숙박", value: "AD5" },
+  { label: "교통", value: "SW8" },
 ];
 
 // 지도 검색용 필터
